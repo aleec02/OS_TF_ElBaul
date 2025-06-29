@@ -1,0 +1,138 @@
+[
+  {
+    "item_orden_id": "IO800001",
+    "orden_id": "OR700001",
+    "producto_id": "PR300001",
+    "cantidad": 1,
+    "precio_unitario": 1500,
+    "subtotal": 1500
+  },
+  {
+    "item_orden_id": "IO800002",
+    "orden_id": "OR700002",
+    "producto_id": "PR300002",
+    "cantidad": 2,
+    "precio_unitario": 90,
+    "subtotal": 180
+  },
+  {
+    "item_orden_id": "IO800003",
+    "orden_id": "OR700003",
+    "producto_id": "PR300003",
+    "cantidad": 1,
+    "precio_unitario": 850,
+    "subtotal": 850
+  },
+  {
+    "item_orden_id": "IO800004",
+    "orden_id": "OR700004",
+    "producto_id": "PR300004",
+    "cantidad": 1,
+    "precio_unitario": 400,
+    "subtotal": 400
+  },
+  {
+    "item_orden_id": "IO800005",
+    "orden_id": "OR700005",
+    "producto_id": "PR300005",
+    "cantidad": 1,
+    "precio_unitario": 380,
+    "subtotal": 380
+  },
+  {
+    "item_orden_id": "IO800006",
+    "orden_id": "OR700006",
+    "producto_id": "PR300006",
+    "cantidad": 1,
+    "precio_unitario": 70,
+    "subtotal": 70
+  },
+  {
+    "item_orden_id": "IO800007",
+    "orden_id": "OR700007",
+    "producto_id": "PR300007",
+    "cantidad": 1,
+    "precio_unitario": 1200,
+    "subtotal": 1200
+  },
+  {
+    "item_orden_id": "IO800008",
+    "orden_id": "OR700008",
+    "producto_id": "PR300008",
+    "cantidad": 1,
+    "precio_unitario": 950,
+    "subtotal": 950
+  },
+  {
+    "item_orden_id": "IO800009",
+    "orden_id": "OR700009",
+    "producto_id": "PR300009",
+    "cantidad": 1,
+    "precio_unitario": 150,
+    "subtotal": 150
+  },
+  {
+    "item_orden_id": "IO800010",
+    "orden_id": "OR700010",
+    "producto_id": "PR300010",
+    "cantidad": 1,
+    "precio_unitario": 500,
+    "subtotal": 500
+  },
+  {
+    "item_orden_id": "IO800011",
+    "orden_id": "OR700011",
+    "producto_id": "PR300011",
+    "cantidad": 1,
+    "precio_unitario": 110,
+    "subtotal": 110
+  },
+  {
+    "item_orden_id": "IO800012",
+    "orden_id": "OR700012",
+    "producto_id": "PR300012",
+    "cantidad": 1,
+    "precio_unitario": 350,
+    "subtotal": 350
+  },
+  {
+    "item_orden_id": "IO800013",
+    "orden_id": "OR700013",
+    "producto_id": "PR300013",
+    "cantidad": 1,
+    "precio_unitario": 280,
+    "subtotal": 280
+  },
+  {
+    "item_orden_id": "IO800014",
+    "orden_id": "OR700014",
+    "producto_id": "PR300014",
+    "cantidad": 1,
+    "precio_unitario": 220,
+    "subtotal": 220
+  },
+  {
+    "item_orden_id": "IO800015",
+    "orden_id": "OR700015",
+    "producto_id": "PR300015",
+    "cantidad": 1,
+    "precio_unitario": 55,
+    "subtotal": 55
+  },
+  {
+    "item_orden_id": "IO800016",
+    "orden_id": "OR700016",
+    "producto_id": "PR300016",
+    "cantidad": 1,
+    "precio_unitario": 300,
+    "subtotal": 300
+  },
+  {
+    "item_orden_id": "IO800017",
+    "orden_id": "OR700017",
+    "producto_id": "PR300017",
+    "cantidad": 1,
+    "precio_unitario": 150,
+    "subtotal": 150
+  }
+]

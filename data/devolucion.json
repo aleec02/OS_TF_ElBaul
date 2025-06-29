@@ -1,0 +1,172 @@
+[
+  {
+    "devolucion_id": "DE150001",
+    "orden_id": "OR700001",
+    "producto_id": "PR300001",
+    "usuario_id": "US100001",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "completada",
+    "fecha_solicitud": "2024-07-03 15:00:00",
+    "monto_reembolso": 1500.0
+  },
+  {
+    "devolucion_id": "DE150002",
+    "orden_id": "OR700002",
+    "producto_id": "PR300002",
+    "usuario_id": "US100002",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "aprobada",
+    "fecha_solicitud": "2024-07-04 15:00:00",
+    "monto_reembolso": 180.0
+  },
+  {
+    "devolucion_id": "DE150003",
+    "orden_id": "OR700003",
+    "producto_id": "PR300003",
+    "usuario_id": "US100003",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "rechazada",
+    "fecha_solicitud": "2024-07-05 15:00:00",
+    "monto_reembolso": null
+  },
+  {
+    "devolucion_id": "DE150004",
+    "orden_id": "OR700004",
+    "producto_id": "PR300004",
+    "usuario_id": "US100004",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "pendiente",
+    "fecha_solicitud": "2024-07-06 15:00:00",
+    "monto_reembolso": 400.0
+  },
+  {
+    "devolucion_id": "DE150005",
+    "orden_id": "OR700005",
+    "producto_id": "PR300005",
+    "usuario_id": "US100005",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "completada",
+    "fecha_solicitud": "2024-07-07 15:00:00",
+    "monto_reembolso": 380.0
+  },
+  {
+    "devolucion_id": "DE150006",
+    "orden_id": "OR700006",
+    "producto_id": "PR300006",
+    "usuario_id": "US100006",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "aprobada",
+    "fecha_solicitud": "2024-07-08 15:00:00",
+    "monto_reembolso": 70.0
+  },
+  {
+    "devolucion_id": "DE150007",
+    "orden_id": "OR700007",
+    "producto_id": "PR300007",
+    "usuario_id": "US100007",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "rechazada",
+    "fecha_solicitud": "2024-07-09 15:00:00",
+    "monto_reembolso": null
+  },
+  {
+    "devolucion_id": "DE150008",
+    "orden_id": "OR700008",
+    "producto_id": "PR300008",
+    "usuario_id": "US100008",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "pendiente",
+    "fecha_solicitud": "2024-07-10 15:00:00",
+    "monto_reembolso": 950.0
+  },
+  {
+    "devolucion_id": "DE150009",
+    "orden_id": "OR700009",
+    "producto_id": "PR300009",
+    "usuario_id": "US100009",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "completada",
+    "fecha_solicitud": "2024-07-11 15:00:00",
+    "monto_reembolso": 150.0
+  },
+  {
+    "devolucion_id": "DE150010",
+    "orden_id": "OR700010",
+    "producto_id": "PR300010",
+    "usuario_id": "US100010",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "aprobada",
+    "fecha_solicitud": "2024-07-12 15:00:00",
+    "monto_reembolso": 500.0
+  },
+  {
+    "devolucion_id": "DE150011",
+    "orden_id": "OR700011",
+    "producto_id": "PR300011",
+    "usuario_id": "US100011",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "rechazada",
+    "fecha_solicitud": "2024-07-13 15:00:00",
+    "monto_reembolso": null
+  },
+  {
+    "devolucion_id": "DE150012",
+    "orden_id": "OR700012",
+    "producto_id": "PR300012",
+    "usuario_id": "US100012",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "pendiente",
+    "fecha_solicitud": "2024-07-14 15:00:00",
+    "monto_reembolso": 350.0
+  },
+  {
+    "devolucion_id": "DE150013",
+    "orden_id": "OR700013",
+    "producto_id": "PR300013",
+    "usuario_id": "US100013",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "completada",
+    "fecha_solicitud": "2024-07-15 15:00:00",
+    "monto_reembolso": 280.0
+  },
+  {
+    "devolucion_id": "DE150014",
+    "orden_id": "OR700014",
+    "producto_id": "PR300014",
+    "usuario_id": "US100014",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "aprobada",
+    "fecha_solicitud": "2024-07-16 15:00:00",
+    "monto_reembolso": 220.0
+  },
+  {
+    "devolucion_id": "DE150015",
+    "orden_id": "OR700015",
+    "producto_id": "PR300015",
+    "usuario_id": "US100015",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "rechazada",
+    "fecha_solicitud": "2024-07-17 15:00:00",
+    "monto_reembolso": null
+  },
+  {
+    "devolucion_id": "DE150016",
+    "orden_id": "OR700016",
+    "producto_id": "PR300016",
+    "usuario_id": "US100016",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "pendiente",
+    "fecha_solicitud": "2024-07-18 15:00:00",
+    "monto_reembolso": 300.0
+  },
+  {
+    "devolucion_id": "DE150017",
+    "orden_id": "OR700017",
+    "producto_id": "PR300017",
+    "usuario_id": "US100017",
+    "motivo": "Producto defectuoso al llegar",
+    "estado": "completada",
+    "fecha_solicitud": "2024-07-19 15:00:00",
+    "monto_reembolso": 150.0
+  }
+]

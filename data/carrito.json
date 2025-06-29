@@ -1,0 +1,104 @@
+[
+  {
+    "carrito_id": "CR500001",
+    "usuario_id": "US100001",
+    "fecha_creacion": "2024-06-18 10:15:00",
+    "fecha_actualizacion": "2024-06-18 10:15:00"
+  },
+  {
+    "carrito_id": "CR500002",
+    "usuario_id": "US100002",
+    "fecha_creacion": "2024-06-19 10:15:00",
+    "fecha_actualizacion": "2024-06-19 10:15:00"
+  },
+  {
+    "carrito_id": "CR500003",
+    "usuario_id": "US100003",
+    "fecha_creacion": "2024-06-20 10:15:00",
+    "fecha_actualizacion": "2024-06-20 10:15:00"
+  },
+  {
+    "carrito_id": "CR500004",
+    "usuario_id": "US100004",
+    "fecha_creacion": "2024-06-21 10:15:00",
+    "fecha_actualizacion": "2024-06-21 10:15:00"
+  },
+  {
+    "carrito_id": "CR500005",
+    "usuario_id": "US100005",
+    "fecha_creacion": "2024-06-22 10:15:00",
+    "fecha_actualizacion": "2024-06-22 10:15:00"
+  },
+  {
+    "carrito_id": "CR500006",
+    "usuario_id": "US100006",
+    "fecha_creacion": "2024-06-23 10:15:00",
+    "fecha_actualizacion": "2024-06-23 10:15:00"
+  },
+  {
+    "carrito_id": "CR500007",
+    "usuario_id": "US100007",
+    "fecha_creacion": "2024-06-24 10:15:00",
+    "fecha_actualizacion": "2024-06-24 10:15:00"
+  },
+  {
+    "carrito_id": "CR500008",
+    "usuario_id": "US100008",
+    "fecha_creacion": "2024-06-25 10:15:00",
+    "fecha_actualizacion": "2024-06-25 10:15:00"
+  },
+  {
+    "carrito_id": "CR500009",
+    "usuario_id": "US100009",
+    "fecha_creacion": "2024-06-26 10:15:00",
+    "fecha_actualizacion": "2024-06-26 10:15:00"
+  },
+  {
+    "carrito_id": "CR500010",
+    "usuario_id": "US100010",
+    "fecha_creacion": "2024-06-27 10:15:00",
+    "fecha_actualizacion": "2024-06-27 10:15:00"
+  },
+  {
+    "carrito_id": "CR500011",
+    "usuario_id": "US100011",
+    "fecha_creacion": "2024-06-28 10:15:00",
+    "fecha_actualizacion": "2024-06-28 10:15:00"
+  },
+  {
+    "carrito_id": "CR500012",
+    "usuario_id": "US100012",
+    "fecha_creacion": "2024-06-29 10:15:00",
+    "fecha_actualizacion": "2024-06-29 10:15:00"
+  },
+  {
+    "carrito_id": "CR500013",
+    "usuario_id": "US100013",
+    "fecha_creacion": "2024-06-30 10:15:00",
+    "fecha_actualizacion": "2024-06-30 10:15:00"
+  },
+  {
+    "carrito_id": "CR500014",
+    "usuario_id": "US100014",
+    "fecha_creacion": "2024-07-01 10:15:00",
+    "fecha_actualizacion": "2024-07-01 10:15:00"
+  },
+  {
+    "carrito_id": "CR500015",
+    "usuario_id": "US100015",
+    "fecha_creacion": "2024-07-02 10:15:00",
+    "fecha_actualizacion": "2024-07-02 10:15:00"
+  },
+  {
+    "carrito_id": "CR500016",
+    "usuario_id": "US100016",
+    "fecha_creacion": "2024-07-03 10:15:00",
+    "fecha_actualizacion": "2024-07-03 10:15:00"
+  },
+  {
+    "carrito_id": "CR500017",
+    "usuario_id": "US100017",
+    "fecha_creacion": "2024-07-04 10:15:00",
+    "fecha_actualizacion": "2024-07-04 10:15:00"
+  }
+]

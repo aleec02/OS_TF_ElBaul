@@ -1,0 +1,155 @@
+[
+  {
+    "resena_id": "RE120001",
+    "producto_id": "PR300001",
+    "usuario_id": "US100001",
+    "puntuacion": 5,
+    "comentario": "Excelente refrigeradora, igual que nueva",
+    "fecha": "2024-07-06 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120002",
+    "producto_id": "PR300002",
+    "usuario_id": "US100002",
+    "puntuacion": 4,
+    "comentario": "Los jeans en buen estado, aunque un poco desgastados en los bolsillos",
+    "fecha": "2024-07-07 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120003",
+    "producto_id": "PR300003",
+    "usuario_id": "US100003",
+    "puntuacion": 5,
+    "comentario": "El iPhone funciona perfectamente, muy contento con mi compra",
+    "fecha": "2024-07-08 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120004",
+    "producto_id": "PR300004",
+    "usuario_id": "US100004",
+    "puntuacion": 3,
+    "comentario": "El sofá es cómodo pero tiene un pequeño rasgón no mencionado",
+    "fecha": "2024-07-09 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120005",
+    "producto_id": "PR300005",
+    "usuario_id": "US100005",
+    "puntuacion": 5,
+    "comentario": "La PlayStation 5 funciona perfectamente, incluye todos los accesorios",
+    "fecha": "2024-07-10 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120006",
+    "producto_id": "PR300006",
+    "usuario_id": "US100006",
+    "puntuacion": 4,
+    "comentario": "Zapatillas como nuevas, muy buen precio",
+    "fecha": "2024-07-11 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120007",
+    "producto_id": "PR300007",
+    "usuario_id": "US100007",
+    "puntuacion": 5,
+    "comentario": "La MacBook está impecable, mejor de lo esperado",
+    "fecha": "2024-07-12 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120008",
+    "producto_id": "PR300008",
+    "usuario_id": "US100008",
+    "puntuacion": 4,
+    "comentario": "Buena cámara, solo le faltaba el manual de instrucciones",
+    "fecha": "2024-07-13 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120009",
+    "producto_id": "PR300009",
+    "usuario_id": "US100009",
+    "puntuacion": 5,
+    "comentario": "Mesa exactamente como en la descripción, muy bonita",
+    "fecha": "2024-07-14 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120010",
+    "producto_id": "PR300010",
+    "usuario_id": "US100010",
+    "puntuacion": 3,
+    "comentario": "La bicicleta necesita ajustes en los frenos",
+    "fecha": "2024-07-15 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120011",
+    "producto_id": "PR300011",
+    "usuario_id": "US100011",
+    "puntuacion": 5,
+    "comentario": "Colección completa y en perfecto estado",
+    "fecha": "2024-07-16 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120012",
+    "producto_id": "PR300012",
+    "usuario_id": "US100012",
+    "puntuacion": 4,
+    "comentario": "Los AirPods funcionan bien, la batería dura menos que nuevos",
+    "fecha": "2024-07-17 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120013",
+    "producto_id": "PR300013",
+    "usuario_id": "US100013",
+    "puntuacion": 5,
+    "comentario": "Máquina de café funciona perfectamente, excelente compra",
+    "fecha": "2024-07-18 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120014",
+    "producto_id": "PR300014",
+    "usuario_id": "US100014",
+    "puntuacion": 5,
+    "comentario": "Reloj en perfecto estado, muy elegante",
+    "fecha": "2024-07-19 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120015",
+    "producto_id": "PR300015",
+    "usuario_id": "US100015",
+    "puntuacion": 4,
+    "comentario": "Juego completo, algunas fichas con signos de uso",
+    "fecha": "2024-07-20 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120016",
+    "producto_id": "PR300016",
+    "usuario_id": "US100016",
+    "puntuacion": 3,
+    "comentario": "Cochecito en buen estado pero con algunos rayones",
+    "fecha": "2024-07-21 18:30:00",
+    "aprobada": true
+  },
+  {
+    "resena_id": "RE120017",
+    "producto_id": "PR300017",
+    "usuario_id": "US100017",
+    "puntuacion": 5,
+    "comentario": "Taladro funciona perfectamente, como nuevo",
+    "fecha": "2024-07-22 18:30:00",
+    "aprobada": true
+  }
+]

@@ -1,0 +1,172 @@
+[
+  {
+    "orden_id": "OR700001",
+    "usuario_id": "US100001",
+    "fecha_orden": "2024-07-05 11:00:00",
+    "total": 1500.0,
+    "estado": "entregada",
+    "metodo_pago": "tarjeta_credito",
+    "direccion_envio": "Av. Arequipa 2345, Lince, Lima",
+    "comprobante_pago": "COMP-2024-0001"
+  },
+  {
+    "orden_id": "OR700002",
+    "usuario_id": "US100002",
+    "fecha_orden": "2024-07-06 12:15:00",
+    "total": 180.0,
+    "estado": "enviada",
+    "metodo_pago": "transferencia",
+    "direccion_envio": "Jr. Carabaya 456, Cercado de Lima",
+    "comprobante_pago": "COMP-2024-0002"
+  },
+  {
+    "orden_id": "OR700003",
+    "usuario_id": "US100003",
+    "fecha_orden": "2024-07-07 10:30:00",
+    "total": 850.0,
+    "estado": "pagada",
+    "metodo_pago": "tarjeta_debito",
+    "direccion_envio": "Av. Javier Prado Este 1456, San Isidro, Lima",
+    "comprobante_pago": "COMP-2024-0003"
+  },
+  {
+    "orden_id": "OR700004",
+    "usuario_id": "US100004",
+    "fecha_orden": "2024-07-08 15:00:00",
+    "total": 400.0,
+    "estado": "entregada",
+    "metodo_pago": "tarjeta_credito",
+    "direccion_envio": "Calle Schell 789, Miraflores, Lima",
+    "comprobante_pago": "COMP-2024-0004"
+  },
+  {
+    "orden_id": "OR700005",
+    "usuario_id": "US100005",
+    "fecha_orden": "2024-07-09 17:30:00",
+    "total": 380.0,
+    "estado": "enviada",
+    "metodo_pago": "transferencia",
+    "direccion_envio": "Av. Brasil 2345, Pueblo Libre, Lima",
+    "comprobante_pago": "COMP-2024-0005"
+  },
+  {
+    "orden_id": "OR700006",
+    "usuario_id": "US100006",
+    "fecha_orden": "2024-07-10 11:00:00",
+    "total": 70.0,
+    "estado": "pagada",
+    "metodo_pago": "tarjeta_debito",
+    "direccion_envio": "Av. La Marina 3456, San Miguel, Lima",
+    "comprobante_pago": "COMP-2024-0006"
+  },
+  {
+    "orden_id": "OR700007",
+    "usuario_id": "US100007",
+    "fecha_orden": "2024-07-11 14:30:00",
+    "total": 1200.0,
+    "estado": "entregada",
+    "metodo_pago": "tarjeta_credito",
+    "direccion_envio": "Jr. De la Unión 678, Lima Centro",
+    "comprobante_pago": "COMP-2024-0007"
+  },
+  {
+    "orden_id": "OR700008",
+    "usuario_id": "US100008",
+    "fecha_orden": "2024-07-12 16:00:00",
+    "total": 950.0,
+    "estado": "enviada",
+    "metodo_pago": "transferencia",
+    "direccion_envio": "Av. Tacna 1234, Lima Cercado",
+    "comprobante_pago": "COMP-2024-0008"
+  },
+  {
+    "orden_id": "OR700009",
+    "usuario_id": "US100009",
+    "fecha_orden": "2024-07-13 10:00:00",
+    "total": 150.0,
+    "estado": "pagada",
+    "metodo_pago": "tarjeta_debito",
+    "direccion_envio": "Calle Los Pinos 234, Surco, Lima",
+    "comprobante_pago": "COMP-2024-0009"
+  },
+  {
+    "orden_id": "OR700010",
+    "usuario_id": "US100010",
+    "fecha_orden": "2024-07-14 13:30:00",
+    "total": 500.0,
+    "estado": "entregada",
+    "metodo_pago": "tarjeta_credito",
+    "direccion_envio": "Av. Petit Thouars 4567, Lince, Lima",
+    "comprobante_pago": "COMP-2024-0010"
+  },
+  {
+    "orden_id": "OR700011",
+    "usuario_id": "US100011",
+    "fecha_orden": "2024-07-15 15:15:00",
+    "total": 110.0,
+    "estado": "enviada",
+    "metodo_pago": "transferencia",
+    "direccion_envio": "Jr. Washington 789, Lima Cercado",
+    "comprobante_pago": "COMP-2024-0011"
+  },
+  {
+    "orden_id": "OR700012",
+    "usuario_id": "US100012",
+    "fecha_orden": "2024-07-16 10:30:00",
+    "total": 350.0,
+    "estado": "pagada",
+    "metodo_pago": "tarjeta_debito",
+    "direccion_envio": "Av. Benavides 3456, Miraflores, Lima",
+    "comprobante_pago": "COMP-2024-0012"
+  },
+  {
+    "orden_id": "OR700013",
+    "usuario_id": "US100013",
+    "fecha_orden": "2024-07-17 12:00:00",
+    "total": 280.0,
+    "estado": "entregada",
+    "metodo_pago": "tarjeta_credito",
+    "direccion_envio": "Calle Montevideo 123, La Victoria, Lima",
+    "comprobante_pago": "COMP-2024-0013"
+  },
+  {
+    "orden_id": "OR700014",
+    "usuario_id": "US100014",
+    "fecha_orden": "2024-07-18 16:15:00",
+    "total": 220.0,
+    "estado": "enviada",
+    "metodo_pago": "transferencia",
+    "direccion_envio": "Av. Arenales 2345, Lince, Lima",
+    "comprobante_pago": "COMP-2024-0014"
+  },
+  {
+    "orden_id": "OR700015",
+    "usuario_id": "US100015",
+    "fecha_orden": "2024-07-19 10:00:00",
+    "total": 55.0,
+    "estado": "pagada",
+    "metodo_pago": "tarjeta_debito",
+    "direccion_envio": "Jr. Ica 456, Lima Cercado",
+    "comprobante_pago": "COMP-2024-0015"
+  },
+  {
+    "orden_id": "OR700016",
+    "usuario_id": "US100016",
+    "fecha_orden": "2024-07-20 14:45:00",
+    "total": 300.0,
+    "estado": "entregada",
+    "metodo_pago": "tarjeta_credito",
+    "direccion_envio": "Av. Salaverry 3456, Jesús María, Lima",
+    "comprobante_pago": "COMP-2024-0016"
+  },
+  {
+    "orden_id": "OR700017",
+    "usuario_id": "US100017",
+    "fecha_orden": "2025-04-18 17:15:00",
+    "total": 150.0,
+    "estado": "pendiente",
+    "metodo_pago": "tarjeta_credito",
+    "direccion_envio": "Av. Universitaria 2345, San Miguel, Lima",
+    "comprobante_pago": "COMP-2025-0001"
+  }
+]

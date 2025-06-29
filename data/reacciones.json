@@ -1,0 +1,155 @@
+[
+  {
+    "_id": "684ff0002061a9f85965022930",
+    "reaccion_id": "RCN900001",
+    "usuario_id": "US100005",
+    "tipo": "genial",
+    "entidad": "post",
+    "entidad_id": "POST700001",
+    "fecha": "2024-06-26 20:33:00"
+  },
+  {
+    "_id": "684ff0012061a9f85965022930",
+    "reaccion_id": "RCN900002",
+    "usuario_id": "US100004",
+    "tipo": "love",
+    "entidad": "post",
+    "entidad_id": "POST700002",
+    "fecha": "2024-07-01 13:26:00"
+  },
+  {
+    "_id": "684ff0022061a9f85965022930",
+    "reaccion_id": "RCN900003",
+    "usuario_id": "US100002",
+    "tipo": "love",
+    "entidad": "post",
+    "entidad_id": "POST700003",
+    "fecha": "2024-06-02 00:35:00"
+  },
+  {
+    "_id": "684ff0032061a9f85965022930",
+    "reaccion_id": "RCN900004",
+    "usuario_id": "US100004",
+    "tipo": "interesante",
+    "entidad": "post",
+    "entidad_id": "POST700004",
+    "fecha": "2024-07-13 09:55:00"
+  },
+  {
+    "_id": "684ff0042061a9f85965022930",
+    "reaccion_id": "RCN900005",
+    "usuario_id": "US100005",
+    "tipo": "like",
+    "entidad": "post",
+    "entidad_id": "POST700005",
+    "fecha": "2024-07-13 23:27:00"
+  },
+  {
+    "_id": "684ff0052061a9f85965022930",
+    "reaccion_id": "RCN900006",
+    "usuario_id": "US100007",
+    "tipo": "interesante",
+    "entidad": "post",
+    "entidad_id": "POST700006",
+    "fecha": "2024-06-08 05:13:00"
+  },
+  {
+    "_id": "684ff0062061a9f85965022930",
+    "reaccion_id": "RCN900007",
+    "usuario_id": "US100009",
+    "tipo": "genial",
+    "entidad": "post",
+    "entidad_id": "POST700007",
+    "fecha": "2024-06-15 22:35:00"
+  },
+  {
+    "_id": "684ff0072061a9f85965022930",
+    "reaccion_id": "RCN900008",
+    "usuario_id": "US100002",
+    "tipo": "like",
+    "entidad": "post",
+    "entidad_id": "POST700008",
+    "fecha": "2024-06-08 12:27:00"
+  },
+  {
+    "_id": "684ff0082061a9f85965022930",
+    "reaccion_id": "RCN900009",
+    "usuario_id": "US100005",
+    "tipo": "wow",
+    "entidad": "post",
+    "entidad_id": "POST700009",
+    "fecha": "2024-06-27 14:18:00"
+  },
+  {
+    "_id": "684ff0092061a9f85965022930",
+    "reaccion_id": "RCN900010",
+    "usuario_id": "US100008",
+    "tipo": "love",
+    "entidad": "post",
+    "entidad_id": "POST700010",
+    "fecha": "2024-07-13 19:28:00"
+  },
+  {
+    "_id": "684ff0102061a9f85965022930",
+    "reaccion_id": "RCN900011",
+    "usuario_id": "US100001",
+    "tipo": "interesante",
+    "entidad": "post",
+    "entidad_id": "POST700011",
+    "fecha": "2024-07-08 21:15:00"
+  },
+  {
+    "_id": "684ff0112061a9f85965022930",
+    "reaccion_id": "RCN900012",
+    "usuario_id": "US100005",
+    "tipo": "interesante",
+    "entidad": "post",
+    "entidad_id": "POST700012",
+    "fecha": "2024-07-11 03:18:00"
+  },
+  {
+    "_id": "684ff0122061a9f85965022930",
+    "reaccion_id": "RCN900013",
+    "usuario_id": "US100007",
+    "tipo": "genial",
+    "entidad": "post",
+    "entidad_id": "POST700013",
+    "fecha": "2024-06-11 19:38:00"
+  },
+  {
+    "_id": "684ff0132061a9f85965022930",
+    "reaccion_id": "RCN900014",
+    "usuario_id": "US100006",
+    "tipo": "wow",
+    "entidad": "post",
+    "entidad_id": "POST700014",
+    "fecha": "2024-06-13 13:35:00"
+  },
+  {
+    "_id": "684ff0142061a9f85965022930",
+    "reaccion_id": "RCN900015",
+    "usuario_id": "US100001",
+    "tipo": "interesante",
+    "entidad": "post",
+    "entidad_id": "POST700015",
+    "fecha": "2024-06-02 21:09:00"
+  },
+  {
+    "_id": "684ff0152061a9f85965022930",
+    "reaccion_id": "RCN900016",
+    "usuario_id": "US100001",
+    "tipo": "interesante",
+    "entidad": "post",
+    "entidad_id": "POST700016",
+    "fecha": "2024-07-15 09:04:00"
+  },
+  {
+    "_id": "684ff0162061a9f85965022930",
+    "reaccion_id": "RCN900017",
+    "usuario_id": "US100003",
+    "tipo": "like",
+    "entidad": "post",
+    "entidad_id": "POST700017",
+    "fecha": "2024-07-01 02:25:00"
+  }
+]

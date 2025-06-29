@@ -1,0 +1,138 @@
+[
+  {
+    "_id": "684ff0001061a9f85965022920",
+    "comentario_id": "CMT800001",
+    "usuario_id": "US100002",
+    "post_id": "POST700001",
+    "contenido": "¡Qué buen gusto! Me encanta ese modelo. ¡Gracias por la reseña, Carlos!",
+    "fecha": "2024-06-27 22:35:00"
+  },
+  {
+    "_id": "684ff0011061a9f85965022920",
+    "comentario_id": "CMT800002",
+    "usuario_id": "US100008",
+    "post_id": "POST700002",
+    "contenido": "Justo lo estaba buscando, ¡gracias! ¡Gracias por la reseña, Valeria!",
+    "fecha": "2024-07-09 16:01:00"
+  },
+  {
+    "_id": "684ff0021061a9f85965022920",
+    "comentario_id": "CMT800003",
+    "usuario_id": "US100008",
+    "post_id": "POST700003",
+    "contenido": "¡Se ve impecable! Yo lo usaría igual. ¡Gracias por la reseña, Lucía!",
+    "fecha": "2024-06-27 10:00:00"
+  },
+  {
+    "_id": "684ff0031061a9f85965022920",
+    "comentario_id": "CMT800004",
+    "usuario_id": "US100008",
+    "post_id": "POST700004",
+    "contenido": "¿Qué tal la duración de la batería? ¡Gracias por la reseña, Fernanda!",
+    "fecha": "2024-07-05 10:40:00"
+  },
+  {
+    "_id": "684ff0041061a9f85965022920",
+    "comentario_id": "CMT800005",
+    "usuario_id": "US100002",
+    "post_id": "POST700005",
+    "contenido": "¿Qué tal la duración de la batería? ¡Gracias por la reseña, Fernanda!",
+    "fecha": "2024-06-10 12:05:00"
+  },
+  {
+    "_id": "684ff0051061a9f85965022920",
+    "comentario_id": "CMT800006",
+    "usuario_id": "US100006",
+    "post_id": "POST700006",
+    "contenido": "También lo compré, y estoy satisfecho. ¡Gracias por la reseña, Ricardo!",
+    "fecha": "2024-07-15 19:19:00"
+  },
+  {
+    "_id": "684ff0061061a9f85965022920",
+    "comentario_id": "CMT800007",
+    "usuario_id": "US100005",
+    "post_id": "POST700007",
+    "contenido": "¿Qué tal la duración de la batería? ¡Gracias por la reseña, Jorge!",
+    "fecha": "2024-06-24 12:33:00"
+  },
+  {
+    "_id": "684ff0071061a9f85965022920",
+    "comentario_id": "CMT800008",
+    "usuario_id": "US100006",
+    "post_id": "POST700008",
+    "contenido": "También lo compré, y estoy satisfecho. ¡Gracias por la reseña, Ricardo!",
+    "fecha": "2024-06-06 07:04:00"
+  },
+  {
+    "_id": "684ff0081061a9f85965022920",
+    "comentario_id": "CMT800009",
+    "usuario_id": "US100009",
+    "post_id": "POST700009",
+    "contenido": "También lo compré, y estoy satisfecho. ¡Gracias por la reseña, Fernanda!",
+    "fecha": "2024-06-29 22:38:00"
+  },
+  {
+    "_id": "684ff0091061a9f85965022920",
+    "comentario_id": "CMT800010",
+    "usuario_id": "US100005",
+    "post_id": "POST700010",
+    "contenido": "Justo lo estaba buscando, ¡gracias! ¡Gracias por la reseña, Luis!",
+    "fecha": "2024-07-15 05:29:00"
+  },
+  {
+    "_id": "684ff0101061a9f85965022920",
+    "comentario_id": "CMT800011",
+    "usuario_id": "US100004",
+    "post_id": "POST700011",
+    "contenido": "Lo tengo igual y funciona increíble. ¡Gracias por la reseña, Ricardo!",
+    "fecha": "2024-06-08 00:25:00"
+  },
+  {
+    "_id": "684ff0111061a9f85965022920",
+    "comentario_id": "CMT800012",
+    "usuario_id": "US100004",
+    "post_id": "POST700012",
+    "contenido": "¡Se ve impecable! Yo lo usaría igual. ¡Gracias por la reseña, Fernanda!",
+    "fecha": "2024-06-30 19:09:00"
+  },
+  {
+    "_id": "684ff0121061a9f85965022920",
+    "comentario_id": "CMT800013",
+    "usuario_id": "US100003",
+    "post_id": "POST700013",
+    "contenido": "También lo compré, y estoy satisfecho. ¡Gracias por la reseña, Carlos!",
+    "fecha": "2024-06-18 10:48:00"
+  },
+  {
+    "_id": "684ff0131061a9f85965022920",
+    "comentario_id": "CMT800014",
+    "usuario_id": "US100002",
+    "post_id": "POST700014",
+    "contenido": "¡Se ve impecable! Yo lo usaría igual. ¡Gracias por la reseña, Carlos!",
+    "fecha": "2024-06-30 11:48:00"
+  },
+  {
+    "_id": "684ff0141061a9f85965022920",
+    "comentario_id": "CMT800015",
+    "usuario_id": "US100006",
+    "post_id": "POST700015",
+    "contenido": "Gran compra, sin duda alguna. ¡Gracias por la reseña, Lucía!",
+    "fecha": "2024-07-12 14:10:00"
+  },
+  {
+    "_id": "684ff0151061a9f85965022920",
+    "comentario_id": "CMT800016",
+    "usuario_id": "US100002",
+    "post_id": "POST700016",
+    "contenido": "Justo lo estaba buscando, ¡gracias! ¡Gracias por la reseña, Fernanda!",
+    "fecha": "2024-07-04 22:49:00"
+  },
+  {
+    "_id": "684ff0161061a9f85965022920",
+    "comentario_id": "CMT800017",
+    "usuario_id": "US100007",
+    "post_id": "POST700017",
+    "contenido": "Gran compra, sin duda alguna. ¡Gracias por la reseña, Jorge!",
+    "fecha": "2024-06-05 20:31:00"
+  }
+]

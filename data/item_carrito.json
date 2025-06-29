@@ -1,0 +1,121 @@
+[
+  {
+    "item_carrito_id": "IC600001",
+    "carrito_id": "CR500001",
+    "producto_id": "PR300001",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-18 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600002",
+    "carrito_id": "CR500002",
+    "producto_id": "PR300002",
+    "cantidad": 2,
+    "fecha_agregado": "2024-06-19 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600003",
+    "carrito_id": "CR500003",
+    "producto_id": "PR300003",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-20 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600004",
+    "carrito_id": "CR500004",
+    "producto_id": "PR300004",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-21 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600005",
+    "carrito_id": "CR500005",
+    "producto_id": "PR300005",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-22 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600006",
+    "carrito_id": "CR500006",
+    "producto_id": "PR300006",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-23 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600007",
+    "carrito_id": "CR500007",
+    "producto_id": "PR300007",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-24 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600008",
+    "carrito_id": "CR500008",
+    "producto_id": "PR300008",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-25 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600009",
+    "carrito_id": "CR500009",
+    "producto_id": "PR300009",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-26 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600010",
+    "carrito_id": "CR500010",
+    "producto_id": "PR300010",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-27 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600011",
+    "carrito_id": "CR500011",
+    "producto_id": "PR300011",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-28 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600012",
+    "carrito_id": "CR500012",
+    "producto_id": "PR300012",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-29 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600013",
+    "carrito_id": "CR500013",
+    "producto_id": "PR300013",
+    "cantidad": 1,
+    "fecha_agregado": "2024-06-30 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600014",
+    "carrito_id": "CR500014",
+    "producto_id": "PR300014",
+    "cantidad": 1,
+    "fecha_agregado": "2024-07-01 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600015",
+    "carrito_id": "CR500015",
+    "producto_id": "PR300015",
+    "cantidad": 1,
+    "fecha_agregado": "2024-07-02 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600016",
+    "carrito_id": "CR500016",
+    "producto_id": "PR300016",
+    "cantidad": 1,
+    "fecha_agregado": "2024-07-03 10:20:00"
+  },
+  {
+    "item_carrito_id": "IC600017",
+    "carrito_id": "CR500017",
+    "producto_id": "PR300017",
+    "cantidad": 1,
+    "fecha_agregado": "2024-07-04 10:20:00"
+  }
+]

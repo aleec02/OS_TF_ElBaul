@@ -1,0 +1,206 @@
+[
+  {
+    "_id": "684ff0000061a9f85965022910",
+    "post_id": "POST700001",
+    "usuario_id": "US100001",
+    "contenido": "Tomás mostró cómo usa su Laptop Dell XPS 13 en casa.",
+    "imagenes": [
+      "/img/post_1.jpg"
+    ],
+    "fecha": "2024-07-14 04:01:00",
+    "likes": 28,
+    "producto_id": "PR300005"
+  },
+  {
+    "_id": "684ff0010061a9f85965022910",
+    "post_id": "POST700002",
+    "usuario_id": "US100006",
+    "contenido": "Carlos mostró cómo usa su Zapatillas Nike Air Max en casa.",
+    "imagenes": [
+      "/img/post_2.jpg"
+    ],
+    "fecha": "2024-07-05 17:12:00",
+    "likes": 57,
+    "producto_id": "PR300002"
+  },
+  {
+    "_id": "684ff0020061a9f85965022910",
+    "post_id": "POST700003",
+    "usuario_id": "US100001",
+    "contenido": "Carlos mostró cómo usa su Zapatillas Nike Air Max en casa.",
+    "imagenes": [
+      "/img/post_3.jpg"
+    ],
+    "fecha": "2024-06-23 10:24:00",
+    "likes": 70,
+    "producto_id": "PR300006"
+  },
+  {
+    "_id": "684ff0030061a9f85965022910",
+    "post_id": "POST700004",
+    "usuario_id": "US100002",
+    "contenido": "Carlos mostró cómo usa su Refrigeradora Samsung 2023 en casa.",
+    "imagenes": [
+      "/img/post_4.jpg"
+    ],
+    "fecha": "2024-06-19 14:48:00",
+    "likes": 10,
+    "producto_id": "PR300005"
+  },
+  {
+    "_id": "684ff0040061a9f85965022910",
+    "post_id": "POST700005",
+    "usuario_id": "US100009",
+    "contenido": "Carlos mostró cómo usa su Jeans Levi's 501 2024 en casa.",
+    "imagenes": [
+      "/img/post_5.jpg"
+    ],
+    "fecha": "2024-06-15 11:05:00",
+    "likes": 32,
+    "producto_id": "PR300007"
+  },
+  {
+    "_id": "684ff0050061a9f85965022910",
+    "post_id": "POST700006",
+    "usuario_id": "US100009",
+    "contenido": "Valeria mostró cómo usa su Smart TV LG 55'' en casa.",
+    "imagenes": [
+      "/img/post_6.jpg"
+    ],
+    "fecha": "2024-06-11 05:47:00",
+    "likes": 30,
+    "producto_id": "PR300005"
+  },
+  {
+    "_id": "684ff0060061a9f85965022910",
+    "post_id": "POST700007",
+    "usuario_id": "US100005",
+    "contenido": "Luis mostró cómo usa su Jeans Levi's 501 2024 en casa.",
+    "imagenes": [
+      "/img/post_7.jpg"
+    ],
+    "fecha": "2024-06-17 23:54:00",
+    "likes": 16,
+    "producto_id": "PR300008"
+  },
+  {
+    "_id": "684ff0070061a9f85965022910",
+    "post_id": "POST700008",
+    "usuario_id": "US100009",
+    "contenido": "Lucía mostró cómo usa su Audífonos Sony WH-1000XM5 en casa.",
+    "imagenes": [
+      "/img/post_8.jpg"
+    ],
+    "fecha": "2024-06-17 19:25:00",
+    "likes": 51,
+    "producto_id": "PR300005"
+  },
+  {
+    "_id": "684ff0080061a9f85965022910",
+    "post_id": "POST700009",
+    "usuario_id": "US100004",
+    "contenido": "Fernanda mostró cómo usa su Laptop Dell XPS 13 en casa.",
+    "imagenes": [
+      "/img/post_9.jpg"
+    ],
+    "fecha": "2024-06-13 06:07:00",
+    "likes": 74,
+    "producto_id": "PR300009"
+  },
+  {
+    "_id": "684ff0090061a9f85965022910",
+    "post_id": "POST700010",
+    "usuario_id": "US100005",
+    "contenido": "Ana mostró cómo usa su Refrigeradora Samsung 2023 en casa.",
+    "imagenes": [
+      "/img/post_10.jpg"
+    ],
+    "fecha": "2024-06-03 05:10:00",
+    "likes": 42,
+    "producto_id": "PR300008"
+  },
+  {
+    "_id": "684ff0100061a9f85965022910",
+    "post_id": "POST700011",
+    "usuario_id": "US100006",
+    "contenido": "Valeria mostró cómo usa su iPhone 14 Pro en casa.",
+    "imagenes": [
+      "/img/post_11.jpg"
+    ],
+    "fecha": "2024-07-09 03:49:00",
+    "likes": 14,
+    "producto_id": "PR300007"
+  },
+  {
+    "_id": "684ff0110061a9f85965022910",
+    "post_id": "POST700012",
+    "usuario_id": "US100006",
+    "contenido": "Valeria mostró cómo usa su Laptop Dell XPS 13 en casa.",
+    "imagenes": [
+      "/img/post_12.jpg"
+    ],
+    "fecha": "2024-06-04 04:42:00",
+    "likes": 49,
+    "producto_id": "PR300007"
+  },
+  {
+    "_id": "684ff0120061a9f85965022910",
+    "post_id": "POST700013",
+    "usuario_id": "US100006",
+    "contenido": "Fernanda mostró cómo usa su Zapatillas Nike Air Max en casa.",
+    "imagenes": [
+      "/img/post_13.jpg"
+    ],
+    "fecha": "2024-07-14 00:40:00",
+    "likes": 28,
+    "producto_id": "PR300005"
+  },
+  {
+    "_id": "684ff0130061a9f85965022910",
+    "post_id": "POST700014",
+    "usuario_id": "US100003",
+    "contenido": "Lucía mostró cómo usa su Jeans Levi's 501 2024 en casa.",
+    "imagenes": [
+      "/img/post_14.jpg"
+    ],
+    "fecha": "2024-06-06 06:07:00",
+    "likes": 91,
+    "producto_id": "PR300005"
+  },
+  {
+    "_id": "684ff0140061a9f85965022910",
+    "post_id": "POST700015",
+    "usuario_id": "US100002",
+    "contenido": "Valeria mostró cómo usa su Refrigeradora Samsung 2023 en casa.",
+    "imagenes": [
+      "/img/post_15.jpg"
+    ],
+    "fecha": "2024-06-03 05:00:00",
+    "likes": 5,
+    "producto_id": "PR300008"
+  },
+  {
+    "_id": "684ff0150061a9f85965022910",
+    "post_id": "POST700016",
+    "usuario_id": "US100005",
+    "contenido": "Fernanda mostró cómo usa su Jeans Levi's 501 2024 en casa.",
+    "imagenes": [
+      "/img/post_16.jpg"
+    ],
+    "fecha": "2024-07-06 02:36:00",
+    "likes": 54,
+    "producto_id": "PR300006"
+  },
+  {
+    "_id": "684ff0160061a9f85965022910",
+    "post_id": "POST700017",
+    "usuario_id": "US100008",
+    "contenido": "Tomás mostró cómo usa su Zapatillas Nike Air Max en casa.",
+    "imagenes": [
+      "/img/post_17.jpg"
+    ],
+    "fecha": "2024-07-13 12:18:00",
+    "likes": 95,
+    "producto_id": "PR300007"
+  }
+]

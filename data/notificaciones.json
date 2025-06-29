@@ -1,0 +1,155 @@
+[
+  {
+    "_id": "684ff0003061a9f85965022940",
+    "notificacion_id": "NTF600001",
+    "usuario_id": "US100007",
+    "tipo": "reaccion",
+    "mensaje": "Han comenzado a seguirte.",
+    "visto": true,
+    "fecha": "2024-06-20 03:37:00"
+  },
+  {
+    "_id": "684ff0013061a9f85965022940",
+    "notificacion_id": "NTF600002",
+    "usuario_id": "US100001",
+    "tipo": "comentario",
+    "mensaje": "Han comenzado a seguirte.",
+    "visto": false,
+    "fecha": "2024-06-06 22:27:00"
+  },
+  {
+    "_id": "684ff0023061a9f85965022940",
+    "notificacion_id": "NTF600003",
+    "usuario_id": "US100005",
+    "tipo": "comentario",
+    "mensaje": "Tienes una nueva reacción en tu publicación.",
+    "visto": false,
+    "fecha": "2024-06-25 06:24:00"
+  },
+  {
+    "_id": "684ff0033061a9f85965022940",
+    "notificacion_id": "NTF600004",
+    "usuario_id": "US100002",
+    "tipo": "comentario",
+    "mensaje": "Tienes una nueva reacción en tu publicación.",
+    "visto": true,
+    "fecha": "2024-06-22 17:09:00"
+  },
+  {
+    "_id": "684ff0043061a9f85965022940",
+    "notificacion_id": "NTF600005",
+    "usuario_id": "US100009",
+    "tipo": "seguimiento",
+    "mensaje": "Alguien comentó tu post.",
+    "visto": true,
+    "fecha": "2024-07-06 03:49:00"
+  },
+  {
+    "_id": "684ff0053061a9f85965022940",
+    "notificacion_id": "NTF600006",
+    "usuario_id": "US100001",
+    "tipo": "seguimiento",
+    "mensaje": "Han comenzado a seguirte.",
+    "visto": true,
+    "fecha": "2024-07-06 23:46:00"
+  },
+  {
+    "_id": "684ff0063061a9f85965022940",
+    "notificacion_id": "NTF600007",
+    "usuario_id": "US100001",
+    "tipo": "reaccion",
+    "mensaje": "Tu post recibió una nueva reacción.",
+    "visto": false,
+    "fecha": "2024-06-28 03:11:00"
+  },
+  {
+    "_id": "684ff0073061a9f85965022940",
+    "notificacion_id": "NTF600008",
+    "usuario_id": "US100008",
+    "tipo": "comentario",
+    "mensaje": "Tu post recibió una nueva reacción.",
+    "visto": true,
+    "fecha": "2024-06-11 21:24:00"
+  },
+  {
+    "_id": "684ff0083061a9f85965022940",
+    "notificacion_id": "NTF600009",
+    "usuario_id": "US100005",
+    "tipo": "reaccion",
+    "mensaje": "Tu post recibió una nueva reacción.",
+    "visto": true,
+    "fecha": "2024-07-05 06:28:00"
+  },
+  {
+    "_id": "684ff0093061a9f85965022940",
+    "notificacion_id": "NTF600010",
+    "usuario_id": "US100008",
+    "tipo": "reaccion",
+    "mensaje": "Alguien comentó tu post.",
+    "visto": false,
+    "fecha": "2024-06-23 21:50:00"
+  },
+  {
+    "_id": "684ff0103061a9f85965022940",
+    "notificacion_id": "NTF600011",
+    "usuario_id": "US100007",
+    "tipo": "seguimiento",
+    "mensaje": "Tu post recibió una nueva reacción.",
+    "visto": true,
+    "fecha": "2024-07-06 17:41:00"
+  },
+  {
+    "_id": "684ff0113061a9f85965022940",
+    "notificacion_id": "NTF600012",
+    "usuario_id": "US100004",
+    "tipo": "comentario",
+    "mensaje": "Han comenzado a seguirte.",
+    "visto": true,
+    "fecha": "2024-06-03 13:23:00"
+  },
+  {
+    "_id": "684ff0123061a9f85965022940",
+    "notificacion_id": "NTF600013",
+    "usuario_id": "US100007",
+    "tipo": "comentario",
+    "mensaje": "Alguien comentó tu post.",
+    "visto": true,
+    "fecha": "2024-07-08 05:07:00"
+  },
+  {
+    "_id": "684ff0133061a9f85965022940",
+    "notificacion_id": "NTF600014",
+    "usuario_id": "US100005",
+    "tipo": "comentario",
+    "mensaje": "Tu post recibió una nueva reacción.",
+    "visto": true,
+    "fecha": "2024-06-07 01:42:00"
+  },
+  {
+    "_id": "684ff0143061a9f85965022940",
+    "notificacion_id": "NTF600015",
+    "usuario_id": "US100008",
+    "tipo": "comentario",
+    "mensaje": "Tu post recibió una nueva reacción.",
+    "visto": false,
+    "fecha": "2024-06-24 03:33:00"
+  },
+  {
+    "_id": "684ff0153061a9f85965022940",
+    "notificacion_id": "NTF600016",
+    "usuario_id": "US100001",
+    "tipo": "comentario",
+    "mensaje": "Alguien comentó tu post.",
+    "visto": true,
+    "fecha": "2024-06-04 01:03:00"
+  },
+  {
+    "_id": "684ff0163061a9f85965022940",
+    "notificacion_id": "NTF600017",
+    "usuario_id": "US100008",
+    "tipo": "comentario",
+    "mensaje": "Han comenzado a seguirte.",
+    "visto": true,
+    "fecha": "2024-07-08 03:00:00"
+  }
+]

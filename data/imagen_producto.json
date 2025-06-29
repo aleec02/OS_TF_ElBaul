@@ -1,0 +1,121 @@
+[
+  {
+    "imagen_id": "IM400001",
+    "producto_id": "PR300001",
+    "url_imagen": "/img/productos/img1.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400002",
+    "producto_id": "PR300002",
+    "url_imagen": "/img/productos/img2.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400003",
+    "producto_id": "PR300003",
+    "url_imagen": "/img/productos/img3.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400004",
+    "producto_id": "PR300004",
+    "url_imagen": "/img/productos/img4.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400005",
+    "producto_id": "PR300005",
+    "url_imagen": "/img/productos/img5.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400006",
+    "producto_id": "PR300006",
+    "url_imagen": "/img/productos/img6.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400007",
+    "producto_id": "PR300007",
+    "url_imagen": "/img/productos/img7.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400008",
+    "producto_id": "PR300008",
+    "url_imagen": "/img/productos/img8.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400009",
+    "producto_id": "PR300009",
+    "url_imagen": "/img/productos/img9.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400010",
+    "producto_id": "PR300010",
+    "url_imagen": "/img/productos/img10.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400011",
+    "producto_id": "PR300011",
+    "url_imagen": "/img/productos/img11.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400012",
+    "producto_id": "PR300012",
+    "url_imagen": "/img/productos/img12.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400013",
+    "producto_id": "PR300013",
+    "url_imagen": "/img/productos/img13.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400014",
+    "producto_id": "PR300014",
+    "url_imagen": "/img/productos/img14.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400015",
+    "producto_id": "PR300015",
+    "url_imagen": "/img/productos/img15.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400016",
+    "producto_id": "PR300016",
+    "url_imagen": "/img/productos/img16.jpg",
+    "orden": 1,
+    "es_principal": true
+  },
+  {
+    "imagen_id": "IM400017",
+    "producto_id": "PR300017",
+    "url_imagen": "/img/productos/img17.jpg",
+    "orden": 1,
+    "es_principal": true
+  }
+]
