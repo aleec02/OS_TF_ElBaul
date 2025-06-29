@@ -8,7 +8,7 @@ const obtenerURIConexion = () => {
     if (process.env.NODE_ENV === 'production') {
         return process.env.MONGODB_URI_DOCKER;
     }
-    return process.env.MONGODB_URI || "mongodb://localhost:27018/elbaul_db";
+    return process.env.MONGODB_URI || "mongodb://localhost:27020/elbaul_db";
 };
 
 
