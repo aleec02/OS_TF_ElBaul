@@ -1,48 +1,40 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-// Schema de Usuario
 const usuarioSchema = new mongoose.Schema(
     {
         usuario_id: {
             type: String,
-            required: true,
             unique: true
         },
         nombre: {
             type: String,
             required: [true, "El nombre es requerido"],
-            trim: true,
-            maxlength: [50, "El nombre no puede exceder 50 caracteres"]
+            trim: true
         },
         apellido: {
             type: String,
             required: [true, "El apellido es requerido"],
-            trim: true,
-            maxlength: [50, "El apellido no puede exceder 50 caracteres"]
+            trim: true
         },
         email: {
             type: String,
             required: [true, "El email es requerido"],
             unique: true,
             lowercase: true,
-            trim: true,
-            match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "Email inválido"]
+            trim: true
         },
         contrasena_hash: {
             type: String,
-            required: [true, "La contraseña es requerida"],
-            minlength: [6, "La contraseña debe tener al menos 6 caracteres"]
+            required: [true, "La contraseña es requerida"]
         },
         direccion: {
             type: String,
-            trim: true,
-            maxlength: [200, "La dirección no puede exceder 200 caracteres"]
+            trim: true
         },
         telefono: {
             type: String,
-            trim: true,
-            match: [/^[0-9]{9,15}$/, "Teléfono inválido"]
+            trim: true
         },
         fecha_registro: {
             type: Date,
@@ -59,38 +51,67 @@ const usuarioSchema = new mongoose.Schema(
         }
     },
     {
-        timestamps: true,
-        versionKey: false
+        versionKey: false,
+        collection: "usuarios"
     }
 );
 
-// Middleware para generar usuario_id antes de guardar
-usuarioSchema.pre("save", async function(next) {
-    if (this.isNew) {
-        // Generar usuario_id único
-        const ultimoUsuario = await mongoose.model("Usuario").findOne().sort({ usuario_id: -1 });
-        let nuevoNumero = 1;
-        
-        if (ultimoUsuario && ultimoUsuario.usuario_id) {
-            const ultimoNumero = parseInt(ultimoUsuario.usuario_id.substring(2));
-            nuevoNumero = ultimoNumero + 1;
+// Middleware para generar usuario_id antes de validar
+usuarioSchema.pre("validate", async function(next) {
+    // Solo generar usuario_id si es un documento nuevo y no tiene usuario_id
+    if (this.isNew && !this.usuario_id) {
+        try {
+            // Buscar el último usuario para generar el siguiente ID
+            const ultimoUsuario = await mongoose.model("Usuario").findOne(
+                {}, 
+                { usuario_id: 1 }
+            ).sort({ usuario_id: -1 }).lean();
+            
+            let nuevoNumero = 100001;
+            
+            if (ultimoUsuario && ultimoUsuario.usuario_id) {
+                const ultimoNumero = parseInt(ultimoUsuario.usuario_id.substring(2));
+                nuevoNumero = ultimoNumero + 1;
+            }
+            
+            this.usuario_id = "US" + nuevoNumero.toString();
+            console.log("Usuario ID generado:", this.usuario_id);
+        } catch (error) {
+            console.error("Error generando usuario_id:", error);
+            return next(error);
         }
-        
-        this.usuario_id = "US" + nuevoNumero.toString().padStart(6, "0");
     }
-    
-    // Hash de la contraseña si fue modificada
-    if (this.isModified("contrasena_hash")) {
-        const salt = await bcrypt.genSalt(10);
-        this.contrasena_hash = await bcrypt.hash(this.contrasena_hash, salt);
-    }
-    
     next();
 });
 
-// Método para comparar contraseñas
+// Middleware para hashear contraseña antes de guardar
+usuarioSchema.pre("save", async function(next) {
+    if (this.isModified("contrasena_hash") && !this.contrasena_hash.startsWith("$2a$")) {
+        try {
+            const salt = await bcrypt.genSalt(10);
+            this.contrasena_hash = await bcrypt.hash(this.contrasena_hash, salt);
+            console.log("Contraseña hasheada exitosamente");
+        } catch (error) {
+            console.error("Error hasheando contraseña:", error);
+            return next(error);
+        }
+    }
+    next();
+});
+
+
+// método para comparar contraseñas
 usuarioSchema.methods.compararContrasena = async function(contrasenaIngresada) {
-    return await bcrypt.compare(contrasenaIngresada, this.contrasena_hash);
+    try {
+        // si la contraseña almacenada no está hasheada (datos existentes)
+        if (!this.contrasena_hash.startsWith("$2a$")) {
+            return contrasenaIngresada === this.contrasena_hash;
+        }
+        return await bcrypt.compare(contrasenaIngresada, this.contrasena_hash);
+    } catch (error) {
+        console.error("Error comparando contraseña:", error);
+        return false;
+    }
 };
 
 // Método para obtener datos públicos del usuario
@@ -108,7 +129,6 @@ usuarioSchema.methods.obtenerDatosPublicos = function() {
     };
 };
 
-// Asociar el Schema a la colección usuarios
 const ModeloUsuario = mongoose.model("Usuario", usuarioSchema);
 
 module.exports = ModeloUsuario;

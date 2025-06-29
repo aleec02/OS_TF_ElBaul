@@ -1,5 +1,5 @@
 const ModeloUsuario = require("../models/usuario.model");
-const { generarToken } = require("../utils/jwt.util");
+const { generarToken, invalidarToken } = require("../utils/jwt.util");
 
 /**
  * Registrar nuevo usuario
@@ -16,7 +16,6 @@ const registrarUsuario = async (req, res) => {
             });
         }
         
-        // Verificar si el email ya existe
         const usuarioExistente = await ModeloUsuario.findOne({ email });
         if (usuarioExistente) {
             return res.status(400).json({
@@ -26,20 +25,17 @@ const registrarUsuario = async (req, res) => {
             });
         }
         
-        // Crear nuevo usuario
         const nuevoUsuario = new ModeloUsuario({
             nombre,
             apellido,
             email,
-            contrasena_hash: contrasena, // Se hashea automáticamente en el modelo
+            contrasena_hash: contrasena,
             direccion,
             telefono
         });
         
-        // Guardar usuario
         await nuevoUsuario.save();
         
-        // Generar token
         const token = generarToken({
             usuario_id: nuevoUsuario.usuario_id,
             email: nuevoUsuario.email,
@@ -67,13 +63,12 @@ const registrarUsuario = async (req, res) => {
 };
 
 /**
- * login de usuario
+ * Login de usuario
  */
 const loginUsuario = async (req, res) => {
     try {
         const { email, contrasena } = req.body;
         
-        // Validar campos requeridos
         if (!email || !contrasena) {
             return res.status(400).json({
                 exito: false,
@@ -82,7 +77,6 @@ const loginUsuario = async (req, res) => {
             });
         }
         
-        // Buscar usuario por email
         const usuario = await ModeloUsuario.findOne({ email, estado: true });
         if (!usuario) {
             return res.status(401).json({
@@ -92,7 +86,6 @@ const loginUsuario = async (req, res) => {
             });
         }
         
-        // Verificar contraseña
         const contrasenaValida = await usuario.compararContrasena(contrasena);
         if (!contrasenaValida) {
             return res.status(401).json({
@@ -102,7 +95,6 @@ const loginUsuario = async (req, res) => {
             });
         }
         
-        // Generar token
         const token = generarToken({
             usuario_id: usuario.usuario_id,
             email: usuario.email,
@@ -125,6 +117,35 @@ const loginUsuario = async (req, res) => {
             mensaje: "Error interno del servidor",
             codigo: "INTERNAL_ERROR",
             error: error.message
+        });
+    }
+};
+
+/**
+ * Logout de usuario
+ */
+const logoutUsuario = async (req, res) => {
+    try {
+        // Obtener token del header
+        const authHeader = req.headers.authorization;
+        
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            const token = authHeader.substring(7);
+            // Invalidar token
+            invalidarToken(token);
+        }
+        
+        res.json({
+            exito: true,
+            mensaje: "Logout exitoso"
+        });
+        
+    } catch (error) {
+        console.error("Error en logoutUsuario:", error);
+        res.status(500).json({
+            exito: false,
+            mensaje: "Error interno del servidor",
+            codigo: "INTERNAL_ERROR"
         });
     }
 };
@@ -155,22 +176,18 @@ const obtenerPerfil = async (req, res) => {
 /**
  * Actualizar perfil del usuario
  */
-
 const actualizarPerfil = async (req, res) => {
     try {
         const { nombre, apellido, direccion, telefono } = req.body;
         
-        // Campos permitidos para actualizar
         const camposPermitidos = { nombre, apellido, direccion, telefono };
         
-        // Remover campos undefined
         Object.keys(camposPermitidos).forEach(key => {
             if (camposPermitidos[key] === undefined) {
                 delete camposPermitidos[key];
             }
         });
         
-        // Actualizar usuario
         const usuarioActualizado = await ModeloUsuario.findOneAndUpdate(
             { usuario_id: req.usuario.usuario_id },
             camposPermitidos,
@@ -196,12 +213,13 @@ const actualizarPerfil = async (req, res) => {
     }
 };
 
-
+/**
+ * Cambiar contraseña
+ */
 const cambiarContrasena = async (req, res) => {
     try {
         const { contrasena_actual, contrasena_nueva } = req.body;
         
-        // Validar campos requeridos
         if (!contrasena_actual || !contrasena_nueva) {
             return res.status(400).json({
                 exito: false,
@@ -210,7 +228,6 @@ const cambiarContrasena = async (req, res) => {
             });
         }
         
-        // Verificar contraseña actual
         const contrasenaValida = await req.usuario.compararContrasena(contrasena_actual);
         if (!contrasenaValida) {
             return res.status(401).json({
@@ -220,8 +237,7 @@ const cambiarContrasena = async (req, res) => {
             });
         }
         
-        // Actualizar contraseña
-        req.usuario.contrasena_hash = contrasena_nueva; // hasheo automático al tq
+        req.usuario.contrasena_hash = contrasena_nueva;
         await req.usuario.save();
         
         res.json({
@@ -243,6 +259,7 @@ const cambiarContrasena = async (req, res) => {
 module.exports = {
     registrarUsuario,
     loginUsuario,
+    logoutUsuario,
     obtenerPerfil,
     actualizarPerfil,
     cambiarContrasena

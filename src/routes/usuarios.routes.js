@@ -4,6 +4,7 @@ const router = express.Router();
 const {
     registrarUsuario,
     loginUsuario,
+    logoutUsuario,  // AGREGADO
     obtenerPerfil,
     actualizarPerfil,
     cambiarContrasena
@@ -11,13 +12,12 @@ const {
 
 const { verificarAuth } = require("../middleware/auth.middleware");
 
-
-
-// rutas públicas (sin autenticación)
+// Rutas públicas
 router.post("/registro", registrarUsuario);
 router.post("/login", loginUsuario);
 
-// rutas protegidas (requieren autenticación)
+// Rutas protegidas
+router.post("/logout", logoutUsuario);
 router.get("/perfil", verificarAuth, obtenerPerfil);
 router.put("/perfil", verificarAuth, actualizarPerfil);
 router.put("/cambiar-contrasena", verificarAuth, cambiarContrasena);
