@@ -7,7 +7,6 @@ const app = express();
 
 require("./config/database");
 
-// Middleware básico
 app.use(cors());
 app.use(express.json());
 
@@ -42,10 +41,20 @@ app.get("/api", (req, res) => {
             login: "POST /api/usuarios/login",
             perfil: "GET /api/usuarios/perfil",
             
+            // Carrito (requiere auth)
+            carrito: "GET /api/carrito",
+            agregar_carrito: "POST /api/carrito/items",
+            
+            // Favoritos (requiere auth)
+            favoritos: "GET /api/favoritos",
+            agregar_favorito: "POST /api/favoritos",
+            
             // Panel de administración
-            admin_panel: "GET /api/admin"
+            admin_panel: "GET /api/admin",
+            admin_productos: "GET /api/admin/productos",
+            admin_categorias: "GET /api/admin/categorias"
         },
-        estado: "Round 3 - Modelo Tienda Centralizada implementado"
+        estado: "Round 4 - Sistema de carrito y favoritos implementado"
     });
 });
 
@@ -67,20 +76,29 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-
-
+// ========================================
 // RUTAS PÚBLICAS (sin autenticación)
+// ========================================
 app.use("/api/categorias", require("./routes/categorias.routes"));
 app.use("/api/productos", require("./routes/productos.routes"));
 
+// ========================================
 // RUTAS DE USUARIOS (con autenticación)
+// ========================================
 app.use("/api/usuarios", require("./routes/usuarios.routes"));
+app.use("/api/carrito", require("./routes/carrito.routes"));
+app.use("/api/favoritos", require("./routes/favoritos.routes"));
 
+// ========================================
 // RUTAS DE ADMINISTRACIÓN (solo admin)
+// ========================================
 app.use("/api/admin", require("./routes/admin/index.routes"));
-
 app.use("/api/admin/productos", require("./routes/admin/productos.routes"));
 app.use("/api/admin/categorias", require("./routes/admin/categorias.routes"));
+
+// TODO: Próximas rutas
+// app.use("/api/ordenes", require("./routes/ordenes.routes"));
+// app.use("/api/envios", require("./routes/envios.routes"));
 
 // Puerto del Servicio Web
 const puerto = process.env.PORT || 3000;
