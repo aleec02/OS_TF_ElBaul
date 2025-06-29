@@ -1,14 +1,10 @@
-// Cargar variables de entorno PRIMERO
 require('dotenv').config();
 
-// Importamos express
 const express = require("express");
 const cors = require("cors");
 
-// Generando la app web
 const app = express();
 
-// Conectar a la base de datos
 require("./config/database");
 
 // Middleware básico
@@ -33,29 +29,25 @@ app.get("/api", (req, res) => {
         endpoints_disponibles: {
             principal: "GET /",
             health: "GET /api/health",
-            api_info: "GET /api",
             
-            // Usuarios
+            // Endpoints públicos
+            categorias: "GET /api/categorias",
+            categoria_detalle: "GET /api/categorias/:id",
+            productos: "GET /api/productos",
+            producto_detalle: "GET /api/productos/:id",
+            buscar_productos: "GET /api/productos/buscar?q=termino",
+            
+            // Autenticación
             registro: "POST /api/usuarios/registro",
             login: "POST /api/usuarios/login",
             perfil: "GET /api/usuarios/perfil",
             
-            // Categorías
-            categorias: "GET /api/categorias",
-            categoria_detalle: "GET /api/categorias/:id",
-            
-            // Productos
-            productos: "GET /api/productos",
-            producto_detalle: "GET /api/productos/:id",
-            buscar_productos: "GET /api/productos/buscar?q=termino",
-            crear_producto: "POST /api/productos",
-            mis_productos: "GET /api/productos/usuario/mis-productos"
+            // Panel de administración
+            admin_panel: "GET /api/admin"
         },
-        estado: "Round 3 - Sistema de productos y categorías implementado"
+        estado: "Round 3 - Modelo Tienda Centralizada implementado"
     });
 });
-
-
 
 app.get("/api/health", (req, res) => {
     const tiempoActividad = process.uptime();
@@ -75,14 +67,20 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-// Rutas de la aplicación
-app.use("/api/usuarios", require("./routes/usuarios.routes"));
+
+
+// RUTAS PÚBLICAS (sin autenticación)
 app.use("/api/categorias", require("./routes/categorias.routes"));
 app.use("/api/productos", require("./routes/productos.routes"));
 
-// TODO: Próximas rutas en rounds posteriores
-// app.use("/api/carrito", require("./routes/carrito.routes"));
-// app.use("/api/favoritos", require("./routes/favoritos.routes"));
+// RUTAS DE USUARIOS (con autenticación)
+app.use("/api/usuarios", require("./routes/usuarios.routes"));
+
+// RUTAS DE ADMINISTRACIÓN (solo admin)
+app.use("/api/admin", require("./routes/admin/index.routes"));
+
+app.use("/api/admin/productos", require("./routes/admin/productos.routes"));
+app.use("/api/admin/categorias", require("./routes/admin/categorias.routes"));
 
 // Puerto del Servicio Web
 const puerto = process.env.PORT || 3000;

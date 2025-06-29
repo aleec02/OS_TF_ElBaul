@@ -3,7 +3,7 @@ const ModeloCategoria = require("../models/categoria.model");
 const ModeloInventario = require("../models/inventario.model");
 
 /**
- * Obtener todos los productos con filtros
+ * Obtener todos los productos con filtros (PÚBLICO)
  */
 const obtenerProductos = async (req, res) => {
     try {
@@ -18,18 +18,13 @@ const obtenerProductos = async (req, res) => {
             orden = 'recientes'
         } = req.query;
         
-        // Construir filtros
-
+        // Filtros para productos activos (sin verificar usuario_id)
         const filtros = { 
             $or: [
                 { activo: true },
                 { activo: { $exists: false } }
             ]
         };
-
-
-
-
         
         if (categoria_id) {
             filtros.categoria_id = categoria_id;
@@ -47,11 +42,14 @@ const obtenerProductos = async (req, res) => {
         
         // Búsqueda por texto
         if (buscar) {
-            filtros.$or = [
-                { titulo: { $regex: buscar, $options: 'i' } },
-                { descripcion: { $regex: buscar, $options: 'i' } },
-                { marca: { $regex: buscar, $options: 'i' } }
-            ];
+            filtros.$and = filtros.$and || [];
+            filtros.$and.push({
+                $or: [
+                    { titulo: { $regex: buscar, $options: 'i' } },
+                    { descripcion: { $regex: buscar, $options: 'i' } },
+                    { marca: { $regex: buscar, $options: 'i' } }
+                ]
+            });
         }
         
         // Configurar ordenamiento
@@ -120,13 +118,12 @@ const obtenerProductos = async (req, res) => {
 };
 
 /**
- * Obtener producto por ID
+ * Obtener producto por ID (PÚBLICO)
  */
 const obtenerProductoPorId = async (req, res) => {
     try {
         const { id } = req.params;
         
-
         const producto = await ModeloProducto.findOne({ 
             producto_id: id,
             $or: [
@@ -134,11 +131,6 @@ const obtenerProductoPorId = async (req, res) => {
                 { activo: { $exists: false } }
             ]
         }).lean();
-
-
-
-
-
         
         if (!producto) {
             return res.status(404).json({
@@ -178,7 +170,7 @@ const obtenerProductoPorId = async (req, res) => {
 };
 
 /**
- * Buscar productos por término
+ * Buscar productos por término (PÚBLICO)
  */
 const buscarProductos = async (req, res) => {
     try {
@@ -194,7 +186,6 @@ const buscarProductos = async (req, res) => {
         
         const termino = q.trim();
         
-
         const productos = await ModeloProducto.find({
             $or: [
                 { activo: true },
@@ -235,288 +226,8 @@ const buscarProductos = async (req, res) => {
     }
 };
 
-/**
- * Crear nuevo producto (requiere autenticación)
- */
-const crearProducto = async (req, res) => {
-    try {
-        const {
-            titulo,
-            descripcion,
-            precio,
-            estado,
-            stock,
-            ubicacion_almacen,
-            marca,
-            modelo,
-            año_fabricacion,
-            categoria_id
-        } = req.body;
-        
-        // Validaciones básicas
-        if (!titulo || !descripcion || !precio || !estado || !categoria_id) {
-            return res.status(400).json({
-                exito: false,
-                mensaje: "Título, descripción, precio, estado y categoría son requeridos",
-                codigo: "MISSING_FIELDS"
-            });
-        }
-        
-        // Verificar que la categoría existe
-        const categoria = await ModeloCategoria.findOne({ 
-            categoria_id, 
-            activa: true 
-        });
-        
-        if (!categoria) {
-            return res.status(400).json({
-                exito: false,
-                mensaje: "La categoría especificada no existe",
-                codigo: "INVALID_CATEGORY"
-            });
-        }
-        
-        // Crear producto
-        const nuevoProducto = new ModeloProducto({
-            titulo,
-            descripcion,
-            precio: parseFloat(precio),
-            estado,
-            stock: stock || 1,
-            ubicacion_almacen,
-            marca,
-            modelo,
-            año_fabricacion: año_fabricacion ? parseInt(año_fabricacion) : undefined,
-            categoria_id,
-            usuario_id: req.usuario.usuario_id
-        });
-        
-        await nuevoProducto.save();
-        
-        // Crear registro de inventario
-        const nuevoInventario = new ModeloInventario({
-            producto_id: nuevoProducto.producto_id,
-            cantidad_disponible: nuevoProducto.stock,
-            cantidad_reservada: 0,
-            ubicacion: ubicacion_almacen
-        });
-        
-        await nuevoInventario.save();
-        
-        res.status(201).json({
-            exito: true,
-            mensaje: "Producto creado exitosamente",
-            data: {
-                producto: nuevoProducto.obtenerDatosPublicos()
-            }
-        });
-        
-    } catch (error) {
-        console.error("Error en crearProducto:", error);
-        res.status(500).json({
-            exito: false,
-            mensaje: "Error interno del servidor",
-            codigo: "INTERNAL_ERROR",
-            error: error.message
-        });
-    }
-};
-
-/**
- * Actualizar producto (solo propietario o admin)
- */
-const actualizarProducto = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const {
-            titulo,
-            descripcion,
-            precio,
-            estado,
-            stock,
-            ubicacion_almacen,
-            marca,
-            modelo,
-            año_fabricacion,
-            categoria_id
-        } = req.body;
-        
-        const producto = await ModeloProducto.findOne({ producto_id: id });
-        
-        if (!producto) {
-            return res.status(404).json({
-                exito: false,
-                mensaje: "Producto no encontrado",
-                codigo: "PRODUCT_NOT_FOUND"
-            });
-        }
-        
-        // Verificar permisos (propietario o admin)
-        if (producto.usuario_id !== req.usuario.usuario_id && req.usuario.rol !== 'admin') {
-            return res.status(403).json({
-                exito: false,
-                mensaje: "No tienes permisos para modificar este producto",
-                codigo: "ACCESS_DENIED"
-            });
-        }
-        
-        // Verificar categoría si se está cambiando
-        if (categoria_id && categoria_id !== producto.categoria_id) {
-            const categoria = await ModeloCategoria.findOne({ 
-                categoria_id, 
-                activa: true 
-            });
-            
-            if (!categoria) {
-                return res.status(400).json({
-                    exito: false,
-                    mensaje: "La categoría especificada no existe",
-                    codigo: "INVALID_CATEGORY"
-                });
-            }
-        }
-        
-        // Actualizar campos
-        if (titulo) producto.titulo = titulo;
-        if (descripcion) producto.descripcion = descripcion;
-        if (precio) producto.precio = parseFloat(precio);
-        if (estado) producto.estado = estado;
-        if (stock !== undefined) producto.stock = parseInt(stock);
-        if (ubicacion_almacen !== undefined) producto.ubicacion_almacen = ubicacion_almacen;
-        if (marca !== undefined) producto.marca = marca;
-        if (modelo !== undefined) producto.modelo = modelo;
-        if (año_fabricacion) producto.año_fabricacion = parseInt(año_fabricacion);
-        if (categoria_id) producto.categoria_id = categoria_id;
-        
-        await producto.save();
-        
-        // Actualizar inventario si cambió el stock
-        if (stock !== undefined) {
-            await ModeloInventario.findOneAndUpdate(
-                { producto_id: id },
-                { cantidad_disponible: parseInt(stock) }
-            );
-        }
-        
-        res.json({
-            exito: true,
-            mensaje: "Producto actualizado exitosamente",
-            data: {
-                producto: producto.obtenerDatosPublicos()
-            }
-        });
-        
-    } catch (error) {
-        console.error("Error en actualizarProducto:", error);
-        res.status(500).json({
-            exito: false,
-            mensaje: "Error interno del servidor",
-            codigo: "INTERNAL_ERROR",
-            error: error.message
-        });
-    }
-};
-
-/**
- * Eliminar producto (solo propietario o admin)
- */
-const eliminarProducto = async (req, res) => {
-    try {
-        const { id } = req.params;
-        
-        const producto = await ModeloProducto.findOne({ producto_id: id });
-        
-        if (!producto) {
-            return res.status(404).json({
-                exito: false,
-                mensaje: "Producto no encontrado",
-                codigo: "PRODUCT_NOT_FOUND"
-            });
-        }
-        
-        // Verificar permisos
-        if (producto.usuario_id !== req.usuario.usuario_id && req.usuario.rol !== 'admin') {
-            return res.status(403).json({
-                exito: false,
-                mensaje: "No tienes permisos para eliminar este producto",
-                codigo: "ACCESS_DENIED"
-            });
-        }
-        
-        // Marcar como inactivo en lugar de eliminar
-        producto.activo = false;
-        await producto.save();
-        
-        res.json({
-            exito: true,
-            mensaje: "Producto eliminado exitosamente"
-        });
-        
-    } catch (error) {
-        console.error("Error en eliminarProducto:", error);
-        res.status(500).json({
-            exito: false,
-            mensaje: "Error interno del servidor",
-            codigo: "INTERNAL_ERROR",
-            error: error.message
-        });
-    }
-};
-
-/**
- * Obtener productos del usuario autenticado
- */
-const obtenerMisProductos = async (req, res) => {
-    try {
-        const { page = 1, limit = 10 } = req.query;
-        const skip = (parseInt(page) - 1) * parseInt(limit);
-        
-        const [productos, total] = await Promise.all([
-            ModeloProducto.find({ 
-                usuario_id: req.usuario.usuario_id,
-                activo: true 
-            })
-            .sort({ fecha_publicacion: -1 })
-            .skip(skip)
-            .limit(parseInt(limit))
-            .lean(),
-            ModeloProducto.countDocuments({ 
-                usuario_id: req.usuario.usuario_id,
-                activo: true 
-            })
-        ]);
-        
-        res.json({
-            exito: true,
-            mensaje: "Mis productos obtenidos exitosamente",
-            data: {
-                productos,
-                paginacion: {
-                    total,
-                    page: parseInt(page),
-                    limit: parseInt(limit),
-                    totalPages: Math.ceil(total / parseInt(limit))
-                }
-            }
-        });
-        
-    } catch (error) {
-        console.error("Error en obtenerMisProductos:", error);
-        res.status(500).json({
-            exito: false,
-            mensaje: "Error interno del servidor",
-            codigo: "INTERNAL_ERROR",
-            error: error.message
-        });
-    }
-};
-
 module.exports = {
     obtenerProductos,
     obtenerProductoPorId,
-    buscarProductos,
-    crearProducto,
-    actualizarProducto,
-    eliminarProducto,
-    obtenerMisProductos
+    buscarProductos
 };

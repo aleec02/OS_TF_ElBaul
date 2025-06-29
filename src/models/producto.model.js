@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// Schema de Producto - basado en tus datos JSON
+// no usuario_id requerido; siguiendo sin mods al JSON SCHEMA
 const productoSchema = new mongoose.Schema(
     {
         producto_id: {
@@ -65,8 +65,8 @@ const productoSchema = new mongoose.Schema(
         },
         usuario_id: {
             type: String,
-            required: [true, "El usuario vendedor es requerido"],
             ref: "Usuario"
+            // SIN required: true
         },
         activo: {
             type: Boolean,
@@ -133,7 +133,7 @@ productoSchema.methods.obtenerDatosPublicos = function() {
         modelo: this.modelo,
         año_fabricacion: this.año_fabricacion,
         categoria_id: this.categoria_id,
-        usuario_id: this.usuario_id,
+        usuario_id: this.usuario_id, // puede ser undefined para productos del sistema
         activo: this.activo,
         destacado: this.destacado
     };
