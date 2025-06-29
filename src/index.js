@@ -1,13 +1,19 @@
+// Cargar variables de entorno PRIMERO
+require('dotenv').config();
+
+// Importamos express
 const express = require("express");
 const cors = require("cors");
 
+// Generando la app web
 const app = express();
 
+// Conectar a la base de datos
 require("./config/database");
 
 // Middleware básico
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 
 // Rutas básicas
 app.get("/", (req, res) => {
@@ -15,7 +21,8 @@ app.get("/", (req, res) => {
         mensaje: "Bienvenido a ElBaul API",
         version: "1.0.0",
         estado: "Operativo",
-        descripcion: "E-commerce de productos de segunda mano"
+        descripcion: "E-commerce de productos de segunda mano",
+        entorno: process.env.NODE_ENV || "development"
     });
 });
 
@@ -26,9 +33,10 @@ app.get("/api", (req, res) => {
         endpoints_disponibles: {
             principal: "GET /",
             health: "GET /api/health",
-            api_info: "GET /api"
+            api_info: "GET /api",
+            usuarios: "POST /api/usuarios/registro, POST /api/usuarios/login, GET /api/usuarios/perfil"
         },
-        estado: "Round 1 - Fundación completa"
+        estado: "Round 2 - Sistema de usuarios implementado"
     });
 });
 
@@ -39,7 +47,7 @@ app.get("/api/health", (req, res) => {
     res.json({
         estado: "OK",
         timestamp: new Date().toISOString(),
-        entorno: "development",
+        entorno: process.env.NODE_ENV || "development",
         version: "1.0.0",
         tiempo_actividad: Math.floor(tiempoActividad / 60) + " minutos",
         uso_memoria: {
@@ -50,11 +58,14 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-// TODO: Aquí se agregarán las rutas en rounds posteriores
-// app.use("/api/usuarios", require("./routes/usuarios.routes"));
-// app.use("/api/productos", require("./routes/productos.routes"));
+// Rutas de la aplicación
+app.use("/api/usuarios", require("./routes/usuarios.routes"));
 
+// TODO: Próximas rutas en rounds posteriores
+// app.use("/api/productos", require("./routes/productos.routes"));
+// app.use("/api/categorias", require("./routes/categorias.routes"));
 
 // Puerto del Servicio Web
-app.listen(3000);
-console.log("Server on port", 3000);
+const puerto = process.env.PORT || 3000;
+app.listen(puerto);
+console.log("Server on port", puerto);
