@@ -34,11 +34,28 @@ app.get("/api", (req, res) => {
             principal: "GET /",
             health: "GET /api/health",
             api_info: "GET /api",
-            usuarios: "POST /api/usuarios/registro, POST /api/usuarios/login, GET /api/usuarios/perfil"
+            
+            // Usuarios
+            registro: "POST /api/usuarios/registro",
+            login: "POST /api/usuarios/login",
+            perfil: "GET /api/usuarios/perfil",
+            
+            // Categorías
+            categorias: "GET /api/categorias",
+            categoria_detalle: "GET /api/categorias/:id",
+            
+            // Productos
+            productos: "GET /api/productos",
+            producto_detalle: "GET /api/productos/:id",
+            buscar_productos: "GET /api/productos/buscar?q=termino",
+            crear_producto: "POST /api/productos",
+            mis_productos: "GET /api/productos/usuario/mis-productos"
         },
-        estado: "Round 2 - Sistema de usuarios implementado"
+        estado: "Round 3 - Sistema de productos y categorías implementado"
     });
 });
+
+
 
 app.get("/api/health", (req, res) => {
     const tiempoActividad = process.uptime();
@@ -60,10 +77,12 @@ app.get("/api/health", (req, res) => {
 
 // Rutas de la aplicación
 app.use("/api/usuarios", require("./routes/usuarios.routes"));
+app.use("/api/categorias", require("./routes/categorias.routes"));
+app.use("/api/productos", require("./routes/productos.routes"));
 
 // TODO: Próximas rutas en rounds posteriores
-// app.use("/api/productos", require("./routes/productos.routes"));
-// app.use("/api/categorias", require("./routes/categorias.routes"));
+// app.use("/api/carrito", require("./routes/carrito.routes"));
+// app.use("/api/favoritos", require("./routes/favoritos.routes"));
 
 // Puerto del Servicio Web
 const puerto = process.env.PORT || 3000;
