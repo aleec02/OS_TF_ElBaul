@@ -1,0 +1,15 @@
+version: "3"
+services:
+  webapp:
+    container_name: elbaul_app
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - database
+  database:
+    container_name: elbaul_db
+    image: mongo
+    ports:
+      - "27018:27017"
