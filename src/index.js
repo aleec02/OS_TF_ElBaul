@@ -36,6 +36,8 @@ app.get("/api", (req, res) => {
             producto_detalle: "GET /api/productos/:id",
             buscar_productos: "GET /api/productos/buscar?q=termino",
             rastrear_envio: "GET /api/envios/rastrear/:numero_seguimiento",
+            resenas_producto: "GET /api/productos/:id/resenas",
+
 
             
             // Autenticación
@@ -66,12 +68,25 @@ app.get("/api", (req, res) => {
             mis_devoluciones: "GET /api/devoluciones",
             detalle_devolucion: "GET /api/devoluciones/:id",
 
+
+            // Reseñas (requiere auth)
+            crear_resena: "POST /api/productos/:id/resenas",
+            mi_resena: "GET /api/productos/:id/resenas/mi-resena",
+            eliminar_mi_resena: "DELETE /api/productos/:id/resenas/mi-resena",
+
+
             // Panel de administración
             admin_panel: "GET /api/admin",
             admin_productos: "GET /api/admin/productos",
-            admin_categorias: "GET /api/admin/categorias"
+            admin_categorias: "GET /api/admin/categorias",
+
+            // Admin reseñas
+            admin_resenas: "GET /api/admin/resenas",
+            admin_aprobar_resena: "PUT /api/admin/resenas/:id/aprobar",
+            admin_eliminar_resena: "DELETE /api/admin/resenas/:id",
+
         },
-        estado: "Round 6 - Sistema de envíos y devoluciones implementado"
+        estado: "Round 7 - Sistema de reseñas implementado"
     });
 });
 
@@ -118,10 +133,8 @@ app.use("/api/devoluciones", require("./routes/devoluciones.routes"));
 app.use("/api/admin", require("./routes/admin/index.routes"));
 app.use("/api/admin/productos", require("./routes/admin/productos.routes"));
 app.use("/api/admin/categorias", require("./routes/admin/categorias.routes"));
+app.use("/api/admin/resenas", require("./routes/admin/resenas.routes"));
 
-// TODO: Próximas rutas
-// app.use("/api/ordenes", require("./routes/ordenes.routes"));
-// app.use("/api/envios", require("./routes/envios.routes"));
 
 // Puerto del Servicio Web
 const puerto = process.env.PORT || 3000;

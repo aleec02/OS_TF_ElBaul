@@ -1,13 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-// Importar controladores
-const {
-    obtenerProductos,
-    obtenerProductoPorId,
-    buscarProductos
-} = require("../controllers/productos.controller");
-
+const { verificarAuth } = require("../middleware/auth.middleware");
 const {
     crearEditarResena,
     obtenerResenasProducto,
@@ -15,37 +9,7 @@ const {
     eliminarMiResena
 } = require("../controllers/resenas.controller");
 
-// Importar middleware
-const { verificarAuth } = require("../middleware/auth.middleware");
-
-// ==========================================
-// RUTAS PÚBLICAS DE PRODUCTOS
-// ==========================================
-
-/**
- * @route   GET /api/productos
- * @desc    Obtener productos con filtros y paginación
- * @access  Public
- */
-router.get("/", obtenerProductos);
-
-/**
- * @route   GET /api/productos/buscar
- * @desc    Buscar productos por término
- * @access  Public
- */
-router.get("/buscar", buscarProductos);
-
-/**
- * @route   GET /api/productos/:id
- * @desc    Obtener producto específico por ID
- * @access  Public
- */
-router.get("/:id", obtenerProductoPorId);
-
-// ==========================================
-// RUTAS DE RESEÑAS DE PRODUCTOS
-// ==========================================
+// RUTAS DE RESEÑAS
 
 /**
  * @route   GET /api/productos/:id/resenas
@@ -61,14 +25,6 @@ router.get("/:id", obtenerProductoPorId);
 router.get("/:id/resenas", obtenerResenasProducto);
 
 /**
- * @route   GET /api/productos/:id/resenas/mi-resena
- * @desc    Obtener mi reseña para un producto específico
- * @access  Private (Usuario autenticado)
- * @params  id: producto_id
- */
-router.get("/:id/resenas/mi-resena", verificarAuth, obtenerMiResena);
-
-/**
  * @route   POST /api/productos/:id/resenas
  * @desc    Crear o editar reseña para un producto
  * @access  Private (Usuario autenticado)
@@ -79,6 +35,14 @@ router.get("/:id/resenas/mi-resena", verificarAuth, obtenerMiResena);
  *          }
  */
 router.post("/:id/resenas", verificarAuth, crearEditarResena);
+
+/**
+ * @route   GET /api/productos/:id/resenas/mi-resena
+ * @desc    Obtener mi reseña para un producto específico
+ * @access  Private (Usuario autenticado)
+ * @params  id: producto_id
+ */
+router.get("/:id/resenas/mi-resena", verificarAuth, obtenerMiResena);
 
 /**
  * @route   DELETE /api/productos/:id/resenas/mi-resena
