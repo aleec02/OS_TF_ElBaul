@@ -35,6 +35,8 @@ app.get("/api", (req, res) => {
             productos: "GET /api/productos",
             producto_detalle: "GET /api/productos/:id",
             buscar_productos: "GET /api/productos/buscar?q=termino",
+            rastrear_envio: "GET /api/envios/rastrear/:numero_seguimiento",
+
             
             // Autenticación
             registro: "POST /api/usuarios/registro",
@@ -48,13 +50,28 @@ app.get("/api", (req, res) => {
             // Favoritos (requiere auth)
             favoritos: "GET /api/favoritos",
             agregar_favorito: "POST /api/favoritos",
-            
+
+            // Órdenes (requiere auth)
+            checkout: "POST /api/ordenes/checkout",
+            mis_ordenes: "GET /api/ordenes",
+            detalle_orden: "GET /api/ordenes/:id",
+            cancelar_orden: "PUT /api/ordenes/:id/cancelar",
+
+            // Envíos (requiere auth)
+            mis_envios: "GET /api/envios",
+            detalle_envio: "GET /api/envios/:id",
+
+            // Devoluciones (requiere auth)
+            solicitar_devolucion: "POST /api/devoluciones",
+            mis_devoluciones: "GET /api/devoluciones",
+            detalle_devolucion: "GET /api/devoluciones/:id",
+
             // Panel de administración
             admin_panel: "GET /api/admin",
             admin_productos: "GET /api/admin/productos",
             admin_categorias: "GET /api/admin/categorias"
         },
-        estado: "Round 4 - Sistema de carrito y favoritos implementado"
+        estado: "Round 6 - Sistema de envíos y devoluciones implementado"
     });
 });
 
@@ -82,12 +99,18 @@ app.get("/api/health", (req, res) => {
 app.use("/api/categorias", require("./routes/categorias.routes"));
 app.use("/api/productos", require("./routes/productos.routes"));
 
+
 // ========================================
 // RUTAS DE USUARIOS (con autenticación)
 // ========================================
 app.use("/api/usuarios", require("./routes/usuarios.routes"));
 app.use("/api/carrito", require("./routes/carrito.routes"));
 app.use("/api/favoritos", require("./routes/favoritos.routes"));
+app.use("/api/ordenes", require("./routes/ordenes.routes"));
+app.use("/api/envios", require("./routes/envios.routes"));
+app.use("/api/devoluciones", require("./routes/devoluciones.routes"));
+
+
 
 // ========================================
 // RUTAS DE ADMINISTRACIÓN (solo admin)
