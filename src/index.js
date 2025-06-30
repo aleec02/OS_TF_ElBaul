@@ -75,6 +75,31 @@ app.get("/api", (req, res) => {
             eliminar_mi_resena: "DELETE /api/productos/:id/resenas/mi-resena",
 
 
+
+            // Publicaciones (mixto público/privado)
+            feed_publicaciones: "GET /api/publicaciones",
+            detalle_publicacion: "GET /api/publicaciones/:id",
+            crear_publicacion: "POST /api/publicaciones",
+            editar_publicacion: "PUT /api/publicaciones/:id",
+            eliminar_publicacion: "DELETE /api/publicaciones/:id",
+
+            // Comentarios en publicaciones
+            comentarios_publicacion: "GET /api/publicaciones/:id/comentarios",
+            crear_comentario: "POST /api/publicaciones/:id/comentarios",
+            editar_comentario: "PUT /api/comentarios/:id",
+            eliminar_comentario: "DELETE /api/comentarios/:id",
+
+            // Reacciones
+            reacciones_publicacion: "GET /api/publicaciones/:id/reacciones",
+            reaccionar_publicacion: "POST /api/publicaciones/:id/reacciones",
+            reacciones_comentario: "GET /api/comentarios/:id/reacciones",
+            reaccionar_comentario: "POST /api/comentarios/:id/reacciones",
+
+
+
+
+
+
             // Panel de administración
             admin_panel: "GET /api/admin",
             admin_productos: "GET /api/admin/productos",
@@ -86,7 +111,7 @@ app.get("/api", (req, res) => {
             admin_eliminar_resena: "DELETE /api/admin/resenas/:id",
 
         },
-        estado: "Round 7 - Sistema de reseñas implementado"
+        estado: "Round 8 - Funciones sociales y publicaciones implementado"
     });
 });
 
@@ -124,6 +149,9 @@ app.use("/api/favoritos", require("./routes/favoritos.routes"));
 app.use("/api/ordenes", require("./routes/ordenes.routes"));
 app.use("/api/envios", require("./routes/envios.routes"));
 app.use("/api/devoluciones", require("./routes/devoluciones.routes"));
+app.use("/api/publicaciones", require("./routes/publicaciones.routes"));
+app.use("/api/comentarios", require("./routes/comentarios.routes"));
+
 
 
 
