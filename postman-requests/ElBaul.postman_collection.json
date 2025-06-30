@@ -1,0 +1,1708 @@
+{
+	"info": {
+		"_postman_id": "b63ac8d0-7b7e-424c-8515-a10750e070d5",
+		"name": "ElBaul",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38317962"
+	},
+	"item": [
+		{
+			"name": "ADMIN",
+			"item": [
+				{
+					"name": "1. Panel Admin - Dashboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin panel accessible\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.endpoints_disponibles).to.exist;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyMzYxODAsImV4cCI6MTc1MTg0MDk4MH0.wGKD-MO_puAfzp5wqHLqIitmROfiXfoNyR3TlLljuls",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin?",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Admin - Ver Todos los Productos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyMzYxODAsImV4cCI6MTc1MTg0MDk4MH0.wGKD-MO_puAfzp5wqHLqIitmROfiXfoNyR3TlLljuls",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/productos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Admin - Crear Producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Product created by admin\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.exito).to.be.true;\r",
+									"    pm.expect(response.data.producto.producto_id).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Save product ID for admin tests\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.data && response.data.producto.producto_id) {\r",
+									"        pm.environment.set(\"admin_product_id\", response.data.producto.producto_id);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyMzYxODAsImV4cCI6MTc1MTg0MDk4MH0.wGKD-MO_puAfzp5wqHLqIitmROfiXfoNyR3TlLljuls",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"MacBook Pro M3 Reacondicionado\",\r\n    \"descripcion\": \"MacBook Pro con chip M3, 16GB RAM, 512GB SSD. Perfectas condiciones\",\r\n    \"precio\": 4500,\r\n    \"estado\": \"como_nuevo\",\r\n    \"stock\": 3,\r\n    \"marca\": \"Apple\",\r\n    \"modelo\": \"MacBook Pro M3\",\r\n    \"año_fabricacion\": 2023,\r\n    \"categoria_id\": \"CA200001\",\r\n    \"ubicacion_almacen\": \"Almacén Central A1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/productos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Admin - Actualizar Producto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyMzYxODAsImV4cCI6MTc1MTg0MDk4MH0.wGKD-MO_puAfzp5wqHLqIitmROfiXfoNyR3TlLljuls",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"MacBook Pro M3 Reacondicionado - OFERTA\",\r\n    \"precio\": 4200,\r\n    \"stock\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/productos/PR300018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"productos",
+								"PR300018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Admin - Ver Todas las Categorías",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyMzYxODAsImV4cCI6MTc1MTg0MDk4MH0.wGKD-MO_puAfzp5wqHLqIitmROfiXfoNyR3TlLljuls",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/categorias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"categorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Admin - Crear Categoría",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyMzYxODAsImV4cCI6MTc1MTg0MDk4MH0.wGKD-MO_puAfzp5wqHLqIitmROfiXfoNyR3TlLljuls",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Gaming y Consolas\",\r\n    \"descripcion\": \"Consolas de videojuegos, accesorios y equipos gaming\",\r\n    \"imagen_url\": \"/img/categorias/gaming.jpg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/categorias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"categorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. Admin - Ver Reseñas a moderar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyNDc4ODcsImV4cCI6MTc1MTg1MjY4N30.a8KM9FBRnjjyHWAdwzjaZM0j18Mh0jZh4FfaKo6umkE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/resenas?page=1&limit=20&estado=pendientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"resenas"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "estado",
+									"value": "pendientes"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8. Admin - Ver Estadísticas Reseñas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyNDc4ODcsImV4cCI6MTc1MTg1MjY4N30.a8KM9FBRnjjyHWAdwzjaZM0j18Mh0jZh4FfaKo6umkE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/resenas/estadisticas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"resenas",
+								"estadisticas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "9. Admin - Eliminar Reseña",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMTciLCJlbWFpbCI6InJlbnpvLmJhcnJpb3NAZ21haWwuY29tIiwicm9sIjoiYWRtaW4iLCJpYXQiOjE3NTEyNDc4ODcsImV4cCI6MTc1MTg1MjY4N30.a8KM9FBRnjjyHWAdwzjaZM0j18Mh0jZh4FfaKo6umkE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"motivo\": \"Contenido inapropiado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/resenas/RE120017",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"resenas",
+								"RE120017"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuario",
+			"item": [
+				{
+					"name": "Registrar Usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"María Fernanda\",\r\n    \"apellido\": \"Lopez Torres\",\r\n    \"email\": \"maria.lopez@example.com\",\r\n    \"contrasena\": \"mF2024*segura\",\r\n    \"direccion\": \"Calle Los Pinos 456, Miraflores, Lima\",\r\n    \"telefono\": \"912345678\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/registro",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"registro"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Admin login successful\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.exito).to.be.true;\r",
+									"    pm.expect(response.data.usuario.rol).to.equal(\"admin\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Save admin token\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.data && response.data.token) {\r",
+									"        pm.environment.set(\"admin_token\", response.data.token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"cmendoza@gmail.com\",\r\n    \"contrasena\": \"CesarM#2023\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/usuarios/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"usuarios",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Perfil",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has required fields\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.have.all.keys('exito', 'mensaje', 'data');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exito is true\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.exito).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Profile data exists\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.usuario).to.exist;\r",
+									"    pm.expect(response.data.usuario.nombre).to.exist;\r",
+									"    pm.expect(response.data.usuario.email).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User data is correct\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.usuario.email).to.equal(\"aldo.quispe@gmail.com\");\r",
+									"    pm.expect(response.data.usuario.nombre).to.equal(\"Aldo\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDIiLCJlbWFpbCI6ImJyaXNhX2Zsb3Jlc0Bob3RtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyMjgzOTYsImV4cCI6MTc1MTgzMzE5Nn0.vWYzOiSKq9NO8aJpmZdhVFca2HGhlnFKISuceXQ4hAM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/perfil",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"perfil"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Perfil",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDIiLCJlbWFpbCI6ImJyaXNhX2Zsb3Jlc0Bob3RtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyMjgzOTYsImV4cCI6MTc1MTgzMzE5Nn0.vWYzOiSKq9NO8aJpmZdhVFca2HGhlnFKISuceXQ4hAM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Brisa Maria\",\r\n    \"direccion\": \"Jr. Carabaya 456, Cercado de Lima. Cerca al Real Plaza\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/perfil",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"perfil"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar contraseña",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDIiLCJlbWFpbCI6ImJyaXNhX2Zsb3Jlc0Bob3RtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyMjg2OTEsImV4cCI6MTc1MTgzMzQ5MX0.9XxdNpwYvOYsjxXo6RewV9MjUi660pelrwfiJhHnQTI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contrasena_actual\": \"brisaF2023\",\r\n    \"contrasena_nueva\": \"brisaF2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/cambiar-contrasena",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"cambiar-contrasena"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categorias",
+			"item": [
+				{
+					"name": "1. Obtener Todas las Categorías",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categorias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Obtener Categoría por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Category details exist\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.categoria).to.exist;\r",
+									"    pm.expect(response.data.categoria.categoria_id).to.equal(\"CA200001\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categorias/CA200001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"CA200001"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "3. Obtener Todos los Productos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has products\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.exito).to.be.true;\r",
+									"    pm.expect(response.data.productos).to.exist;\r",
+									"    pm.expect(response.data.paginacion).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Products array is not empty\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.productos.length).to.be.greaterThan(0);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Obtener Productos con Filtros",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Filters applied correctly\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.filtros_aplicados.categoria_id).to.equal(\"CA200001\");\r",
+									"    pm.expect(response.data.filtros_aplicados.precio_min).to.exist;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos?categoria_id=CA200001&precio_min=100&precio_max=2000&limit=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos"
+							],
+							"query": [
+								{
+									"key": "categoria_id",
+									"value": "CA200001"
+								},
+								{
+									"key": "precio_min",
+									"value": "100"
+								},
+								{
+									"key": "precio_max",
+									"value": "2000"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Buscar Productos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Search results exist\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.productos).to.exist;\r",
+									"    pm.expect(response.data.termino_busqueda).to.equal(\"Samsung\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/buscar?q=Samsung&limit=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"buscar"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "Samsung"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Obtener Producto por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product details exist\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.data.producto).to.exist;\r",
+									"    pm.expect(response.data.producto.producto_id).to.equal(\"PR300001\");\r",
+									"    pm.expect(response.data.producto.categoria).to.exist;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/PR300001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"PR300001"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Carrito",
+			"item": [
+				{
+					"name": "1. Ver Carrito",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyMzc3NTAsImV4cCI6MTc1MTg0MjU1MH0.84iGyI3bolijl7i4R6PEhCCrhOmN3utcCD6CBRlJ8Q8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/carrito",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"carrito"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Agregar Producto al Carrito",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyMzc3NTAsImV4cCI6MTc1MTg0MjU1MH0.84iGyI3bolijl7i4R6PEhCCrhOmN3utcCD6CBRlJ8Q8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"producto_id\": \"PR300002\",\r\n    \"cantidad\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/carrito/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"carrito",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Actualizar Cantidad Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cantidad\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/carrito/items/IC600018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"carrito",
+								"items",
+								"IC600018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Borrar Producto del Carrito",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/carrito/items/IC600018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"carrito",
+								"items",
+								"IC600018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Vaciar carrito",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/carrito",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"carrito"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Favoritos",
+			"item": [
+				{
+					"name": "1. Agregar a Favoritos",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"producto_id\": \"PR300002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/favoritos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"favoritos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Ver Favoritos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/favoritos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"favoritos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Quitar de Favoritos",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/favoritos/FA130018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"favoritos",
+								"FA130018"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Checkout y Orden",
+			"item": [
+				{
+					"name": "1. Procesar Checkout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"direccion_envio\": \"Av. Javier Prado 1234, San Isidro, Lima\",\r\n    \"metodo_pago\": \"tarjeta_credito\",\r\n    \"notas\": \"Entregar por la tarde, por favor\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ordenes/checkout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ordenes",
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Ver Mis Órdenes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ordenes?page=1&limit=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ordenes"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Ver Detalle de Orden",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ordenes/OR700003",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ordenes",
+								"OR700003"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Cancelar Orden",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"motivo\": \"Cambié de opinión sobre la compra\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ordenes/OR700003/cancelar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ordenes",
+								"OR700003",
+								"cancelar"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reseñas",
+			"item": [
+				{
+					"name": "1. Ver Reseñas Producto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/PR300001/resenas?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"PR300001",
+								"resenas"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Ver Reseñas Producto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"puntuacion\": 5,\r\n    \"comentario\": \"Excelente producto, muy buena calidad y tal como se describe. Lo recomiendo totalmente.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/productos/PR300001/resenas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"PR300001",
+								"resenas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Ver Mis Reseñas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/productos/PR300001/resenas/mi-resena",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"PR300001",
+								"resenas",
+								"mi-resena"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Actualizar Reseña",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"puntuacion\": 4,\r\n    \"comentario\": \"Producto bueno, pero podría mejorar el empaque. Aún así lo recomiendo.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/productos/PR300001/resenas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"PR300001",
+								"resenas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Eliminar Reseña Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDA0NTUsImV4cCI6MTc1MTg0NTI1NX0.-1eTKYzl3iQJiop5T0-TzPFxNZp_sYAGaBoYO6aLpuc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/productos/PR300001/resenas/mi-resena",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"productos",
+								"PR300001",
+								"resenas",
+								"mi-resena"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Redes Sociales feats",
+			"item": [
+				{
+					"name": "1. Ver Feed Publicaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Crear Publicación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDk1NjQsImV4cCI6MTc1MTg1NDM2NH0.TfjMKkWbyeX01V38INiPXn6kJYN4NWhL3NmTgSYm90s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contenido\": \"¡Acabo de comprar esta increíble refrigeradora Samsung! Muy contento con la calidad y el precio. 100% recomendado para familias grandes.\",\r\n    \"imagenes\": [\"/img/post_1.jpg\", \"/img/post_2.jpg\"],\r\n    \"producto_id\": \"PR300001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Ver Detalle Publicación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones/POST700018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones",
+								"POST700018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Editar Publicación",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDk1NjQsImV4cCI6MTc1MTg1NDM2NH0.TfjMKkWbyeX01V38INiPXn6kJYN4NWhL3NmTgSYm90s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contenido\": \"¡Actualización! Después de un mes usando esta refrigeradora Samsung, puedo confirmar que es excelente. Muy eficiente y silenciosa Wuui.\",\r\n    \"imagenes\": [\"/img/post_1_updated.jpg\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones/POST700018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones",
+								"POST700018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Eliminar Publicación",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones/POST700018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones",
+								"POST700018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Ver Comentarios Publicación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones/POST700019/comentarios?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones",
+								"POST700019",
+								"comentarios"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. Crear Comentario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDk1NjQsImV4cCI6MTc1MTg1NDM2NH0.TfjMKkWbyeX01V38INiPXn6kJYN4NWhL3NmTgSYm90s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contenido\": \"¡Qué buenaza compra! Yo también estoy pensando en cambiar mi refri. ¿Qué tal el consumo de energía?\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones/POST700019/comentarios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones",
+								"POST700019",
+								"comentarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8. Editar Comentario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDk1NjQsImV4cCI6MTc1MTg1NDM2NH0.TfjMKkWbyeX01V38INiPXn6kJYN4NWhL3NmTgSYm90s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contenido\": \"Compraza mi refri!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/comentarios/CMT800018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"comentarios",
+								"CMT800018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "9. Eliminar comentario",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDk1NjQsImV4cCI6MTc1MTg1NDM2NH0.TfjMKkWbyeX01V38INiPXn6kJYN4NWhL3NmTgSYm90s",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/comentarios/CMT800018",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"comentarios",
+								"CMT800018"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "10. Ver Reacciones Publicación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones/POST700001/reacciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones",
+								"POST700001",
+								"reacciones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "11. Reaccionar y deshacer reaccion Publicación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvX2lkIjoiVVMxMDAwMDMiLCJlbWFpbCI6ImNtZW5kb3phQGdtYWlsLmNvbSIsInJvbCI6ImNsaWVudGUiLCJpYXQiOjE3NTEyNDk1NjQsImV4cCI6MTc1MTg1NDM2NH0.TfjMKkWbyeX01V38INiPXn6kJYN4NWhL3NmTgSYm90s",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tipo\": \"love\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/publicaciones/POST700001/reacciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"publicaciones",
+								"POST700001",
+								"reacciones"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
