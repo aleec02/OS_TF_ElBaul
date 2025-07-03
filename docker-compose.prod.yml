@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  webapp:
+    container_name: elbaul_app
+    restart: unless-stopped
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.production
+    networks:
+      - elbaul_network
+
+  database:
+    container_name: elbaul_db
+    image: mongo:6.0
+    restart: unless-stopped
+    ports:
+      - "27020:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    environment:
+      - MONGO_INITDB_DATABASE=elbaul_db
+    networks:
+      - elbaul_network
+    command: ["mongod", "--bind_ip_all"]
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+networks:
+  elbaul_network:
+    driver: bridge
