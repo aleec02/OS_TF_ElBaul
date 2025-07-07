@@ -1,0 +1,78 @@
+<div class="container py-4">
+    <h1>Products - Standalone Test</h1>
+    <div id="loading">Loading products...</div>
+    <div id="products-container" style="display: none;"></div>
+    <div id="error-container" style="display: none; color: red;"></div>
+</div>
+
+<script>
+// Standalone script with no external dependencies
+console.log('Standalone products page loading...');
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, fetching products...');
+    loadProducts();
+});
+
+function loadProducts() {
+    console.log('Starting loadProducts function...');
+    
+    fetch('/api/productos')
+        .then(response => {
+            console.log('Response received:', response.status, response.statusText);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Data received:', data);
+            
+            document.getElementById('loading').style.display = 'none';
+            
+            if (data.exito && data.data.productos.length > 0) {  // Fixed: productos not produtos
+                console.log('Displaying products...');
+                displayProducts(data.data.productos);
+            } else {
+                console.log('No products found');
+                showError('No se encontraron productos');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading products:', error);
+            document.getElementById('loading').style.display = 'none';
+            showError('Error al cargar productos: ' + error.message);
+        });
+}
+
+function displayProducts(products) {
+    const container = document.getElementById('products-container');
+    
+    let html = '<div class="row">';
+    products.forEach(product => {
+        html += `
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.titulo}</h5>
+                        <p class="card-text">${product.descripcion}</p>
+                        <p class="text-success">S/ ${product.precio}</p>
+                        <span class="badge bg-secondary">${product.estado}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    container.innerHTML = html;
+    container.style.display = 'block';
+    console.log('Products displayed successfully');
+}
+
+function showError(message) {
+    const errorContainer = document.getElementById('error-container');
+    errorContainer.textContent = message;
+    errorContainer.style.display = 'block';
+}
+</script>

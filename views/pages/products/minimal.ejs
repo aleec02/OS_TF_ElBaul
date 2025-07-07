@@ -1,0 +1,36 @@
+<div class="container py-4">
+    <h1>Products</h1>
+    <div id="products-loading">Loading products...</div>
+    <div id="products-grid" class="row" style="display: none;"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/productos')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('products-loading').style.display = 'none';
+            
+            if (data.exito && data.data.produtos.length > 0) {
+                const grid = document.getElementById('products-grid');
+                grid.innerHTML = data.data.produtos.map(product => `
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>${product.titulo}</h5>
+                                <p>${product.descripcion}</p>
+                                <p class="text-success">S/ ${product.precio}</p>
+                                <span class="badge bg-secondary">${product.estado}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                grid.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('products-loading').textContent = 'Error loading products';
+        });
+});
+</script>

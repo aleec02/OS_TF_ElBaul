@@ -1,0 +1,225 @@
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="py-3">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/productos">Productos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detalle del Producto</li>
+        </ol>
+    </div>
+ </nav>
+ 
+ <!-- Product Detail Container -->
+ <div class="container py-4">
+    <div id="product-container">
+        <!-- Loading state -->
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando producto...</span>
+            </div>
+            <p class="mt-2">Cargando detalles del producto...</p>
+        </div>
+    </div>
+ </div>
+ 
+ <!-- Related Products Section -->
+ <div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-4">Productos Relacionados</h3>
+            <div id="related-products" class="row">
+                <!-- Related products will be loaded here -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">Cargando productos relacionados...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>
+ 
+ <!-- Custom CSS for product detail -->
+ <style>
+ /* Product Images */
+ .main-image-container {
+    position: relative;
+ }
+ 
+ .product-thumbnail {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+ }
+ 
+ .product-thumbnail:hover,
+ .product-thumbnail.active {
+    border-color: var(--bs-primary);
+    transform: scale(1.05);
+ }
+ 
+ /* Rating Input */
+ .rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.1rem;
+ }
+ 
+ .rating-input input {
+    display: none;
+ }
+ 
+ .rating-input label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+ }
+ 
+ .rating-input input:checked ~ label,
+ .rating-input label:hover,
+ .rating-input label:hover ~ label {
+    color: #ffc107;
+ }
+ 
+ /* Stars Display */
+ .stars {
+    color: #ffc107;
+ }
+ 
+ /* Product Card */
+ .product-card {
+    transition: transform 0.2s ease;
+ }
+ 
+ .product-card:hover {
+    transform: translateY(-2px);
+ }
+ 
+ /* Quantity Controls */
+ .quantity-btn {
+    width: 40px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+ }
+ 
+ /* Reviews */
+ .review-item:last-child {
+    border-bottom: none !important;
+ }
+ 
+ .reviews-stats .rating-display {
+    text-align: center;
+ }
+ 
+ /* Responsive adjustments */
+ @media (max-width: 768px) {
+    .main-image-container img {
+        height: 300px !important;
+    }
+    
+    .thumbnail-images img {
+        height: 60px !important;
+    }
+    
+    .rating-input label {
+        font-size: 1.2rem;
+    }
+ }
+ </style>
+ 
+ <!-- Include the product detail JavaScript -->
+ <script src="/js/product-detail.js"></script>
+ 
+ <!-- Additional script for related products -->
+ <script>
+ // Load related products
+ document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(loadRelatedProducts, 1000); // Load after main product
+ });
+ 
+ async function loadRelatedProducts() {
+    try {
+        const productId = getProductIdFromURL();
+        if (!productId || !currentProduct) return;
+ 
+        // Get products from the same category
+        const categoryId = currentProduct.categoria_id;
+        if (!categoryId) return;
+ 
+        const response = await fetch(`/api/productos?categoria_id=${categoryId}&limit=4`);
+        const data = await response.json();
+ 
+        if (data.exito && data.data.productos.length > 0) {
+            // Filter out current product
+            const relatedProducts = data.data.productos.filter(p => p.producto_id !== productId);
+            displayRelatedProducts(relatedProducts.slice(0, 3));
+        }
+    } catch (error) {
+        console.error('Error loading related products:', error);
+        document.getElementById('related-products').innerHTML = `
+            <div class="col-12 text-center text-muted">
+                <p>No se pudieron cargar productos relacionados</p>
+            </div>
+        `;
+    }
+ }
+ 
+ function displayRelatedProducts(products) {
+    const container = document.getElementById('related-products');
+    
+    if (!products || products.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center text-muted">
+                <p>No hay productos relacionados disponibles</p>
+            </div>
+        `;
+        return;
+    }
+ 
+    let html = '';
+    products.forEach(product => {
+        const imageUrl = product.imagenes && product.imagenes.length > 0 
+            ? product.imagenes[0] 
+            : '/img/placeholder.jpg';
+        
+        const estadoBadgeClass = getEstadoBadgeClass(product.estado);
+        
+        html += `
+            <div class="col-md-4 mb-3">
+                <div class="card product-card h-100 shadow-sm">
+                    <div class="position-relative">
+                        <img src="${imageUrl}" 
+                             class="card-img-top" 
+                             alt="${product.titulo}"
+                             style="height: 200px; object-fit: cover;"
+                             onerror="this.src='/img/placeholder.jpg'">
+                        <span class="badge ${estadoBadgeClass} position-absolute top-0 end-0 m-2">
+                            ${formatEstado(product.estado)}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">${product.titulo}</h6>
+                        <p class="card-text text-muted small">
+                            ${product.descripcion ? product.descripcion.substring(0, 80) + '...' : 'Sin descripción'}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h6 text-primary mb-0">S/ ${product.precio}</span>
+                            <small class="text-muted">${product.marca || ''}</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/productos/${product.producto_id}" class="btn btn-primary btn-sm w-100">
+                            Ver Producto
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+ }
+ </script>

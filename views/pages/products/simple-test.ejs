@@ -1,0 +1,40 @@
+<div class="container py-4">
+    <h1>Products Test Page</h1>
+    <div id="status">Loading...</div>
+    <div id="products-list"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, testing API...');
+    
+    fetch('/api/productos')
+        .then(response => {
+            console.log('API Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('API Data:', data);
+            document.getElementById('status').textContent = 'API Response received';
+            
+            if (data.exito && data.data.productos.length > 0) {
+                const productsList = document.getElementById('products-list');
+                productsList.innerHTML = data.data.productos.map(product => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5>${product.titulo}</h5>
+                            <p>Price: S/ ${product.precio}</p>
+                            <p>${product.descripcion}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('products-list').innerHTML = '<p>No products found</p>';
+            }
+        })
+        .catch(error => {
+            console.error('API Error:', error);
+            document.getElementById('status').textContent = 'Error: ' + error.message;
+        });
+});
+</script>

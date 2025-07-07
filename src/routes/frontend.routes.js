@@ -156,4 +156,76 @@ router.get('/admin/resenas', requireAdmin, (req, res) => {
     });
 });
 
+// Test route
+router.get('/productos-test', (req, res) => {
+    res.render('pages/products/simple-test', {
+        title: 'Products Test - ElBaul',
+        page: 'products-test'
+    });
+});
+
+// Basic test route
+router.get('/basic-test', (req, res) => {
+    res.render('pages/products/basic-test', {
+        title: 'Basic Test - ElBaul',
+        page: 'basic-test'
+    });
+});
+
+
+router.get('/productos-standalone', (req, res) => {
+    res.render('pages/products/standalone', {
+        title: 'Products Standalone - ElBaul',
+        page: 'products-standalone'
+    });
+});
+
+
+// Standalone products test
+router.get('/productos-standalone', (req, res) => {
+    res.render('pages/products/standalone', {
+        title: 'Products Standalone - ElBaul',
+        page: 'products-standalone'
+    });
+});
+
+// Debug route - add this after the existing /productos route
+router.get('/productos-debug', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Debug Test</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container py-4">
+                <h1>Direct Debug Test</h1>
+                <div id="test-area">Testing...</div>
+            </div>
+            
+            <script>
+                console.log('DIRECT SCRIPT RUNNING');
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('DIRECT DOM LOADED');
+                    document.getElementById('test-area').innerHTML = '<p style="color: green;">Direct script works!</p>';
+                    
+                    fetch('/api/productos')
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('DIRECT API SUCCESS:', data.data.productos.length, 'products');
+                            document.getElementById('test-area').innerHTML += '<p>API works! Found ' + data.data.productos.length + ' products</p>';
+                        })
+                        .catch(error => {
+                            console.error('DIRECT API ERROR:', error);
+                        });
+                });
+            </script>
+        </body>
+        </html>
+    `);
+});
+
 module.exports = router;
+
+

@@ -1,0 +1,29 @@
+<div class="container py-4">
+    <h1>Basic Test Page</h1>
+    <p>This page should load without any JavaScript issues.</p>
+    <div id="test-area">
+        <p>Testing basic functionality...</p>
+    </div>
+</div>
+
+<script>
+// Simple inline test
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Simple test - DOM loaded');
+    document.getElementById('test-area').innerHTML = '<p style="color: green;">JavaScript is working!</p>';
+    
+    // Test fetch without external dependencies
+    fetch('/api/productos')
+        .then(response => response.json())
+        .then(data => {
+            console.log('API test result:', data);
+            if (data.exito) {
+                document.getElementById('test-area').innerHTML += `<p>API works! Found ${data.data.productos.length} products</p>`;
+            }
+        })
+        .catch(error => {
+            console.error('API test failed:', error);
+            document.getElementById('test-area').innerHTML += `<p style="color: red;">API Error: ${error.message}</p>`;
+        });
+});
+</script>

@@ -4,10 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
-  },
+
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node src/index.js",
+        "dev": "nodemon src/index.js",
+        "load-data": "node add-test-data.js",
+        "verify-data": "node verify-data.js",
+        "db:up": "docker-compose up database -d",
+        "db:down": "docker-compose down",
+        "setup:win": "npm run db:up && timeout /t 5 && npm run load-data",
+        "setup": "npm run db:up && npm run load-data"
+    },
   "keywords": [],
   "author": "",
   "license": "ISC",
