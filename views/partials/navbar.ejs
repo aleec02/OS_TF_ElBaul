@@ -1,105 +1,64 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
         <a class="navbar-brand fw-bold" href="/">
-            <i class="fas fa-box me-2"></i>ElBaul
+            <i class="fas fa-box"></i> ElBaul
         </a>
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         
         <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Main Navigation -->
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link <%= page === 'home' ? 'active' : '' %>" href="/">
-                        <i class="fas fa-home me-1"></i>Inicio
-                    </a>
+                    <a class="nav-link <%= page === 'home' ? 'active' : '' %>" href="/">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= page === 'products' ? 'active' : '' %>" href="/productos">
-                        <i class="fas fa-shopping-bag me-1"></i>Productos
-                    </a>
+                    <a class="nav-link <%= page === 'products' ? 'active' : '' %>" href="/productos">Productos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= page === 'social' ? 'active' : '' %>" href="/comunidad">
-                        <i class="fas fa-users me-1"></i>Comunidad
-                    </a>
+                    <a class="nav-link <%= page === 'social' ? 'active' : '' %>" href="/comunidad">Comunidad</a>
                 </li>
             </ul>
             
-            <!-- Search Bar -->
-            <div class="d-flex me-3">
-                <div class="input-group" style="width: 300px;">
-                    <input type="text" class="form-control" placeholder="Buscar productos..." id="searchInput">
-                    <button class="btn btn-outline-light" type="button" id="searchBtn">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
+            <!-- Search Form -->
+            <form class="d-flex me-3" id="nav-search-form">
+                <input class="form-control" type="search" placeholder="Buscar productos..." id="nav-search-input">
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
             
-            <!-- User Menu -->
             <ul class="navbar-nav">
                 <% if (user) { %>
-                    <!-- Cart -->
                     <li class="nav-item">
-                        <a class="nav-link position-relative <%= page === 'cart' ? 'active' : '' %>" href="/carrito">
+                        <a class="nav-link position-relative" href="/carrito">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count" style="font-size: 0.7rem;">
-                                0
-                            </span>
+                            <span class="badge bg-warning cart-count" style="display: none;">0</span>
                         </a>
                     </li>
-                    
-                    <!-- Favorites -->
                     <li class="nav-item">
-                        <a class="nav-link <%= page === 'favorites' ? 'active' : '' %>" href="/favoritos" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mis Favoritos">
+                        <a class="nav-link" href="/favoritos">
                             <i class="fas fa-heart"></i>
                         </a>
                     </li>
-                    
-                    <!-- User Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-1"></i><%= user.nombre %>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> <%= user.nombre %>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="/perfil">
-                                    <i class="fas fa-user me-2"></i>Mi Perfil
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/mis-ordenes">
-                                    <i class="fas fa-box me-2"></i>Mis Órdenes
-                                </a>
-                            </li>
-                            <% if (user.rol === 'admin') { %>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="/admin">
-                                        <i class="fas fa-cog me-2"></i>Administración
-                                    </a>
-                                </li>
-                            <% } %>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/perfil">Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="/mis-ordenes">Mis Órdenes</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="#" onclick="logout()">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item" href="/logout">Cerrar Sesión</a></li>
                         </ul>
                     </li>
                 <% } else { %>
                     <li class="nav-item">
-                        <a class="nav-link <%= page === 'login' ? 'active' : '' %>" href="/login">
-                            <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
-                        </a>
+                        <a class="nav-link" href="/login">Iniciar Sesión</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <%= page === 'register' ? 'active' : '' %>" href="/registro">
-                            <i class="fas fa-user-plus me-1"></i>Registrarse
-                        </a>
+                        <a class="nav-link" href="/registro">Registrarse</a>
                     </li>
                 <% } %>
             </ul>
