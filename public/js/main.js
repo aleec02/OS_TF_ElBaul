@@ -1,5 +1,6 @@
 // Main JavaScript for ElBaul frontend
 
+// Global configuration
 const API_BASE_URL = '/api';
 let authToken = localStorage.getItem('authToken');
 
@@ -20,8 +21,10 @@ async function apiCall(endpoint, options = {}) {
         ...options
     };
     
-    if (authToken && !config.headers['Authorization']) {
-        config.headers['Authorization'] = `Bearer ${authToken}`;
+    // Always include current token if available
+    const currentToken = localStorage.getItem('authToken');
+    if (currentToken && !config.headers['Authorization']) {
+        config.headers['Authorization'] = `Bearer ${currentToken}`;
     }
     
     try {
@@ -39,7 +42,7 @@ async function apiCall(endpoint, options = {}) {
     }
 }
 
-// Authentication fns
+// Authentication functions (basic versions - enhanced versions in auth.js)
 async function login(email, password) {
     try {
         const response = await apiCall('/usuarios/login', {
@@ -52,7 +55,7 @@ async function login(email, password) {
             localStorage.setItem('authToken', authToken);
             localStorage.setItem('user', JSON.stringify(response.data.usuario));
             
-            // Sync with session via hidden form or AJAX
+            // Sync with session
             await syncUserSession(response.data.usuario);
             
             showAlert('success', 'Sesión iniciada correctamente');
@@ -72,6 +75,9 @@ async function logout() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
         authToken = null;
+        
+        // Clear session
+        await fetch('/clear-session', { method: 'POST' });
         
         showAlert('success', 'Sesión cerrada correctamente');
         setTimeout(() => {
@@ -98,8 +104,17 @@ async function syncUserSession(userData) {
     }
 }
 
+// Cart functions
 async function addToCart(productId, cantidad = 1) {
     try {
+        if (!authToken) {
+            showAlert('warning', 'Debes iniciar sesión para agregar productos al carrito');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
+            return;
+        }
+        
         const response = await apiCall('/carrito/items', {
             method: 'POST',
             body: JSON.stringify({ producto_id: productId, cantidad })
@@ -121,7 +136,16 @@ async function updateCartCount() {
         const response = await apiCall('/carrito');
         if (response.exito && response.data.carrito) {
             const count = response.data.carrito.items ? response.data.carrito.items.length : 0;
-            document.getElementById('cart-count').textContent = count;
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = count;
+                // Show/hide badge based on count
+                if (count > 0) {
+                    cartCountElement.style.display = 'inline';
+                } else {
+                    cartCountElement.style.display = 'none';
+                }
+            }
         }
     } catch (error) {
         console.error('Error updating cart count:', error);
@@ -131,6 +155,14 @@ async function updateCartCount() {
 // Favorites functions
 async function toggleFavorite(productId) {
     try {
+        if (!authToken) {
+            showAlert('warning', 'Debes iniciar sesión para agregar favoritos');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
+            return;
+        }
+        
         const response = await apiCall('/favoritos', {
             method: 'POST',
             body: JSON.stringify({ producto_id: productId })
@@ -161,6 +193,20 @@ function initializeSearch() {
                 performSearch();
             }
         });
+        
+        // Auto-complete functionality
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const term = this.value.trim();
+                if (term.length >= 2) {
+                    showSearchSuggestions(term);
+                } else {
+                    hideSearchSuggestions();
+                }
+            }, 300);
+        });
     }
 }
 
@@ -171,10 +217,62 @@ function performSearch() {
     }
 }
 
+async function showSearchSuggestions(term) {
+    try {
+        const response = await apiCall(`/productos/buscar?q=${encodeURIComponent(term)}&limit=5`);
+        if (response.exito && response.data.productos.length > 0) {
+            displaySearchSuggestions(response.data.productos);
+        }
+    } catch (error) {
+        console.error('Search suggestions error:', error);
+    }
+}
+
+function displaySearchSuggestions(products) {
+    // Create suggestions dropdown if it doesn't exist
+    let suggestionsDiv = document.getElementById('search-suggestions');
+    if (!suggestionsDiv) {
+        suggestionsDiv = document.createElement('div');
+        suggestionsDiv.id = 'search-suggestions';
+        suggestionsDiv.className = 'position-absolute bg-white border rounded shadow-sm w-100';
+        suggestionsDiv.style.zIndex = '1000';
+        suggestionsDiv.style.top = '100%';
+        
+        const searchContainer = document.querySelector('.input-group');
+        searchContainer.style.position = 'relative';
+        searchContainer.appendChild(suggestionsDiv);
+    }
+    
+    const suggestionsHTML = products.map(product => `
+        <div class="p-2 border-bottom search-suggestion" style="cursor: pointer;" 
+             onclick="selectSuggestion('${product.titulo}')">
+            <small><strong>${product.titulo}</strong> - S/ ${product.precio}</small>
+        </div>
+    `).join('');
+    
+    suggestionsDiv.innerHTML = suggestionsHTML;
+    suggestionsDiv.style.display = 'block';
+}
+
+function selectSuggestion(title) {
+    document.getElementById('searchInput').value = title;
+    hideSearchSuggestions();
+    performSearch();
+}
+
+function hideSearchSuggestions() {
+    const suggestionsDiv = document.getElementById('search-suggestions');
+    if (suggestionsDiv) {
+        suggestionsDiv.style.display = 'none';
+    }
+}
+
 // Utility functions
 function showAlert(type, message) {
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-    const alertIcon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+    const alertClass = type === 'success' ? 'alert-success' : 
+                     type === 'warning' ? 'alert-warning' : 'alert-danger';
+    const alertIcon = type === 'success' ? 'fas fa-check-circle' : 
+                     type === 'warning' ? 'fas fa-exclamation-triangle' : 'fas fa-exclamation-circle';
     
     const alertHtml = `
         <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
@@ -214,6 +312,18 @@ function formatDate(dateString) {
     });
 }
 
+function formatRelativeTime(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return 'Hace 1 día';
+    if (diffDays < 7) return `Hace ${diffDays} días`;
+    if (diffDays < 30) return `Hace ${Math.ceil(diffDays / 7)} semanas`;
+    return formatDate(dateString);
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize search
@@ -240,6 +350,13 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error parsing stored user data:', error);
         }
     }
+    
+    // Hide search suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.input-group')) {
+            hideSearchSuggestions();
+        }
+    });
 });
 
 // Global error handler

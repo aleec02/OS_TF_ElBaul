@@ -1,0 +1,209 @@
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white text-center py-4">
+                        <h2 class="mb-0">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </h2>
+                        <p class="mb-0 mt-2">Bienvenido de vuelta a ElBaul</p>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                                </label>
+                                <input type="email" class="form-control form-control-lg" id="email" name="email" required
+                                       placeholder="tu@email.com">
+                                <div class="invalid-feedback" id="email-error"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock me-1"></i>Contraseña
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control form-control-lg" id="password" name="password" required
+                                           placeholder="Tu contraseña">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="password-error"></div>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Recordarme
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
+                                    <span class="login-text">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                                    </span>
+                                    <span class="loading-spinner d-none">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Iniciando sesión...
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center">
+                            <p class="mb-0">
+                                ¿No tienes cuenta? 
+                                <a href="/registro" class="text-primary fw-bold">Regístrate aquí</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Demo Credentials (remove in production) -->
+                <div class="card mt-3 border-info">
+                    <div class="card-body">
+                        <h6 class="card-title text-info">
+                            <i class="fas fa-info-circle me-1"></i>Credenciales de Demo
+                        </h6>
+                        <small class="text-muted">
+                            <strong>Admin:</strong> renzo.barrios@gmail.com / admin123<br>
+                            <strong>Cliente:</strong> cmendoza@gmail.com / CesarM#2023
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+    
+    // Handle form submission
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Clear previous errors
+        clearErrors();
+        
+        // Validate form
+        if (!validateForm(email, password)) {
+            return;
+        }
+        
+        // Show loading state
+        setLoadingState(true);
+        
+        try {
+            await login(email, password);
+        } catch (error) {
+            setLoadingState(false);
+            console.error('Login error:', error);
+        }
+    });
+    
+    function validateForm(email, password) {
+        let isValid = true;
+        
+        if (!email || !email.includes('@')) {
+            showFieldError('email', 'Por favor ingresa un correo válido');
+            isValid = false;
+        }
+        
+        if (!password || password.length < 6) {
+            showFieldError('password', 'La contraseña debe tener al menos 6 caracteres');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    function showFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const errorDiv = document.getElementById(fieldId + '-error');
+        
+        field.classList.add('is-invalid');
+        errorDiv.textContent = message;
+    }
+    
+    function clearErrors() {
+        const fields = ['email', 'password'];
+        fields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(fieldId + '-error');
+            
+            field.classList.remove('is-invalid');
+            errorDiv.textContent = '';
+        });
+    }
+    
+    function setLoadingState(loading) {
+        const loginText = loginBtn.querySelector('.login-text');
+        const loadingSpinner = loginBtn.querySelector('.loading-spinner');
+        
+        if (loading) {
+            loginBtn.disabled = true;
+            loginText.classList.add('d-none');
+            loadingSpinner.classList.remove('d-none');
+        } else {
+            loginBtn.disabled = false;
+            loginText.classList.remove('d-none');
+            loadingSpinner.classList.add('d-none');
+        }
+    }
+});
+
+// Override the global login function for this page
+async function login(email, password) {
+    try {
+        const response = await apiCall('/usuarios/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, contrasena: password })
+        });
+        
+        if (response.exito) {
+            // Store token and user data
+            authToken = response.data.token;
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('user', JSON.stringify(response.data.usuario));
+            
+            // Sync with session
+            await fetch('/sync-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user: response.data.usuario })
+            });
+            
+            showAlert('success', '¡Bienvenido! Redirigiendo...');
+            
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500);
+        }
+    } catch (error) {
+        showAlert('error', error.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+        throw error;
+    }
+}
+</script>
