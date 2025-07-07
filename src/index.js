@@ -2,22 +2,58 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
+const session = require('express-session');
+const flash = require('connect-flash');
+const path = require('path');
+const expressLayouts = require('express-ejs-layouts'); 
 
 const app = express();
 
 require("./config/database");
+
+// EJS Configuration
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+
+// EJS Layouts Configuration
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
+
+// Static files
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Session configuration (for frontend user state only)
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'elbaul-frontend-secret-2024',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
+
+app.use(flash());
+
+// Global variables for templates
+app.use((req, res, next) => {
+    res.locals.success_messages = req.flash('success');
+    res.locals.error_messages = req.flash('error');
+    res.locals.user = req.session.user || null;
+    res.locals.currentPath = req.path;
+    next();
+});
 
 app.use(cors());
 app.use(express.json());
 
 // Rutas básicas
 app.get("/", (req, res) => {
-    res.json({
-        mensaje: "Bienvenido a ElBaul API",
-        version: "1.0.0",
-        estado: "Operativo",
-        descripcion: "E-commerce de productos de segunda mano",
-        entorno: process.env.NODE_ENV || "development"
+    res.render('pages/home', {
+        title: 'ElBaul - Productos de Segunda Mano',
+        page: 'home'
     });
 });
 
@@ -38,8 +74,6 @@ app.get("/api", (req, res) => {
             rastrear_envio: "GET /api/envios/rastrear/:numero_seguimiento",
             resenas_producto: "GET /api/productos/:id/resenas",
 
-
-            
             // Autenticación
             registro: "POST /api/usuarios/registro",
             login: "POST /api/usuarios/login",
@@ -68,13 +102,10 @@ app.get("/api", (req, res) => {
             mis_devoluciones: "GET /api/devoluciones",
             detalle_devolucion: "GET /api/devoluciones/:id",
 
-
             // Reseñas (requiere auth)
             crear_resena: "POST /api/productos/:id/resenas",
             mi_resena: "GET /api/productos/:id/resenas/mi-resena",
             eliminar_mi_resena: "DELETE /api/productos/:id/resenas/mi-resena",
-
-
 
             // Publicaciones (mixto público/privado)
             feed_publicaciones: "GET /api/publicaciones",
@@ -95,11 +126,6 @@ app.get("/api", (req, res) => {
             reacciones_comentario: "GET /api/comentarios/:id/reacciones",
             reaccionar_comentario: "POST /api/comentarios/:id/reacciones",
 
-
-
-
-
-
             // Panel de administración
             admin_panel: "GET /api/admin",
             admin_productos: "GET /api/admin/productos",
@@ -111,7 +137,7 @@ app.get("/api", (req, res) => {
             admin_eliminar_resena: "DELETE /api/admin/resenas/:id",
 
         },
-        estado: "Round 8 - Funciones sociales y publicaciones implementado"
+        estado: "Round 1 - Frontend integrado con EJS"
     });
 });
 
@@ -129,7 +155,8 @@ app.get("/api/health", (req, res) => {
             rss: Math.round(usoMemoria.rss / 1024 / 1024) + " MB",
             heap_usado: Math.round(usoMemoria.heapUsed / 1024 / 1024) + " MB"
         },
-        bd_estado: "Conectado"
+        bd_estado: "Conectado",
+        frontend: "EJS integrado"
     });
 });
 
@@ -138,7 +165,6 @@ app.get("/api/health", (req, res) => {
 // ========================================
 app.use("/api/categorias", require("./routes/categorias.routes"));
 app.use("/api/productos", require("./routes/productos.routes"));
-
 
 // ========================================
 // RUTAS DE USUARIOS (con autenticación)
@@ -152,9 +178,6 @@ app.use("/api/devoluciones", require("./routes/devoluciones.routes"));
 app.use("/api/publicaciones", require("./routes/publicaciones.routes"));
 app.use("/api/comentarios", require("./routes/comentarios.routes"));
 
-
-
-
 // ========================================
 // RUTAS DE ADMINISTRACIÓN (solo admin)
 // ========================================
@@ -163,8 +186,54 @@ app.use("/api/admin/productos", require("./routes/admin/productos.routes"));
 app.use("/api/admin/categorias", require("./routes/admin/categorias.routes"));
 app.use("/api/admin/resenas", require("./routes/admin/resenas.routes"));
 
+// ========================================
+// FRONTEND ROUTES (NEW)
+// ========================================
+app.use('/', require('./routes/frontend.routes'));
+
+// Error handling middleware
+app.use((req, res, next) => {
+    res.status(404).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>404 - Página no encontrada</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container mt-5 text-center">
+                <h1>404 - Página no encontrada</h1>
+                <p>La página que buscas no existe.</p>
+                <a href="/" class="btn btn-primary">Volver al inicio</a>
+            </div>
+        </body>
+        </html>
+    `);
+});
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>500 - Error del servidor</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container mt-5 text-center">
+                <h1>500 - Error del servidor</h1>
+                <p>Algo salió mal. Por favor, intenta de nuevo más tarde.</p>
+                <a href="/" class="btn btn-primary">Volver al inicio</a>
+            </div>
+        </body>
+        </html>
+    `);
+});
 
 // Puerto del Servicio Web
 const puerto = process.env.PORT || 3000;
 app.listen(puerto);
-console.log("Server on port", puerto);
+console.log("Server ElBaul on port", puerto);
+console.log(`Frontend: http://localhost:${puerto}`);
+console.log(`API: http://localhost:${puerto}/api`);

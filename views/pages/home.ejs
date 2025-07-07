@@ -1,0 +1,233 @@
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Encuentra productos únicos en <span class="text-warning">ElBaul</span>
+                </h1>
+                <p class="lead mb-4">
+                    Tu marketplace de productos de segunda mano. Descubre artículos de calidad a precios increíbles y encuentra exactamente lo que buscas.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="/productos" class="btn btn-warning btn-lg">
+                        <i class="fas fa-search me-2"></i>Explorar Productos
+                    </a>
+                    <% if (!user) { %>
+                        <a href="/registro" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Únete Ahora
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="/img/hero-image.png" alt="ElBaul Hero" class="img-fluid" style="max-height: 400px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="fw-bold">¿Por qué elegir ElBaul?</h2>
+                <p class="text-muted">La plataforma más confiable para comprar productos de segunda mano</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-shield-alt fa-2x"></i>
+                    </div>
+                    <h4>Compra Segura</h4>
+                    <p class="text-muted">Todos nuestros vendedores son verificados y ofrecemos garantía en cada compra.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                    <h4>Mejores Precios</h4>
+                    <p class="text-muted">Encuentra productos de calidad a precios mucho más bajos que en tiendas tradicionales.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-star fa-2x"></i>
+                    </div>
+                    <h4>Productos Verificados</h4>
+                    <p class="text-muted">Cada producto es revisado y cuenta con descripción detallada y fotos reales.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="fw-bold">Categorías Populares</h2>
+                <p class="text-muted">Explora nuestras categorías más buscadas</p>
+            </div>
+        </div>
+        
+        <div class="row g-4" id="categories-container">
+            <!-- Categories will be loaded here via JavaScript -->
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-laptop fa-3x text-primary mb-3"></i>
+                        <h5>Tecnología</h5>
+                        <p class="text-muted">Laptops, celulares, tablets y más</p>
+                        <a href="/productos?categoria=tecnologia" class="btn btn-outline-primary">Ver Productos</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-couch fa-3x text-success mb-3"></i>
+                        <h5>Muebles</h5>
+                        <p class="text-muted">Sofás, mesas, sillas y decoración</p>
+                        <a href="/productos?categoria=muebles" class="btn btn-outline-success">Ver Productos</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-car fa-3x text-warning mb-3"></i>
+                        <h5>Vehículos</h5>
+                        <p class="text-muted">Autos, motos y accesorios</p>
+                        <a href="/productos?categoria=vehiculos" class="btn btn-outline-warning">Ver Productos</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tshirt fa-3x text-info mb-3"></i>
+                        <h5>Ropa y Moda</h5>
+                        <p class="text-muted">Ropa, zapatos y accesorios</p>
+                        <a href="/productos?categoria=ropa" class="btn btn-outline-info">Ver Productos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="fw-bold">Productos Destacados</h2>
+                <p class="text-muted">Los productos más populares de esta semana</p>
+            </div>
+        </div>
+        
+        <div class="row g-4" id="featured-products">
+            <!-- Featured products will be loaded here via JavaScript -->
+            <div class="col-12 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando productos...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/productos" class="btn btn-primary btn-lg">
+                Ver Todos los Productos
+                <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Community Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-3">Únete a Nuestra Comunidad</h2>
+                <p class="lead mb-0">
+                    Conecta con otros usuarios, comparte tus experiencias y descubre las mejores ofertas antes que nadie.
+                </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <a href="/comunidad" class="btn btn-warning btn-lg">
+                    <i class="fas fa-users me-2"></i>Explorar Comunidad
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Load featured products on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadFeaturedProducts();
+});
+
+function loadFeaturedProducts() {
+    fetch('/api/productos?limit=4')
+        .then(response => response.json())
+        .then(data => {
+            if (data.exito && data.data.productos.length > 0) {
+                displayFeaturedProducts(data.data.productos);
+            } else {
+                document.getElementById('featured-products').innerHTML = 
+                    '<div class="col-12 text-center"><p class="text-muted">No hay productos disponibles.</p></div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading featured products:', error);
+            document.getElementById('featured-products').innerHTML = 
+                '<div class="col-12 text-center"><p class="text-danger">Error al cargar productos.</p></div>';
+        });
+}
+
+function displayFeaturedProducts(products) {
+    const container = document.getElementById('featured-products');
+    container.innerHTML = '';
+    
+    products.forEach(product => {
+        const productCard = `
+            <div class="col-md-6 col-lg-3">
+                <div class="card product-card h-100 shadow-sm">
+                    <img src="${product.imagenes && product.imagenes.length > 0 ? product.imagenes[0] : '/img/placeholder.jpg'}" 
+                         class="card-img-top product-image" alt="${product.titulo}">
+                    <div class="card-body">
+                        <h6 class="card-title">${product.titulo}</h6>
+                        <p class="card-text text-muted small">${product.descripcion.substring(0, 80)}...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">S/ ${product.precio}</span>
+                            <span class="badge bg-secondary product-status">${product.estado}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/productos/${product.producto_id}" class="btn btn-primary btn-sm w-100">
+                            Ver Detalles
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.innerHTML += productCard;
+    });
+}
+</script>
