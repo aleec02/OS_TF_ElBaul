@@ -1,0 +1,119 @@
+<!-- Edit Profile Page -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>Editar Perfil
+                        </h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="editProfileForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">Nombre *</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                           value="<%= user.nombre %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellido" class="form-label">Apellido *</label>
+                                    <input type="text" class="form-control" id="apellido" name="apellido" 
+                                           value="<%= user.apellido %>" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Correo Electrónico *</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="<%= user.email %>" readonly>
+                                <small class="text-muted">El email no se puede cambiar</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                       value="<%= user.telefono || '' %>">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <textarea class="form-control" id="direccion" name="direccion" rows="3"><%= user.direccion || '' %></textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                                </button>
+                                <a href="/perfil" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editProfileForm');
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            nombre: document.getElementById('nombre').value,
+            apellido: document.getElementById('apellido').value,
+            telefono: document.getElementById('telefono').value,
+            direccion: document.getElementById('direccion').value
+        };
+        
+        try {
+            const response = await fetch('/api/usuarios/perfil', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.exito) {
+                if (typeof window.showAlert === 'function') {
+                    window.showAlert('success', 'Perfil actualizado exitosamente');
+                } else {
+                    alert('Perfil actualizado exitosamente');
+                }
+                
+                // Update local storage
+                const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                const updatedUser = { ...currentUser, ...formData };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                
+                setTimeout(() => {
+                    window.location.href = '/perfil';
+                }, 1500);
+            } else {
+                if (typeof window.showAlert === 'function') {
+                    window.showAlert('danger', data.mensaje || 'Error al actualizar perfil');
+                } else {
+                    alert('Error: ' + (data.mensaje || 'Error al actualizar perfil'));
+                }
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            if (typeof window.showAlert === 'function') {
+                window.showAlert('danger', 'Error de conexión');
+            } else {
+                alert('Error de conexión');
+            }
+        }
+    });
+});
+</script> 

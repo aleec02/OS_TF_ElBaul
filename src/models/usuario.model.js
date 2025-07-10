@@ -103,11 +103,22 @@ usuarioSchema.pre("save", async function(next) {
 // método para comparar contraseñas
 usuarioSchema.methods.compararContrasena = async function(contrasenaIngresada) {
     try {
+        console.log('Comparing passwords:', {
+            input: contrasenaIngresada,
+            stored: this.contrasena_hash,
+            isHashed: this.contrasena_hash.startsWith("$2a$")
+        });
+        
         // si la contraseña almacenada no está hasheada (datos existentes)
         if (!this.contrasena_hash.startsWith("$2a$")) {
-            return contrasenaIngresada === this.contrasena_hash;
+            const result = contrasenaIngresada === this.contrasena_hash;
+            console.log('Plain text comparison result:', result);
+            return result;
         }
-        return await bcrypt.compare(contrasenaIngresada, this.contrasena_hash);
+        
+        const result = await bcrypt.compare(contrasenaIngresada, this.contrasena_hash);
+        console.log('Hashed comparison result:', result);
+        return result;
     } catch (error) {
         console.error("Error comparando contraseña:", error);
         return false;

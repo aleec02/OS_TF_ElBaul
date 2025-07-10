@@ -10,6 +10,7 @@ services:
     volumes:
       - mongodb_data_dev:/data/db
       - mongodb_config_dev:/data/configdb
+      - ./data:/docker-entrypoint-initdb.d
     environment:
       - MONGO_INITDB_DATABASE=elbaul_db
     command: ["mongod", "--bind_ip_all"]

@@ -1,31 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-// Middleware to check if user is authenticated (frontend session)
-const requireAuth = (req, res, next) => {
-    if (!req.session.user) {
-        req.flash('error', 'Debes iniciar sesión para acceder a esta página');
-        return res.redirect('/login');
-    }
-    next();
-};
-
-// Middleware to check if user is admin
-const requireAdmin = (req, res, next) => {
-    if (!req.session.user || req.session.user.rol !== 'admin') {
-        req.flash('error', 'Acceso denegado. Se requieren permisos de administrador.');
-        return res.redirect('/');
-    }
-    next();
-};
-
-// Middleware to redirect authenticated users away from auth pages
-const redirectIfAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        return res.redirect('/');
-    }
-    next();
-};
+// Import frontend authentication middleware
+const { 
+    requireAuth, 
+    requireAdmin, 
+    redirectIfAuthenticated, 
+    optionalAuth 
+} = require('../middleware/frontend-auth.middleware');
 
 // ==========================================
 // SESSION SYNC ROUTES (for JWT integration)
@@ -108,11 +90,15 @@ router.get('/recuperar-password', redirectIfAuthenticated, (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
+    // Clear session
     req.session.destroy((err) => {
         if (err) {
             console.error('Error destroying session:', err);
         }
         res.clearCookie('connect.sid');
+        
+        // Redirect to home with success message
+        req.flash('success', 'Sesión cerrada exitosamente');
         res.redirect('/');
     });
 });

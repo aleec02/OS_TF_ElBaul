@@ -1,0 +1,279 @@
+<!-- User Profile Page -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Profile Header -->
+            <div class="col-12 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 text-center">
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                                    <i class="fas fa-user fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h2 class="mb-2"><%= user.nombre %> <%= user.apellido %></h2>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-envelope me-2"></i><%= user.email %>
+                                </p>
+                                <% if (user.telefono) { %>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-phone me-2"></i><%= user.telefono %>
+                                    </p>
+                                <% } %>
+                                <% if (user.direccion) { %>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-map-marker-alt me-2"></i><%= user.direccion %>
+                                    </p>
+                                <% } %>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-calendar me-2"></i>Miembro desde <%= new Date(user.fecha_registro).toLocaleDateString('es-PE') %>
+                                </p>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <a href="/perfil/editar" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit me-2"></i>Editar Perfil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="col-12 mb-4">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                                <h4 class="mb-0" id="orders-count">-</h4>
+                                <small>Órdenes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-heart fa-2x mb-2"></i>
+                                <h4 class="mb-0" id="favorites-count">-</h4>
+                                <small>Favoritos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-star fa-2x mb-2"></i>
+                                <h4 class="mb-0" id="reviews-count">-</h4>
+                                <small>Reseñas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-2x mb-2"></i>
+                                <h4 class="mb-0" id="posts-count">-</h4>
+                                <small>Publicaciones</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Recent Orders -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>Órdenes Recientes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-orders">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="/mis-ordenes" class="btn btn-outline-primary">Ver Todas las Órdenes</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Reviews -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-star me-2"></i>Mis Reseñas Recientes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-reviews">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="/mis-resenas" class="btn btn-outline-primary">Ver Todas las Reseñas</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Quick Actions -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/carrito" class="btn btn-outline-primary">
+                                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                            </a>
+                            <a href="/favoritos" class="btn btn-outline-danger">
+                                <i class="fas fa-heart me-2"></i>Mis Favoritos
+                            </a>
+                            <a href="/comunidad" class="btn btn-outline-success">
+                                <i class="fas fa-users me-2"></i>Comunidad
+                            </a>
+                            <a href="/perfil/seguridad" class="btn btn-outline-warning">
+                                <i class="fas fa-shield-alt me-2"></i>Seguridad
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock me-2"></i>Actividad Reciente
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-activity">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadUserStats();
+    loadRecentOrders();
+    loadRecentReviews();
+    loadRecentActivity();
+});
+
+async function loadUserStats() {
+    try {
+        // Load orders count
+        const ordersResponse = await fetch('/api/ordenes?limit=1');
+        const ordersData = await ordersResponse.json();
+        if (ordersData.exito) {
+            document.getElementById('orders-count').textContent = ordersData.data.paginacion?.total || 0;
+        }
+        
+        // Load favorites count
+        const favoritesResponse = await fetch('/api/favoritos');
+        const favoritesData = await favoritesResponse.json();
+        if (favoritesData.exito) {
+            document.getElementById('favorites-count').textContent = favoritesData.data.favoritos?.length || 0;
+        }
+        
+        // Load reviews count (this would need a reviews endpoint)
+        document.getElementById('reviews-count').textContent = '0';
+        
+        // Load posts count (this would need a posts endpoint)
+        document.getElementById('posts-count').textContent = '0';
+        
+    } catch (error) {
+        console.error('Error loading user stats:', error);
+    }
+}
+
+async function loadRecentOrders() {
+    try {
+        const response = await fetch('/api/ordenes?limit=3');
+        const data = await response.json();
+        
+        const container = document.getElementById('recent-orders');
+        
+        if (data.exito && data.data.ordenes && data.data.ordenes.length > 0) {
+            let html = '';
+            data.data.ordenes.forEach(order => {
+                html += `
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div>
+                            <strong>Orden #${order.orden_id}</strong>
+                            <br>
+                            <small class="text-muted">${new Date(order.fecha_creacion).toLocaleDateString('es-PE')}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-${getStatusColor(order.estado)}">${order.estado}</span>
+                            <br>
+                            <small class="text-muted">S/ ${order.total}</small>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p class="text-muted text-center">No hay órdenes recientes</p>';
+        }
+    } catch (error) {
+        console.error('Error loading recent orders:', error);
+        document.getElementById('recent-orders').innerHTML = '<p class="text-danger text-center">Error al cargar órdenes</p>';
+    }
+}
+
+async function loadRecentReviews() {
+    try {
+        // This would need a reviews endpoint
+        document.getElementById('recent-reviews').innerHTML = '<p class="text-muted text-center">No hay reseñas recientes</p>';
+    } catch (error) {
+        console.error('Error loading recent reviews:', error);
+        document.getElementById('recent-reviews').innerHTML = '<p class="text-danger text-center">Error al cargar reseñas</p>';
+    }
+}
+
+async function loadRecentActivity() {
+    try {
+        // This would need an activity endpoint
+        document.getElementById('recent-activity').innerHTML = '<p class="text-muted text-center">No hay actividad reciente</p>';
+    } catch (error) {
+        console.error('Error loading recent activity:', error);
+        document.getElementById('recent-activity').innerHTML = '<p class="text-danger text-center">Error al cargar actividad</p>';
+    }
+}
+
+function getStatusColor(status) {
+    switch (status) {
+        case 'completada': return 'success';
+        case 'en_proceso': return 'warning';
+        case 'cancelada': return 'danger';
+        case 'pendiente': return 'info';
+        default: return 'secondary';
+    }
+}
+</script> 

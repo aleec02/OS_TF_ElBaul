@@ -67,9 +67,12 @@ const registrarUsuario = async (req, res) => {
  */
 const loginUsuario = async (req, res) => {
     try {
+        console.log('Login attempt:', { email: req.body.email, hasPassword: !!req.body.contrasena });
+        
         const { email, contrasena } = req.body;
         
         if (!email || !contrasena) {
+            console.log('Missing credentials');
             return res.status(400).json({
                 exito: false,
                 mensaje: "Email y contraseña son requeridos",
@@ -77,8 +80,10 @@ const loginUsuario = async (req, res) => {
             });
         }
         
+        console.log('Looking for user with email:', email);
         const usuario = await ModeloUsuario.findOne({ email, estado: true });
         if (!usuario) {
+            console.log('User not found');
             return res.status(401).json({
                 exito: false,
                 mensaje: "Credenciales inválidas",
@@ -86,8 +91,12 @@ const loginUsuario = async (req, res) => {
             });
         }
         
+        console.log('User found:', { usuario_id: usuario.usuario_id, nombre: usuario.nombre });
         const contrasenaValida = await usuario.compararContrasena(contrasena);
+        console.log('Password validation result:', contrasenaValida);
+        
         if (!contrasenaValida) {
+            console.log('Invalid password');
             return res.status(401).json({
                 exito: false,
                 mensaje: "Credenciales inválidas",

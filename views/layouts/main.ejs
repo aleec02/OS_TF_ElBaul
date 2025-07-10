@@ -35,7 +35,10 @@
         window.user = <%- JSON.stringify(user || null) %>;
     </script>
     
-    <!-- Page-specific scripts -->
+    <!-- Common scripts for all pages (load first) -->
+    <script src="/js/common.js"></script>
+    
+    <!-- Page-specific scripts (load after common) -->
     <% if (typeof page !== 'undefined') { %>
         <% if (page === 'products') { %>
             <script src="/js/products.js"></script>
@@ -47,8 +50,5 @@
             <script src="/js/auth.js"></script>
         <% } %>
     <% } %>
-    
-    <!-- Common scripts for all pages -->
-    <script src="/js/common.js"></script>
 </body>
 </html>

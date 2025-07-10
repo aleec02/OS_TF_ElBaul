@@ -11,7 +11,7 @@
                     </div>
                     
                     <div class="card-body p-4">
-                        <form id="loginForm">
+                        <form id="loginForm" method="POST" action="javascript:void(0);">
                             <div class="mb-3">
                                 <label for="email" class="form-label">
                                     <i class="fas fa-envelope me-1"></i>Correo Electrónico
@@ -103,6 +103,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle form submission
     if (loginForm) {
+        console.log('Login form found, adding event listener');
+        console.log('Available functions:', {
+            apiCall: typeof window.apiCall,
+            showAlert: typeof window.showAlert,
+            updateAuthUI: typeof window.updateAuthUI,
+            syncUserSession: typeof window.syncUserSession,
+            ElBaulCommon: typeof window.ElBaulCommon
+        });
+        
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             console.log('Login form submitted');
@@ -124,18 +133,78 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 console.log('Attempting login...');
-                const result = await enhancedLogin(email, password, rememberMe);
                 
-                if (result.success) {
-                    showAlert('success', '¡Bienvenido! Redirigiendo...');
+                // Check if apiCall is available, otherwise use fetch directly
+                let response;
+                if (typeof window.apiCall === 'function') {
+                    response = await window.apiCall('/usuarios/login', {
+                        method: 'POST',
+                        body: JSON.stringify({ 
+                            email: email, 
+                            contrasena: password 
+                        })
+                    });
+                } else {
+                    console.log('apiCall not available, using fetch directly');
+                    const fetchResponse = await fetch('/api/usuarios/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            email: email, 
+                            contrasena: password 
+                        })
+                    });
+                    response = await fetchResponse.json();
+                }
+                
+                if (response.exito) {
+                    // Store authentication data
+                    const token = response.data.token;
+                    const userData = response.data.usuario;
+                    
+                    // Store in localStorage
+                    localStorage.setItem('authToken', token);
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    
+                    // Set remember me
+                    if (rememberMe) {
+                        localStorage.setItem('rememberMe', 'true');
+                    }
+                    
+                    // Update global variables
+                    window.authToken = token;
+                    window.currentUser = userData;
+                    
+                    // Sync with backend session
+                    if (typeof window.syncUserSession === 'function') {
+                        await window.syncUserSession(userData);
+                    }
+                    
+                    // Update UI
+                    if (typeof window.updateAuthUI === 'function') {
+                        window.updateAuthUI(userData);
+                    }
+                    
+                    // Show success message
+                    if (typeof window.showAlert === 'function') {
+                        window.showAlert('success', '¡Bienvenido! Redirigiendo...');
+                    } else {
+                        alert('¡Bienvenido! Redirigiendo...');
+                    }
                     
                     setTimeout(() => {
-                        window.location.href = '/';
+                        window.location.href = '/perfil';
                     }, 1500);
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showAlert('danger', error.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+                if (typeof window.showAlert === 'function') {
+                    window.showAlert('danger', error.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+                } else {
+                    alert('Error al iniciar sesión: ' + (error.message || 'Verifica tus credenciales.'));
+                }
                 setLoadingState(false);
             }
         });
@@ -144,7 +213,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateLoginForm(email, password) {
         let isValid = true;
         
-        if (!email || !email.includes('@')) {
+        // Simple email validation if ElBaulAuth is not available
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmailValid = window.ElBaulAuth?.validateEmail ? 
+            window.ElBaulAuth.validateEmail(email) : 
+            emailRegex.test(email);
+        
+        if (!email || !isEmailValid) {
             showFieldError('email', 'Por favor ingresa un correo válido');
             isValid = false;
         }

@@ -1,0 +1,47 @@
+<!-- User Dashboard -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Bienvenido, <%= user.nombre %>!</h4>
+                                <p class="text-muted">Email: <%= user.email %></p>
+                                <p class="text-muted">Rol: <%= user.rol %></p>
+                                <p class="text-muted">Miembro desde: <%= new Date(user.fecha_registro).toLocaleDateString('es-PE') %></p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5>Acciones Rápidas</h5>
+                                        <div class="d-grid gap-2">
+                                            <a href="/productos" class="btn btn-outline-primary">
+                                                <i class="fas fa-search me-2"></i>Explorar Productos
+                                            </a>
+                                            <a href="/carrito" class="btn btn-outline-success">
+                                                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                                            </a>
+                                            <a href="/favoritos" class="btn btn-outline-danger">
+                                                <i class="fas fa-heart me-2"></i>Mis Favoritos
+                                            </a>
+                                            <a href="/mis-ordenes" class="btn btn-outline-info">
+                                                <i class="fas fa-list me-2"></i>Mis Órdenes
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> 

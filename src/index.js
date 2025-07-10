@@ -46,6 +46,24 @@ app.use((req, res, next) => {
     next();
 });
 
+// Endpoint to sync user session from frontend
+app.post('/sync-session', express.json(), (req, res) => {
+    const { user } = req.body;
+    if (user) {
+        req.session.user = user;
+        res.json({ success: true });
+    } else {
+        req.session.user = null;
+        res.json({ success: true });
+    }
+});
+
+// Endpoint to clear session
+app.post('/clear-session', (req, res) => {
+    req.session.user = null;
+    res.json({ success: true });
+});
+
 app.use(cors());
 app.use(express.json());
 
