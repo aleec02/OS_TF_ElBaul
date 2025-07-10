@@ -318,11 +318,45 @@ function formatPrice(price) {
 }
 
 function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString('es-PE', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+    try {
+        if (!dateString) return 'Fecha no disponible';
+        
+        let date;
+        
+        // Handle different date formats
+        if (dateString instanceof Date) {
+            date = dateString;
+        } else if (typeof dateString === 'string') {
+            // Handle ISO format with or without Z
+            if (dateString.includes('T')) {
+                // Add Z if missing for proper ISO format
+                const isoString = dateString.endsWith('Z') ? dateString : dateString + 'Z';
+                date = new Date(isoString);
+            } else {
+                date = new Date(dateString);
+            }
+        } else if (typeof dateString === 'number') {
+            date = new Date(dateString);
+        } else {
+            return 'Formato de fecha inválido';
+        }
+        
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+            console.warn('Invalid date:', dateString);
+            return 'Fecha inválida';
+        }
+        
+        return date.toLocaleDateString('es-PE', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+    } catch (error) {
+        console.error('Error formatting date:', error, 'Input:', dateString);
+        return 'Error en fecha';
+    }
 }
 
 function debounce(func, wait) {

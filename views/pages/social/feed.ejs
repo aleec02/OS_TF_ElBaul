@@ -28,14 +28,16 @@
                         <form id="create-post-form">
                             <div class="mb-3">
                                 <textarea class="form-control" id="post-content" rows="3" 
-                                          placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+                                          placeholder="¿Qué quieres compartir con la comunidad?"
+                                          maxlength="2000"></textarea>
+                                <div class="form-text">Máximo 2000 caracteres</div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
                                         <i class="fas fa-image me-1"></i>Foto
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
                                         <i class="fas fa-tag me-1"></i>Producto
                                     </button>
                                 </div>
@@ -68,7 +70,7 @@
                         <button type="button" class="btn btn-outline-secondary btn-sm active">
                             <i class="fas fa-clock me-1"></i>Recientes
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
                             <i class="fas fa-fire me-1"></i>Populares
                         </button>
                     </div>
@@ -90,6 +92,33 @@
 
             <!-- Sidebar -->
             <div class="col-lg-4">
+                <!-- User Stats (if logged in) -->
+                <% if (locals.user) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user me-2"></i>Mi Perfil
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="/img/default-avatar.png" class="rounded-circle mb-2" 
+                             style="width: 60px; height: 60px; object-fit: cover;">
+                        <h6><%= user.nombre %> <%= user.apellido %></h6>
+                        <p class="text-muted small">Miembro desde <%= user.fecha_registro ? new Date(user.fecha_registro).getFullYear() : '2024' %></p>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h6 class="text-primary mb-0">0</h6>
+                                <small class="text-muted">Posts</small>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="text-success mb-0">0</h6>
+                                <small class="text-muted">Likes</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
                 <!-- Trending Topics -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -115,6 +144,12 @@
                                 <div class="d-flex w-100 justify-content-between">
                                     <span>#RopaVintage</span>
                                     <small class="text-muted">156 posts</small>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <span>#TecnologíaUsada</span>
+                                    <small class="text-muted">98 posts</small>
                                 </div>
                             </a>
                         </div>
@@ -144,7 +179,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-chart-bar me-2"></i>Estadísticas
+                            <i class="fas fa-chart-bar me-2"></i>Estadísticas de la Comunidad
                         </h5>
                     </div>
                     <div class="card-body">
@@ -166,6 +201,35 @@
                                 <small class="text-muted">Hoy</small>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Community Guidelines -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Reglas de la Comunidad
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <small>Sé respetuoso con otros usuarios</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <small>Comparte contenido relevante</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <small>No spam o publicidad excesiva</small>
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <small>Reporta contenido inapropiado</small>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

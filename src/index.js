@@ -207,6 +207,7 @@ app.get("/api/health", (req, res) => {
 // ========================================
 app.use("/api/categorias", require("./routes/categorias.routes"));
 app.use("/api/productos", require("./routes/productos.routes"));
+app.use("/api/publicaciones", require("./routes/publicaciones.routes"));  // <-- ESTA LÍNEA DEBE EXISTIR
 
 // ========================================
 // RUTAS DE USUARIOS (con autenticación)
@@ -217,8 +218,9 @@ app.use("/api/favoritos", require("./routes/favoritos.routes"));
 app.use("/api/ordenes", require("./routes/ordenes.routes"));
 app.use("/api/envios", require("./routes/envios.routes"));
 app.use("/api/devoluciones", require("./routes/devoluciones.routes"));
-app.use("/api/publicaciones", require("./routes/publicaciones.routes"));
 app.use("/api/comentarios", require("./routes/comentarios.routes"));
+app.use("/api/reacciones", require("./routes/reacciones.routes"));
+
 
 // ========================================
 // RUTAS DE ADMINISTRACIÓN (solo admin)
