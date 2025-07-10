@@ -5,8 +5,12 @@
 <script src="/js/common.js"></script>
 
 <!-- Page-specific JS based on page variable -->
-<% if (locals.page === 'login' || locals.page === 'register') { %>
+<% if (locals.page === 'login') { %>
     <script src="/js/auth.js"></script>
+<% } %>
+
+<% if (locals.page === 'register') { %>
+    <script src="/js/register.js"></script>
 <% } %>
 
 <% if (locals.page === 'comunidad' || locals.page === 'social') { %>

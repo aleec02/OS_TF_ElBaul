@@ -86,7 +86,7 @@ usuarioSchema.pre("validate", async function(next) {
 
 // Middleware para hashear contraseña antes de guardar
 usuarioSchema.pre("save", async function(next) {
-    if (this.isModified("contrasena_hash") && !this.contrasena_hash.startsWith("$2a$")) {
+    if (this.isModified("contrasena_hash") && !this.contrasena_hash.startsWith("$2b$")) {
         try {
             const salt = await bcrypt.genSalt(10);
             this.contrasena_hash = await bcrypt.hash(this.contrasena_hash, salt);
@@ -106,11 +106,11 @@ usuarioSchema.methods.compararContrasena = async function(contrasenaIngresada) {
         console.log('Comparing passwords:', {
             input: contrasenaIngresada,
             stored: this.contrasena_hash,
-            isHashed: this.contrasena_hash.startsWith("$2a$")
+            isHashed: this.contrasena_hash.startsWith("$2b$")
         });
         
         // si la contraseña almacenada no está hasheada (datos existentes)
-        if (!this.contrasena_hash.startsWith("$2a$")) {
+        if (!this.contrasena_hash.startsWith("$2b$")) {
             const result = contrasenaIngresada === this.contrasena_hash;
             console.log('Plain text comparison result:', result);
             return result;

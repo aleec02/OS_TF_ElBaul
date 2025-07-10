@@ -47,9 +47,13 @@
         console.log('🔍 DEBUG - Current path:', window.location.pathname);
     </script>
     
-    <% if (locals.page === 'login' || locals.page === 'register') { %>
+    <% if (locals.page === 'login') { %>
         <script>console.log('📱 Loading auth.js for page:', '<%= locals.page %>');</script>
         <script src="/js/auth.js"></script>
+    <% } %>
+    <% if (locals.page === 'register') { %>
+        <script>console.log('📝 Loading register.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/register.js"></script>
     <% } %>
     
     <% if (locals.page === 'comunidad' || locals.page === 'social') { %>
