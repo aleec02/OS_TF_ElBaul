@@ -6,7 +6,9 @@ const {
     obtenerFeed,
     obtenerDetallePublicacion,
     editarPublicacion,
-    eliminarPublicacion
+    eliminarPublicacion,
+    obtenerEstadisticasUsuario,
+    obtenerTagsPopulares
 } = require("../controllers/publicaciones.controller");
 
 const {
@@ -23,9 +25,13 @@ const { verificarAuth } = require("../middleware/auth.middleware");
 
 // Rutas públicas (no requieren autenticación)
 router.get("/", obtenerFeed);
+router.get("/tags/populares", obtenerTagsPopulares);
 router.get("/:id", obtenerDetallePublicacion);
 router.get("/:id/comentarios", obtenerComentarios);
 router.get("/:id/reacciones", obtenerReaccionesPublicacion);
+
+// Estadísticas de usuario (público)
+router.get("/usuario/:usuario_id/estadisticas", obtenerEstadisticasUsuario);
 
 // Rutas que requieren autenticación
 router.use(verificarAuth);

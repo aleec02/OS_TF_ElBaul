@@ -25,6 +25,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
+                        <!-- Form will be enhanced by JavaScript -->
                         <form id="create-post-form">
                             <div class="mb-3">
                                 <textarea class="form-control" id="post-content" rows="3" 
@@ -34,10 +35,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm">
                                         <i class="fas fa-image me-1"></i>Foto
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm">
                                         <i class="fas fa-tag me-1"></i>Producto
                                     </button>
                                 </div>
@@ -62,24 +63,26 @@
                 <% } %>
 
                 <!-- Feed Header -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0">
-                        <i class="fas fa-newspaper me-2"></i>Feed de Publicaciones
-                    </h4>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-secondary btn-sm active">
-                            <i class="fas fa-clock me-1"></i>Recientes
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
-                            <i class="fas fa-fire me-1"></i>Populares
-                        </button>
+                <div class="feed-header">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">
+                            <i class="fas fa-newspaper me-2"></i>Feed de Publicaciones
+                        </h4>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm sort-btn active" data-sort="recientes">
+                                <i class="fas fa-clock me-1"></i>Recientes
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm sort-btn" data-sort="populares">
+                                <i class="fas fa-fire me-1"></i>Populares
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Alert container -->
                 <div id="alerts-container"></div>
 
-                <!-- Feed Container -->
+<!-- Feed Container -->
                 <div id="feed-container">
                     <div class="text-center py-4">
                         <div class="spinner-border text-primary" role="status">
@@ -104,14 +107,14 @@
                         <img src="/img/default-avatar.png" class="rounded-circle mb-2" 
                              style="width: 60px; height: 60px; object-fit: cover;">
                         <h6><%= user.nombre %> <%= user.apellido %></h6>
-                        <p class="text-muted small">Miembro desde <%= user.fecha_registro ? new Date(user.fecha_registro).getFullYear() : '2024' %></p>
+                        <p class="text-muted small member-since">Miembro desde <%= user.fecha_registro ? new Date(user.fecha_registro).getFullYear() : '2024' %></p>
                         <div class="row text-center">
                             <div class="col-6">
-                                <h6 class="text-primary mb-0">0</h6>
+                                <h6 class="text-primary mb-0 user-posts-count">0</h6>
                                 <small class="text-muted">Posts</small>
                             </div>
                             <div class="col-6">
-                                <h6 class="text-success mb-0">0</h6>
+                                <h6 class="text-success mb-0 user-likes-count">0</h6>
                                 <small class="text-muted">Likes</small>
                             </div>
                         </div>
@@ -120,38 +123,45 @@
                 <% } %>
 
                 <!-- Trending Topics -->
-                <div class="card mb-4">
+                <div class="card mb-4 trending-topics">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-hashtag me-2"></i>Temas Populares
+                            <i class="fas fa-hashtag me-2"></i>Tags Populares
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <span>#ElectrónicosBaratos</span>
-                                    <small class="text-muted">245 posts</small>
+                            <!-- Tags will be loaded dynamically -->
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                                    <span class="visually-hidden">Cargando tags...</span>
                                 </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <span>#MueblesCasaOferta</span>
-                                    <small class="text-muted">189 posts</small>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <span>#RopaVintage</span>
-                                    <small class="text-muted">156 posts</small>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <span>#TecnologíaUsada</span>
-                                    <small class="text-muted">98 posts</small>
-                                </div>
-                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-lightning-bolt me-2"></i>Acciones Rápidas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="filterByTag('ofertas')">
+                                <i class="fas fa-tag me-2"></i>Ver Ofertas
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="filterByTag('tecnologia')">
+                                <i class="fas fa-laptop me-2"></i>Tecnología
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="filterByTag('hogar')">
+                                <i class="fas fa-home me-2"></i>Hogar
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="clearTagFilter()">
+                                <i class="fas fa-globe me-2"></i>Ver Todo
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -208,26 +218,26 @@
                 <div class="card mt-4">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-info-circle me-2"></i>Reglas de la Comunidad
+                            <i class="fas fa-info-circle me-2"></i>Guía de Uso
                         </h5>
                     </div>
                     <div class="card-body">
                         <ul class="list-unstyled mb-0">
                             <li class="mb-2">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <small>Sé respetuoso con otros usuarios</small>
+                                <i class="fas fa-hashtag text-primary me-2"></i>
+                                <small>Usa #hashtags para categorizar</small>
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <small>Comparte contenido relevante</small>
+                                <i class="fas fa-tag text-success me-2"></i>
+                                <small>Menciona productos con su código</small>
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <small>No spam o publicidad excesiva</small>
+                                <i class="fas fa-image text-info me-2"></i>
+                                <small>Agrega imágenes con URL</small>
                             </li>
                             <li class="mb-0">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <small>Reporta contenido inapropiado</small>
+                                <i class="fas fa-heart text-danger me-2"></i>
+                                <small>Interactúa con la comunidad</small>
                             </li>
                         </ul>
                     </div>
@@ -236,3 +246,63 @@
         </div>
     </div>
 </section>
+
+<!-- Custom CSS for enhanced styling -->
+<style>
+.tag-link, .tag-badge {
+    color: #0d6efd !important;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.tag-link:hover, .tag-badge:hover {
+    text-decoration: underline;
+    background-color: #0d6efd !important;
+    color: white !important;
+}
+
+.product-card {
+    border-left: 4px solid #198754;
+    background-color: #f8f9fa;
+}
+
+.post-images img {
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.post-images img:hover {
+    transform: scale(1.02);
+}
+
+.active-filter {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sort-btn.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+.trending-topics .list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+    transition: all 0.2s;
+}
+
+.user-stats-loading {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+</style>

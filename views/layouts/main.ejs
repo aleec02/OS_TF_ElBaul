@@ -62,6 +62,11 @@
         <script src="/js/product-detail.js"></script>
     <% } %>
     
+    <% if (locals.page === 'post-detail') { %>
+        <script>console.log('📝 Loading post-detail.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/post-detail.js"></script>
+    <% } %>
+    
     <% if (locals.page === 'products') { %>
         <script>console.log('🛍️ Loading products.js for page:', '<%= locals.page %>');</script>
         <script src="/js/products.js"></script>

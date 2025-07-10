@@ -31,7 +31,12 @@ const publicacionSchema = new mongoose.Schema(
         producto_id: {
             type: String,
             ref: "Producto"
-        }
+        },
+        tags: [{
+            type: String,
+            lowercase: true,
+            trim: true
+        }]
     },
     {
         versionKey: false,
@@ -75,6 +80,8 @@ publicacionSchema.pre("validate", async function(next) {
 publicacionSchema.index({ usuario_id: 1, fecha: -1 });
 publicacionSchema.index({ producto_id: 1 });
 publicacionSchema.index({ fecha: -1 });
+publicacionSchema.index({ tags: 1 });
+publicacionSchema.index({ likes: -1 });
 
 publicacionSchema.methods.obtenerDatosPublicos = function() {
     return {
@@ -84,7 +91,8 @@ publicacionSchema.methods.obtenerDatosPublicos = function() {
         imagenes: this.imagenes,
         fecha: this.fecha,
         likes: this.likes,
-        producto_id: this.producto_id
+        producto_id: this.producto_id,
+        tags: this.tags
     };
 };
 

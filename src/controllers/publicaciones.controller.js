@@ -9,7 +9,7 @@ const ModeloProducto = require("../models/producto.model");
  */
 const crearPublicacion = async (req, res) => {
     try {
-        const { contenido, imagenes = [], producto_id } = req.body;
+        const { contenido, imagenes = [], producto_id, tags = [] } = req.body;
         
         // Validar campos requeridos
         if (!contenido || contenido.trim().length === 0) {
@@ -39,12 +39,18 @@ const crearPublicacion = async (req, res) => {
             }
         }
         
+        // Extraer tags del contenido (hashtags)
+        const hashtagRegex = /#(\w+)/g;
+        const contentTags = [...contenido.matchAll(hashtagRegex)].map(match => match[1].toLowerCase());
+        const allTags = [...new Set([...tags, ...contentTags])]; // Combinar y eliminar duplicados
+        
         // Crear publicación
         const nuevaPublicacion = new ModeloPublicacion({
             usuario_id: req.usuario.usuario_id,
             contenido: contenido.trim(),
             imagenes,
-            producto_id
+            producto_id,
+            tags: allTags
         });
         
         await nuevaPublicacion.save();
@@ -73,17 +79,37 @@ const crearPublicacion = async (req, res) => {
  */
 const obtenerFeed = async (req, res) => {
     try {
-        const { page = 1, limit = 10, usuario_id } = req.query;
+        const { page = 1, limit = 10, usuario_id, sort = 'recientes', tag } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
+        
+        console.log('📡 obtenerFeed called:', { page, limit, usuario_id, sort, tag });
         
         // Construir filtros
         const filtros = {};
         if (usuario_id) {
             filtros.usuario_id = usuario_id;
         }
+        if (tag) {
+            filtros.tags = tag.toLowerCase();
+        }
         
-        // Obtener publicaciones con información del usuario
-        const publicaciones = await ModeloPublicacion.aggregate([
+        console.log('🔍 Filters:', filtros);
+        
+        // Determinar orden
+        let sortStage;
+        if (sort === 'populares') {
+            // Ordenar por engagement (likes + comentarios) y fecha
+            sortStage = { 
+                engagement_score: -1, 
+                fecha: -1 
+            };
+        } else {
+            // Por defecto: recientes
+            sortStage = { fecha: -1 };
+        }
+        
+        // Pipeline de agregación
+        const pipeline = [
             { $match: filtros },
             {
                 $lookup: {
@@ -93,7 +119,11 @@ const obtenerFeed = async (req, res) => {
                     as: "usuario"
                 }
             },
-            { $unwind: "$usuario" },
+            {
+                $addFields: {
+                    usuario: { $arrayElemAt: ["$usuario", 0] }
+                }
+            },
             {
                 $lookup: {
                     from: "productos",
@@ -102,53 +132,103 @@ const obtenerFeed = async (req, res) => {
                     as: "producto"
                 }
             },
-            { $sort: { fecha: -1 } },
+            {
+                $addFields: {
+                    producto: { $arrayElemAt: ["$producto", 0] }
+                }
+            }
+        ];
+        
+        // Para populares, calcular engagement score
+        if (sort === 'populares') {
+            pipeline.push({
+                $addFields: {
+                    engagement_score: {
+                        $add: [
+                            { $ifNull: ["$likes", 0] },
+                            { $multiply: [{ $ifNull: ["$comentarios_count", 0] }, 2] } // Comentarios valen más
+                        ]
+                    }
+                }
+            });
+        }
+        
+        pipeline.push(
+            { $sort: sortStage },
             { $skip: skip },
             { $limit: parseInt(limit) },
             {
                 $project: {
+                    _id: 0,
                     post_id: 1,
+                    publicacion_id: "$post_id",
                     usuario_id: 1,
                     contenido: 1,
                     imagenes: 1,
                     fecha: 1,
+                    fecha_creacion: "$fecha",
                     likes: 1,
                     producto_id: 1,
+                    tags: 1,
+                    "usuario.usuario_id": 1,
                     "usuario.nombre": 1,
                     "usuario.apellido": 1,
+                    "usuario.avatar": 1,
+                    "producto.producto_id": 1,
                     "producto.titulo": 1,
-                    "producto.precio": 1
+                    "producto.precio": 1,
+                    "producto.estado": 1,
+                    "producto.imagenes": 1
                 }
             }
-        ]);
+        );
         
-        // Obtener conteos de comentarios y reacciones para cada publicación
+        const publicaciones = await ModeloPublicacion.aggregate(pipeline);
+        
+        console.log('📚 Raw publicaciones found:', publicaciones.length);
+        
+        // Obtener conteos de comentarios para cada publicación
         for (let publicacion of publicaciones) {
-            // Contar comentarios
-            const comentarios = await ModeloComentario.countDocuments({
-                post_id: publicacion.post_id
-            });
-            
-            // Contar reacciones por tipo
-            const reacciones = await ModeloReaccion.aggregate([
-                { $match: { entidad: "post", entidad_id: publicacion.post_id } },
-                {
-                    $group: {
-                        _id: "$tipo",
-                        cantidad: { $sum: 1 }
+            try {
+                // Contar comentarios
+                const comentarios = await ModeloComentario.countDocuments({
+                    post_id: publicacion.post_id
+                });
+                
+                publicacion.comentarios_count = comentarios;
+                publicacion.total_comentarios = comentarios;
+                
+                // Contar reacciones por tipo
+                const reacciones = await ModeloReaccion.aggregate([
+                    { $match: { entidad: "post", entidad_id: publicacion.post_id } },
+                    {
+                        $group: {
+                            _id: "$tipo",
+                            cantidad: { $sum: 1 }
+                        }
                     }
-                }
-            ]);
-            
-            publicacion.comentarios_count = comentarios;
-            publicacion.reacciones = reacciones.reduce((acc, r) => {
-                acc[r._id] = r.cantidad;
-                return acc;
-            }, {});
+                ]);
+                
+                publicacion.reacciones = reacciones.reduce((acc, r) => {
+                    acc[r._id] = r.cantidad;
+                    return acc;
+                }, {});
+                
+                publicacion.total_reacciones = publicacion.reacciones;
+                
+            } catch (error) {
+                console.error('Error getting counts for post:', publicacion.post_id, error);
+                publicacion.comentarios_count = 0;
+                publicacion.total_comentarios = 0;
+                publicacion.reacciones = {};
+                publicacion.total_reacciones = {};
+            }
         }
         
         // Contar total
         const total = await ModeloPublicacion.countDocuments(filtros);
+        
+        console.log('✅ Final publicaciones:', publicaciones.length);
         
         res.json({
             exito: true,
@@ -160,12 +240,105 @@ const obtenerFeed = async (req, res) => {
                     page: parseInt(page),
                     limit: parseInt(limit),
                     totalPages: Math.ceil(total / parseInt(limit))
+                },
+                filtros_aplicados: {
+                    sort,
+                    tag,
+                    usuario_id
                 }
             }
         });
         
     } catch (error) {
-        console.error("Error en obtenerFeed:", error);
+        console.error("❌ Error en obtenerFeed:", error);
+        res.status(500).json({
+            exito: false,
+            mensaje: "Error interno del servidor",
+            codigo: "INTERNAL_ERROR",
+            error: error.message,
+            stack: error.stack
+        });
+    }
+};
+
+/**
+ * Obtener estadísticas de usuario
+ */
+const obtenerEstadisticasUsuario = async (req, res) => {
+    try {
+        const { usuario_id } = req.params;
+        
+        // Contar publicaciones del usuario
+        const totalPosts = await ModeloPublicacion.countDocuments({ usuario_id });
+        
+        // Contar likes totales en sus publicaciones
+        const likesAggregate = await ModeloPublicacion.aggregate([
+            { $match: { usuario_id } },
+            { $group: { _id: null, totalLikes: { $sum: "$likes" } } }
+        ]);
+        
+        const totalLikes = likesAggregate.length > 0 ? likesAggregate[0].totalLikes : 0;
+        
+        // Contar comentarios totales en sus publicaciones
+        const postsUsuario = await ModeloPublicacion.find({ usuario_id }, { post_id: 1 });
+        const postIds = postsUsuario.map(p => p.post_id);
+        
+        const totalComments = await ModeloComentario.countDocuments({
+            post_id: { $in: postIds }
+        });
+        
+        // Obtener fecha de registro del usuario
+        const usuario = await ModeloUsuario.findOne({ usuario_id }, { fecha_registro: 1 });
+        
+        res.json({
+            exito: true,
+            mensaje: "Estadísticas obtenidas exitosamente",
+            data: {
+                usuario_id,
+                total_posts: totalPosts,
+                total_likes: totalLikes,
+                total_comments: totalComments,
+                miembro_desde: usuario?.fecha_registro,
+                engagement_promedio: totalPosts > 0 ? ((totalLikes + totalComments) / totalPosts).toFixed(1) : 0
+            }
+        });
+        
+    } catch (error) {
+        console.error("Error en obtenerEstadisticasUsuario:", error);
+        res.status(500).json({
+            exito: false,
+            mensaje: "Error interno del servidor",
+            codigo: "INTERNAL_ERROR",
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Obtener tags populares
+ */
+const obtenerTagsPopulares = async (req, res) => {
+    try {
+        const { limit = 10 } = req.query;
+        
+        const tagsPopulares = await ModeloPublicacion.aggregate([
+            { $unwind: "$tags" },
+            { $group: { _id: "$tags", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: parseInt(limit) },
+            { $project: { tag: "$_id", count: 1, _id: 0 } }
+        ]);
+        
+        res.json({
+            exito: true,
+            mensaje: "Tags populares obtenidos exitosamente",
+            data: {
+                tags: tagsPopulares
+            }
+        });
+        
+    } catch (error) {
+        console.error("Error en obtenerTagsPopulares:", error);
         res.status(500).json({
             exito: false,
             mensaje: "Error interno del servidor",
@@ -211,6 +384,7 @@ const obtenerDetallePublicacion = async (req, res) => {
                     fecha: 1,
                     likes: 1,
                     producto_id: 1,
+                    tags: 1,
                     "usuario.nombre": 1,
                     "usuario.apellido": 1,
                     "producto.titulo": 1,
@@ -295,7 +469,7 @@ const obtenerDetallePublicacion = async (req, res) => {
 const editarPublicacion = async (req, res) => {
     try {
         const { id } = req.params;
-        const { contenido, imagenes } = req.body;
+        const { contenido, imagenes, tags } = req.body;
         
         // Buscar publicación
         const publicacion = await ModeloPublicacion.findOne({ post_id: id });
@@ -327,10 +501,20 @@ const editarPublicacion = async (req, res) => {
                 });
             }
             publicacion.contenido = contenido.trim();
+            
+            // Extraer tags del contenido actualizado
+            const hashtagRegex = /#(\w+)/g;
+            const contentTags = [...contenido.matchAll(hashtagRegex)].map(match => match[1].toLowerCase());
+            const allTags = [...new Set([...(tags || []), ...contentTags])];
+            publicacion.tags = allTags;
         }
         
         if (imagenes !== undefined) {
-            publicacion.imagenes = imagenes;
+            // Only update images if a new array is provided
+            // This prevents images from being cleared when not included in the request
+            if (Array.isArray(imagenes)) {
+                publicacion.imagenes = imagenes;
+            }
         }
         
         await publicacion.save();
@@ -409,5 +593,7 @@ module.exports = {
     obtenerFeed,
     obtenerDetallePublicacion,
     editarPublicacion,
-    eliminarPublicacion
+    eliminarPublicacion,
+    obtenerEstadisticasUsuario,
+    obtenerTagsPopulares
 };

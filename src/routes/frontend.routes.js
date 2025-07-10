@@ -60,6 +60,15 @@ router.get("/productos/:id", (req, res) => {
     });
 });
 
+// Detalle de publicación
+router.get("/publicaciones/:id", (req, res) => {
+    res.render('pages/social/post-detail', {
+        title: 'Publicación - ElBaul',
+        page: 'post-detail',
+        postId: req.params.id
+    });
+});
+
 router.get("/buscar", (req, res) => {
     res.render('pages/products/index', {
         title: 'Buscar Productos - ElBaul',
