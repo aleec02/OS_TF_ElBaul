@@ -32,8 +32,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadFavorites() {
     try {
-        const response = await fetch('/api/favoritos');
-        const data = await response.json();
+        // Use the common apiCall function if available, otherwise fallback
+        let data;
+        if (typeof window.apiCall === 'function') {
+            data = await window.apiCall('/favoritos');
+        } else {
+            const response = await fetch('/api/favoritos', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+            data = await response.json();
+        }
         
         const container = document.getElementById('favorites-container');
         
@@ -41,14 +51,16 @@ async function loadFavorites() {
             let html = '<div class="row g-4">';
             data.data.favoritos.forEach(favorite => {
                 const product = favorite.producto;
+                const imagenes = favorite.imagenes || [];
                 html += `
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 shadow-sm">
-                            <img src="${product.imagenes && product.imagenes.length > 0 ? product.imagenes[0] : '/img/placeholder.jpg'}" 
-                                 class="card-img-top" alt="${product.titulo}" style="height: 200px; object-fit: cover;">
+                            <img src="${imagenes.length > 0 ? imagenes[0] : '/img/placeholder.jpg'}" 
+                                 class="card-img-top" alt="${product.titulo}" style="height: 200px; object-fit: cover;"
+                                 onerror="this.src='/img/placeholder.jpg'">
                             <div class="card-body">
                                 <h6 class="card-title">${product.titulo}</h6>
-                                <p class="card-text text-muted small">${product.descripcion.substring(0, 80)}...</p>
+                                <p class="card-text text-muted small">${product.descripcion ? product.descripcion.substring(0, 80) + '...' : 'Sin descripción'}</p>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="h5 text-success mb-0">S/ ${product.precio}</span>
                                     <span class="badge bg-secondary">${product.estado}</span>
@@ -101,14 +113,20 @@ async function removeFavorite(favoriteId) {
     }
     
     try {
-        const response = await fetch(`/api/favoritos/${favoriteId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-            }
-        });
-        
-        const data = await response.json();
+        let data;
+        if (typeof window.apiCall === 'function') {
+            data = await window.apiCall(`/favoritos/${favoriteId}`, {
+                method: 'DELETE'
+            });
+        } else {
+            const response = await fetch(`/api/favoritos/${favoriteId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+            data = await response.json();
+        }
         
         if (data.exito) {
             if (typeof window.showAlert === 'function') {

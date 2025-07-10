@@ -449,16 +449,24 @@ async function toggleFavorite(event) {
     const productId = event.currentTarget.getAttribute('data-product-id');
     
     try {
-        const response = await fetch('/api/favoritos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({ producto_id: productId })
-        });
-        
-        const data = await response.json();
+        // Use common apiCall function if available
+        let data;
+        if (typeof window.apiCall === 'function') {
+            data = await window.apiCall('/favoritos', {
+                method: 'POST',
+                body: JSON.stringify({ producto_id: productId })
+            });
+        } else {
+            const response = await fetch('/api/favoritos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify({ producto_id: productId })
+            });
+            data = await response.json();
+        }
         
         if (data.exito) {
             // Toggle heart icon
@@ -467,11 +475,11 @@ async function toggleFavorite(event) {
                 icon.classList.remove('far');
                 icon.classList.add('fas');
                 icon.style.color = '#dc3545';
-        } else {
+            } else {
                 icon.classList.remove('fas');
                 icon.classList.add('far');
                 icon.style.color = 'white';
-        }
+            }
         } else {
             showError(data.mensaje || 'Error al agregar a favoritos');
         }
@@ -488,19 +496,30 @@ async function addToCart(productId) {
     }
 
     try {
-        const response = await fetch('/api/carrito/items', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({ 
-                producto_id: productId,
-                cantidad: 1
-            })
-        });
-        
-        const data = await response.json();
+        // Use common apiCall function if available
+        let data;
+        if (typeof window.apiCall === 'function') {
+            data = await window.apiCall('/carrito/items', {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    producto_id: productId,
+                    cantidad: 1
+                })
+            });
+        } else {
+            const response = await fetch('/api/carrito/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify({ 
+                    producto_id: productId,
+                    cantidad: 1
+                })
+            });
+            data = await response.json();
+        }
         
         if (data.exito) {
             showSuccess('Producto agregado al carrito');
@@ -508,7 +527,7 @@ async function addToCart(productId) {
             if (typeof updateCartCount === 'function') {
                 updateCartCount();
             }
-    } else {
+        } else {
             showError(data.mensaje || 'Error al agregar al carrito');
         }
     } catch (error) {

@@ -74,15 +74,49 @@ const obtenerProductos = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const limitNum = parseInt(limit);
         
-        // Ejecutar consultas
-        const [productos, total] = await Promise.all([
-            ModeloProducto.find(filtros)
-                .sort(ordenamiento)
-                .skip(skip)
-                .limit(limitNum)
-                .lean(),
-            ModeloProducto.countDocuments(filtros)
+        // Ejecutar consultas con agregación para incluir imágenes
+        const productos = await ModeloProducto.aggregate([
+            { $match: filtros },
+            {
+                $lookup: {
+                    from: "imagen_productos",
+                    localField: "producto_id",
+                    foreignField: "producto_id",
+                    as: "imagenes"
+                }
+            },
+            { $sort: ordenamiento },
+            { $skip: skip },
+            { $limit: limitNum },
+            {
+                $project: {
+                    producto_id: 1,
+                    titulo: 1,
+                    descripcion: 1,
+                    precio: 1,
+                    estado: 1,
+                    fecha_publicacion: 1,
+                    stock: 1,
+                    ubicacion_almacen: 1,
+                    marca: 1,
+                    modelo: 1,
+                    año_fabricacion: 1,
+                    categoria_id: 1,
+                    usuario_id: 1,
+                    activo: 1,
+                    destacado: 1,
+                    imagenes: {
+                        $map: {
+                            input: "$imagenes",
+                            as: "img",
+                            in: "$$img.url_imagen"
+                        }
+                    }
+                }
+            }
         ]);
+        
+        const total = await ModeloProducto.countDocuments(filtros);
         
         res.json({
             exito: true,
@@ -124,15 +158,53 @@ const obtenerProductoPorId = async (req, res) => {
     try {
         const { id } = req.params;
         
-        const producto = await ModeloProducto.findOne({ 
-            producto_id: id,
-            $or: [
-                { activo: true },
-                { activo: { $exists: false } }
-            ]
-        }).lean();
+        const producto = await ModeloProducto.aggregate([
+            { 
+                $match: { 
+                    producto_id: id,
+                    $or: [
+                        { activo: true },
+                        { activo: { $exists: false } }
+                    ]
+                } 
+            },
+            {
+                $lookup: {
+                    from: "imagen_productos",
+                    localField: "producto_id",
+                    foreignField: "producto_id",
+                    as: "imagenes"
+                }
+            },
+            {
+                $project: {
+                    producto_id: 1,
+                    titulo: 1,
+                    descripcion: 1,
+                    precio: 1,
+                    estado: 1,
+                    fecha_publicacion: 1,
+                    stock: 1,
+                    ubicacion_almacen: 1,
+                    marca: 1,
+                    modelo: 1,
+                    año_fabricacion: 1,
+                    categoria_id: 1,
+                    usuario_id: 1,
+                    activo: 1,
+                    destacado: 1,
+                    imagenes: {
+                        $map: {
+                            input: "$imagenes",
+                            as: "img",
+                            in: "$$img.url_imagen"
+                        }
+                    }
+                }
+            }
+        ]);
         
-        if (!producto) {
+        if (!producto || producto.length === 0) {
             return res.status(404).json({
                 exito: false,
                 mensaje: "Producto no encontrado",
@@ -140,9 +212,11 @@ const obtenerProductoPorId = async (req, res) => {
             });
         }
         
+        const productoData = producto[0];
+        
         // Obtener información adicional
         const [categoria, inventario] = await Promise.all([
-            ModeloCategoria.findOne({ categoria_id: producto.categoria_id }).lean(),
+            ModeloCategoria.findOne({ categoria_id: productoData.categoria_id }).lean(),
             ModeloInventario.findOne({ producto_id: id }).lean()
         ]);
         
@@ -151,7 +225,7 @@ const obtenerProductoPorId = async (req, res) => {
             mensaje: "Producto obtenido exitosamente",
             data: {
                 producto: {
-                    ...producto,
+                    ...productoData,
                     categoria: categoria ? categoria.nombre : null,
                     stock_disponible: inventario ? inventario.cantidad_disponible : 0
                 }
@@ -186,24 +260,61 @@ const buscarProductos = async (req, res) => {
         
         const termino = q.trim();
         
-        const productos = await ModeloProducto.find({
-            $or: [
-                { activo: true },
-                { activo: { $exists: false } }
-            ],
-            $and: [
-                {
+        const productos = await ModeloProducto.aggregate([
+            {
+                $match: {
                     $or: [
-                        { titulo: { $regex: termino, $options: 'i' } },
-                        { descripcion: { $regex: termino, $options: 'i' } },
-                        { marca: { $regex: termino, $options: 'i' } }
+                        { activo: true },
+                        { activo: { $exists: false } }
+                    ],
+                    $and: [
+                        {
+                            $or: [
+                                { titulo: { $regex: termino, $options: 'i' } },
+                                { descripcion: { $regex: termino, $options: 'i' } },
+                                { marca: { $regex: termino, $options: 'i' } }
+                            ]
+                        }
                     ]
                 }
-            ]
-        })
-        .sort({ fecha_publicacion: -1 })
-        .limit(parseInt(limit))
-        .lean();
+            },
+            {
+                $lookup: {
+                    from: "imagen_productos",
+                    localField: "producto_id",
+                    foreignField: "producto_id",
+                    as: "imagenes"
+                }
+            },
+            { $sort: { fecha_publicacion: -1 } },
+            { $limit: parseInt(limit) },
+            {
+                $project: {
+                    producto_id: 1,
+                    titulo: 1,
+                    descripcion: 1,
+                    precio: 1,
+                    estado: 1,
+                    fecha_publicacion: 1,
+                    stock: 1,
+                    ubicacion_almacen: 1,
+                    marca: 1,
+                    modelo: 1,
+                    año_fabricacion: 1,
+                    categoria_id: 1,
+                    usuario_id: 1,
+                    activo: 1,
+                    destacado: 1,
+                    imagenes: {
+                        $map: {
+                            input: "$imagenes",
+                            as: "img",
+                            in: "$$img.url_imagen"
+                        }
+                    }
+                }
+            }
+        ]);
         
         res.json({
             exito: true,

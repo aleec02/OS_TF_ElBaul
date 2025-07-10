@@ -9,7 +9,7 @@ const obtenerFavoritos = async (req, res) => {
         const { page = 1, limit = 10 } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
         
-        // Obtener favoritos con información del producto
+        // Obtener favoritos con información del producto e imágenes
         const favoritos = await ModeloFavorito.aggregate([
             { $match: { usuario_id: req.usuario.usuario_id } },
             {
@@ -29,6 +29,14 @@ const obtenerFavoritos = async (req, res) => {
                     ]
                 }
             },
+            {
+                $lookup: {
+                    from: "imagen_productos",
+                    localField: "producto_id",
+                    foreignField: "producto_id",
+                    as: "imagenes"
+                }
+            },
             { $sort: { fecha_agregado: -1 } },
             { $skip: skip },
             { $limit: parseInt(limit) },
@@ -37,11 +45,22 @@ const obtenerFavoritos = async (req, res) => {
                     favorito_id: 1,
                     producto_id: 1,
                     fecha_agregado: 1,
+                    "producto.producto_id": 1,
                     "producto.titulo": 1,
+                    "producto.descripcion": 1,
                     "producto.precio": 1,
                     "producto.estado": 1,
                     "producto.marca": 1,
-                    "producto.categoria_id": 1
+                    "producto.categoria_id": 1,
+                    "producto.stock": 1,
+                    "producto.fecha_publicacion": 1,
+                    "imagenes": {
+                        $map: {
+                            input: "$imagenes",
+                            as: "img",
+                            in: "$$img.url_imagen"
+                        }
+                    }
                 }
             }
         ]);
