@@ -87,43 +87,61 @@ document.addEventListener('DOMContentLoaded', function() {
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     
+    console.log('Login page loaded');
+    
     // Toggle password visibility
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-    });
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+    }
     
     // Handle form submission
-    loginForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        // Clear previous errors
-        clearErrors();
-        
-        // Validate form
-        if (!validateForm(email, password)) {
-            return;
-        }
-        
-        // Show loading state
-        setLoadingState(true);
-        
-        try {
-            await login(email, password);
-        } catch (error) {
-            setLoadingState(false);
-            console.error('Login error:', error);
-        }
-    });
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('Login form submitted');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // Clear previous errors
+            clearErrors();
+            
+            // Validate form
+            if (!validateLoginForm(email, password)) {
+                return;
+            }
+            
+            // Show loading state
+            setLoadingState(true);
+            
+            try {
+                console.log('Attempting login...');
+                const result = await enhancedLogin(email, password, rememberMe);
+                
+                if (result.success) {
+                    showAlert('success', '¡Bienvenido! Redirigiendo...');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('danger', error.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+                setLoadingState(false);
+            }
+        });
+    }
     
-    function validateForm(email, password) {
+    function validateLoginForm(email, password) {
         let isValid = true;
         
         if (!email || !email.includes('@')) {
@@ -143,8 +161,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const field = document.getElementById(fieldId);
         const errorDiv = document.getElementById(fieldId + '-error');
         
-        field.classList.add('is-invalid');
-        errorDiv.textContent = message;
+        if (field) {
+            field.classList.add('is-invalid');
+        }
+        if (errorDiv) {
+            errorDiv.textContent = message;
+        }
     }
     
     function clearErrors() {
@@ -153,8 +175,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const field = document.getElementById(fieldId);
             const errorDiv = document.getElementById(fieldId + '-error');
             
-            field.classList.remove('is-invalid');
-            errorDiv.textContent = '';
+            if (field) {
+                field.classList.remove('is-invalid');
+            }
+            if (errorDiv) {
+                errorDiv.textContent = '';
+            }
         });
     }
     
@@ -164,46 +190,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (loading) {
             loginBtn.disabled = true;
-            loginText.classList.add('d-none');
-            loadingSpinner.classList.remove('d-none');
+            if (loginText) loginText.classList.add('d-none');
+            if (loadingSpinner) loadingSpinner.classList.remove('d-none');
         } else {
             loginBtn.disabled = false;
-            loginText.classList.remove('d-none');
-            loadingSpinner.classList.add('d-none');
+            if (loginText) loginText.classList.remove('d-none');
+            if (loadingSpinner) loadingSpinner.classList.add('d-none');
         }
     }
 });
-
-// Override the global login function for this page
-async function login(email, password) {
-    try {
-        const response = await apiCall('/usuarios/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, contrasena: password })
-        });
-        
-        if (response.exito) {
-            // Store token and user data
-            authToken = response.data.token;
-            localStorage.setItem('authToken', authToken);
-            localStorage.setItem('user', JSON.stringify(response.data.usuario));
-            
-            // Sync with session
-            await fetch('/sync-session', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user: response.data.usuario })
-            });
-            
-            showAlert('success', '¡Bienvenido! Redirigiendo...');
-            
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1500);
-        }
-    } catch (error) {
-        showAlert('error', error.message || 'Error al iniciar sesión. Verifica tus credenciales.');
-        throw error;
-    }
-}
 </script>

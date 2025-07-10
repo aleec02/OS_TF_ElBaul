@@ -1,5 +1,64 @@
-// Authentication specific JavaScript for ElBaul
+// Global auth variables
+let authToken = localStorage.getItem('authToken');
+let currentUser = null;
 
+// API base URL
+const API_BASE_URL = '/api';
+
+// Generic API call function
+async function apiCall(endpoint, options = {}) {
+    const url = `${API_BASE_URL}${endpoint}`;
+    
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        },
+        ...options
+    };
+    
+    // Add auth token if available
+    if (authToken) {
+        config.headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    try {
+        const response = await fetch(url, config);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.mensaje || `HTTP error! status: ${response.status}`);
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('API call error:', error);
+        throw error;
+    }
+}
+
+// Show alert function
+function showAlert(type, message) {
+    // Remove existing alerts
+    const existingAlerts = document.querySelectorAll('.auth-alert, .alert');
+    existingAlerts.forEach(alert => alert.remove());
+    
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show auth-alert`;
+    alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' || type === 'danger' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert at the top of the container
+    const container = document.querySelector('.card-body') || document.querySelector('.container');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+    }
+}
+
+// Authentication specific JavaScript for ElBaul
 // Enhanced login function with better error handling
 async function enhancedLogin(email, password, rememberMe = false) {
     try {
@@ -20,7 +79,6 @@ async function enhancedLogin(email, password, rememberMe = false) {
             // Set remember me
             if (rememberMe) {
                 localStorage.setItem('rememberMe', 'true');
-                // Extend token expiration if needed
             }
             
             // Sync with backend session
@@ -95,6 +153,8 @@ async function enhancedLogout() {
         
         // Reset global state
         window.authToken = null;
+        authToken = null;
+        currentUser = null;
         
         // Update UI
         updateAuthUI(null);
@@ -111,7 +171,6 @@ async function syncUserSession(userData) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user: userData })
         });
-        
         const result = await response.json();
         return result.success;
     } catch (error) {
@@ -146,7 +205,6 @@ function updateAuthUI(userData) {
         
         // Update cart count
         updateCartCount();
-        
     } else {
         // User is logged out
         // Show login/register links
@@ -175,6 +233,8 @@ function checkAuthStatus() {
         try {
             const userData = JSON.parse(storedUser);
             window.authToken = storedToken;
+            authToken = storedToken;
+            currentUser = userData;
             
             // Sync with session
             syncUserSession(userData);
@@ -194,6 +254,25 @@ function checkAuthStatus() {
     return { authenticated: false, user: null };
 }
 
+// Update cart count function
+async function updateCartCount() {
+    if (!authToken) return;
+    
+    try {
+        const response = await apiCall('/carrito');
+        if (response.exito && response.data.items) {
+            const count = response.data.items.reduce((total, item) => total + item.cantidad, 0);
+            const cartCount = document.querySelector('.cart-count');
+            if (cartCount) {
+                cartCount.textContent = count;
+                cartCount.style.display = count > 0 ? 'inline' : 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error updating cart count:', error);
+    }
+}
+
 // Password strength validator
 function validatePasswordStrength(password) {
     const strength = {
@@ -202,10 +281,10 @@ function validatePasswordStrength(password) {
         isValid: false
     };
     
-    if (password.length >= 8) {
+    if (password.length >= 6) {
         strength.score += 1;
     } else {
-        strength.feedback.push('Debe tener al menos 8 caracteres');
+        strength.feedback.push('Debe tener al menos 6 caracteres');
     }
     
     if (/[a-z]/.test(password)) {
@@ -226,14 +305,7 @@ function validatePasswordStrength(password) {
         strength.feedback.push('Debe incluir números');
     }
     
-    if (/[^a-zA-Z0-9]/.test(password)) {
-        strength.score += 1;
-    } else {
-        strength.feedback.push('Debe incluir caracteres especiales');
-    }
-    
-    strength.isValid = strength.score >= 3;
-    
+    strength.isValid = strength.score >= 2; // Relaxed requirement
     return strength;
 }
 
@@ -250,44 +322,20 @@ function validatePhone(phone) {
     return phoneRegex.test(cleanPhone);
 }
 
-// Auto-logout on token expiration
-function setupAutoLogout() {
-    // Check token validity periodically
-    setInterval(async () => {
-        if (authToken) {
-            try {
-                await apiCall('/usuarios/perfil');
-            } catch (error) {
-                if (error.message.includes('Token inválido') || error.message.includes('expirado')) {
-                    console.log('Token expired, logging out...');
-                    await enhancedLogout();
-                    showAlert('warning', 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-                    setTimeout(() => {
-                        window.location.href = '/login';
-                    }, 2000);
-                }
-            }
-        }
-    }, 5 * 60 * 1000); // Check every 5 minutes
-}
-
 // Initialize authentication on page load
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Auth.js loaded');
+    
     // Check auth status
     const authStatus = checkAuthStatus();
-    
-    // Setup auto-logout
-    setupAutoLogout();
+    console.log('Auth status:', authStatus);
     
     // Handle remember me
     const rememberMe = localStorage.getItem('rememberMe');
     if (rememberMe === 'true') {
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            const rememberCheckbox = document.getElementById('rememberMe');
-            if (rememberCheckbox) {
-                rememberCheckbox.checked = true;
-            }
+        const rememberCheckbox = document.getElementById('rememberMe');
+        if (rememberCheckbox) {
+            rememberCheckbox.checked = true;
         }
     }
 });
