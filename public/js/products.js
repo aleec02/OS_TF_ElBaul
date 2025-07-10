@@ -3,6 +3,7 @@ let currentPage = 1;
 let currentFilters = {};
 let isLoading = false;
 let isInitialized = false;
+let loadTimeout = null;
 
 // DOM Elements
 let productsContainer;
@@ -17,18 +18,50 @@ let estadoCheckboxes;
 let sortSelect;
 let resultsInfo;
 
-// Initialize when DOM is loaded
+// Initialize when DOM is loaded (PROTECTED AGAINST MULTIPLE CALLS)
 document.addEventListener('DOMContentLoaded', function() {
-    if (isInitialized) return; // Prevent multiple initializations
+    console.log('🔄 Products.js DOMContentLoaded triggered');
     
-    console.log('Products listing page loaded');
+    if (isInitialized) {
+        console.log('⚠️ Products.js already initialized, skipping...');
+        return; // Prevent multiple initializations
+    }
+    
+    console.log('✅ Products listing page loaded - initializing...');
     isInitialized = true;
     
-    initializeElements();
-    initializeEventListeners();
-    loadProducts();
-    loadCategories();
+    // Wait for common.js to be ready
+    waitForCommonFunctions().then(() => {
+        console.log('🔧 Common functions ready, initializing products page...');
+        initializeElements();
+        initializeEventListeners();
+        initializeDebouncedLoadProducts();
+        if (debouncedLoadProducts) {
+            console.log('🚀 Using debounced load products');
+            debouncedLoadProducts();
+        } else {
+            console.log('⚠️ Using fallback load products (no debounce)');
+            loadProducts(); // Fallback if debounce not available
+        }
+        loadCategories();
+    });
 });
+
+// Wait for common functions to be available
+function waitForCommonFunctions() {
+    return new Promise((resolve) => {
+        const checkFunctions = () => {
+            if (window.apiCall && window.showAlert) {
+                console.log('Common functions ready for products page');
+                resolve();
+            } else {
+                console.log('Waiting for common functions...');
+                setTimeout(checkFunctions, 100);
+            }
+        };
+        checkFunctions();
+    });
+}
 
 function initializeElements() {
     productsContainer = document.getElementById('products-container');
@@ -52,58 +85,117 @@ function initializeElements() {
 }
 
 function initializeEventListeners() {
-    // Search functionality
+    console.log('🔧 Initializing event listeners...');
+    
+    // Ensure debounce is available
+    if (!window.debounce) {
+        console.error('❌ window.debounce not available, using fallback');
+        window.debounce = function(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        };
+    }
+    
+    // Search functionality (DEBOUNCED)
     if (searchInput) {
-        searchInput.addEventListener('input', debounce(handleSearch, 500));
+        console.log('🔍 Adding search input listener');
+        searchInput.addEventListener('input', window.debounce(handleSearch, 800));
     }
 
     // Filters form
     if (filtersForm) {
+        console.log('📋 Adding filters form listener');
         filtersForm.addEventListener('submit', handleFiltersSubmit);
     }
 
     // Clear filters button
     const clearFiltersBtn = document.getElementById('clear-filters');
     if (clearFiltersBtn) {
+        console.log('🧹 Adding clear filters listener');
         clearFiltersBtn.addEventListener('click', clearFilters);
     }
 
-    // Sort select
+    // Sort select (DEBOUNCED)
     if (sortSelect) {
-        sortSelect.addEventListener('change', handleSortChange);
+        console.log('📊 Adding sort select listener');
+        sortSelect.addEventListener('change', window.debounce(handleSortChange, 300));
     }
 
-    // Category select
+    // Category select (DEBOUNCED)
     if (categorySelect) {
-        categorySelect.addEventListener('change', handleCategoryChange);
+        console.log('🏷️ Adding category select listener');
+        categorySelect.addEventListener('change', window.debounce(handleCategoryChange, 300));
     }
 
-    // Price inputs
+    // Price inputs (DEBOUNCED)
     if (priceMinInput) {
-        priceMinInput.addEventListener('change', handlePriceChange);
+        console.log('💰 Adding price min input listener');
+        priceMinInput.addEventListener('change', window.debounce(handlePriceChange, 500));
     }
     if (priceMaxInput) {
-        priceMaxInput.addEventListener('change', handlePriceChange);
+        console.log('💰 Adding price max input listener');
+        priceMaxInput.addEventListener('change', window.debounce(handlePriceChange, 500));
     }
 
-    // Estado checkboxes
-    estadoCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', handleEstadoChange);
+    // Estado checkboxes (DEBOUNCED)
+    estadoCheckboxes.forEach((checkbox, index) => {
+        console.log(`☑️ Adding estado checkbox ${index + 1} listener`);
+        checkbox.addEventListener('change', window.debounce(handleEstadoChange, 300));
     });
+    
+    console.log('✅ Event listeners initialized');
 }
 
-// Load products from API
+// DEBOUNCED load products function (DEFERRED INITIALIZATION)
+let debouncedLoadProducts = null;
+
+function initializeDebouncedLoadProducts() {
+    console.log('🔧 Initializing debounced load products...');
+    
+    if (window.debounce && !debouncedLoadProducts) {
+        console.log('✅ Using window.debounce');
+        debouncedLoadProducts = window.debounce(function(page = 1, filters = {}) {
+            console.log('🚀 Debounced loadProducts called with:', { page, filters });
+            loadProducts(page, filters);
+        }, 300);
+    } else if (!window.debounce) {
+        console.warn('⚠️ window.debounce not available, creating fallback');
+        // Create a simple debounce fallback
+        let timeout;
+        debouncedLoadProducts = function(page = 1, filters = {}) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                console.log('🚀 Fallback loadProducts called with:', { page, filters });
+                loadProducts(page, filters);
+            }, 300);
+        };
+    } else {
+        console.log('ℹ️ Debounced load products already initialized');
+    }
+}
+
+// Load products from API (PROTECTED AGAINST MULTIPLE CALLS)
 async function loadProducts(page = 1, filters = {}) {
-    if (isLoading) return;
+    const callId = Math.random().toString(36).substr(2, 9);
+    console.log(`🔄 [${callId}] loadProducts START - page: ${page}, filters:`, filters);
+    
+    if (isLoading) {
+        console.log(`⏸️ [${callId}] Products already loading, skipping...`);
+        return;
+    }
     
     isLoading = true;
     showLoading();
     
     try {
-        console.log('Loading products...', { page, filters });
-        
-        // Small delay to prevent rapid successive calls
-        await new Promise(resolve => setTimeout(resolve, 100));
+        console.log(`📡 [${callId}] Making API call...`);
         
         // Build query parameters
         const params = new URLSearchParams({
@@ -112,42 +204,40 @@ async function loadProducts(page = 1, filters = {}) {
             ...filters
         });
 
-        const response = await fetch(`/api/productos?${params}`);
+        const response = await window.apiCall(`/productos?${params}`);
+        console.log(`✅ [${callId}] Products data received:`, response);
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Products data received:', data);
-        
-        if (data.exito) {
-            displayProducts(data.data.productos);
-            updatePagination(data.data.paginacion);
-            updateResultsInfo(data.data.paginacion, data.data.filtros_aplicados);
+        if (response.exito) {
+            displayProducts(response.data.productos, callId);
+            updatePagination(response.data.paginacion);
+            updateResultsInfo(response.data.paginacion, response.data.filtros_aplicados);
             currentPage = page;
             currentFilters = filters;
         } else {
-            throw new Error(data.mensaje || 'Error loading products');
+            throw new Error(response.mensaje || 'Error loading products');
         }
         
     } catch (error) {
-        console.error('Error loading products:', error);
+        console.error(`❌ [${callId}] Error loading products:`, error);
         showError('Error al cargar los productos: ' + error.message);
     } finally {
         hideLoading();
         isLoading = false;
+        console.log(`🏁 [${callId}] loadProducts END`);
     }
 }
 
-// Display products in the container
-function displayProducts(products) {
+// Display products in the container (PREVENT MULTIPLE RENDERS)
+function displayProducts(products, callId = 'unknown') {
+    console.log(`🎨 [${callId}] displayProducts START - products count: ${products?.length || 0}`);
+    
     if (!productsContainer) {
-        console.error('Products container not found');
+        console.error(`❌ [${callId}] Products container not found`);
         return;
     }
 
     if (!products || products.length === 0) {
+        console.log(`📭 [${callId}] No products to display`);
         productsContainer.innerHTML = `
             <div class="col-12">
                 <div class="alert alert-info text-center">
@@ -159,15 +249,23 @@ function displayProducts(products) {
         return;
     }
 
+    console.log(`🏗️ [${callId}] Building HTML for ${products.length} products...`);
     let html = '';
-    products.forEach(product => {
+    products.forEach((product, index) => {
         html += createProductCard(product);
     });
     
+    // Update DOM once instead of multiple times
+    console.log(`💾 [${callId}] Updating DOM with ${products.length} products...`);
     productsContainer.innerHTML = html;
     
-    // Initialize favorite buttons
-    initializeFavoriteButtons();
+    // Initialize buttons after DOM update
+    setTimeout(() => {
+        console.log(`🔧 [${callId}] Initializing favorite buttons...`);
+        initializeFavoriteButtons();
+    }, 100);
+    
+    console.log(`✅ [${callId}] displayProducts END`);
 }
 
 // Update results info
@@ -184,10 +282,10 @@ function updateResultsInfo(pagination, filters) {
     
     // Add filter info if any filters are applied
     const activeFilters = [];
-    if (filters.categoria_id) activeFilters.push('categoría');
-    if (filters.precio_min || filters.precio_max) activeFilters.push('precio');
-    if (filters.estado) activeFilters.push('estado');
-    if (filters.buscar) activeFilters.push('búsqueda');
+    if (filters?.categoria_id) activeFilters.push('categoría');
+    if (filters?.precio_min || filters?.precio_max) activeFilters.push('precio');
+    if (filters?.estado) activeFilters.push('estado');
+    if (filters?.q) activeFilters.push('búsqueda');
     
     if (activeFilters.length > 0) {
         infoText += ` (filtros: ${activeFilters.join(', ')})`;
@@ -198,12 +296,15 @@ function updateResultsInfo(pagination, filters) {
 
 // Create HTML for a single product card
 function createProductCard(product) {
+    // Use a data URL for placeholder instead of file path to prevent 404 errors
+    const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+    
     const imageUrl = product.imagenes && product.imagenes.length > 0 
         ? product.imagenes[0] 
-        : '/img/placeholder.jpg';
+        : placeholderImage;
     
     const estadoBadgeClass = getEstadoBadgeClass(product.estado);
-    const isLoggedIn = window.user ? true : false;
+    const isLoggedIn = window.currentUser ? true : false;
     
     return `
         <div class="col-md-6 col-lg-4 mb-4">
@@ -213,7 +314,7 @@ function createProductCard(product) {
                          class="card-img-top product-image" 
                          alt="${product.titulo}"
                          style="height: 250px; object-fit: cover;"
-                         onerror="this.src='/img/placeholder.jpg'">
+                         onerror="this.src='${placeholderImage}'">
                     <span class="badge ${estadoBadgeClass} position-absolute top-0 end-0 m-2">
                         ${formatEstado(product.estado)}
                     </span>
@@ -263,12 +364,11 @@ function createProductCard(product) {
 // Load categories for filter dropdown
 async function loadCategories() {
     try {
-        const response = await fetch('/api/categorias');
-        const data = await response.json();
+        const response = await window.apiCall('/categorias');
         
-        if (data.exito && categorySelect) {
+        if (response.exito && categorySelect) {
             let options = '<option value="">Todas las categorías</option>';
-            data.data.categorias.forEach(categoria => {
+            response.data.categorias.forEach(categoria => {
                 options += `<option value="${categoria.categoria_id}">${categoria.nombre}</option>`;
             });
             categorySelect.innerHTML = options;
@@ -278,7 +378,7 @@ async function loadCategories() {
     }
 }
 
-// Event Handlers
+// Event Handlers (ALL DEBOUNCED)
 function handleSearch(event) {
     const searchTerm = event.target.value.trim();
     const filters = { ...currentFilters };
@@ -289,7 +389,11 @@ function handleSearch(event) {
         delete filters.q;
     }
     
-    loadProducts(1, filters);
+    if (debouncedLoadProducts) {
+        debouncedLoadProducts(1, filters);
+    } else {
+        loadProducts(1, filters);
+    }
 }
 
 function handleFiltersSubmit(event) {
@@ -307,7 +411,11 @@ function handleSortChange(event) {
         delete filters.orden;
     }
     
-    loadProducts(1, filters);
+    if (debouncedLoadProducts) {
+        debouncedLoadProducts(1, filters);
+    } else {
+        loadProducts(1, filters);
+    }
 }
 
 function handleCategoryChange(event) {
@@ -320,7 +428,11 @@ function handleCategoryChange(event) {
         delete filters.categoria_id;
     }
     
-    loadProducts(1, filters);
+    if (debouncedLoadProducts) {
+        debouncedLoadProducts(1, filters);
+    } else {
+        loadProducts(1, filters);
+    }
 }
 
 function handlePriceChange() {
@@ -364,7 +476,11 @@ function applyFilters() {
         filters.orden = sortValue;
     }
     
-    loadProducts(1, filters);
+    if (debouncedLoadProducts) {
+        debouncedLoadProducts(1, filters);
+    } else {
+        loadProducts(1, filters);
+    }
 }
 
 function clearFilters() {
@@ -374,7 +490,11 @@ function clearFilters() {
     
     // Clear filters and reload
     currentFilters = {};
-    loadProducts(1, {});
+    if (debouncedLoadProducts) {
+        debouncedLoadProducts(1, {});
+    } else {
+        loadProducts(1, {});
+    }
 }
 
 function updatePagination(paginationData) {
@@ -422,98 +542,101 @@ function updatePagination(paginationData) {
 
 function changePage(page) {
     if (page < 1) return;
-    loadProducts(page, currentFilters);
+    if (debouncedLoadProducts) {
+        debouncedLoadProducts(page, currentFilters);
+    } else {
+        loadProducts(page, currentFilters);
+    }
 }
 
 function initializeFavoriteButtons() {
-    // Add event listeners for favorite buttons
+    // Remove existing event listeners to prevent duplicates
     document.querySelectorAll('.favorite-btn').forEach(btn => {
-        btn.addEventListener('click', toggleFavorite);
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
     });
     
-    // Add event listeners for add to cart buttons
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+    });
+    
+    // Add event listeners for favorite buttons (DEBOUNCED)
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', window.debounce(toggleFavorite, 300));
+    });
+    
+    // Add event listeners for add to cart buttons (DEBOUNCED)
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', window.debounce(function() {
             const productId = this.getAttribute('data-product-id');
-        addToCart(productId);
-        });
+            addToCart(productId);
+        }, 300));
     });
 }
 
 async function toggleFavorite(event) {
-    if (!window.user) {
-        showError('Debes iniciar sesión para agregar favoritos');
+    if (!window.currentUser) {
+        window.showAlert('warning', 'Debes iniciar sesión para agregar favoritos');
         return;
     }
     
     const productId = event.currentTarget.getAttribute('data-product-id');
     
     try {
-        const response = await fetch('/api/favoritos', {
+        const response = await window.apiCall('/favoritos', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
             body: JSON.stringify({ producto_id: productId })
         });
         
-        const data = await response.json();
-        
-        if (data.exito) {
+        if (response.exito) {
             // Toggle heart icon
             const icon = event.currentTarget.querySelector('i');
             if (icon.classList.contains('far')) {
                 icon.classList.remove('far');
                 icon.classList.add('fas');
                 icon.style.color = '#dc3545';
-        } else {
+            } else {
                 icon.classList.remove('fas');
                 icon.classList.add('far');
                 icon.style.color = 'white';
-        }
+            }
         } else {
-            showError(data.mensaje || 'Error al agregar a favoritos');
+            window.showAlert('danger', response.mensaje || 'Error al agregar a favoritos');
         }
     } catch (error) {
         console.error('Error toggling favorite:', error);
-        showError('Error al agregar a favoritos');
+        window.showAlert('danger', 'Error al agregar a favoritos');
     }
 }
 
 async function addToCart(productId) {
-    if (!window.user) {
-        showError('Debes iniciar sesión para agregar al carrito');
+    if (!window.currentUser) {
+        window.showAlert('warning', 'Debes iniciar sesión para agregar al carrito');
         return;
     }
 
     try {
-        const response = await fetch('/api/carrito/items', {
+        const response = await window.apiCall('/carrito/items', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
             body: JSON.stringify({ 
                 producto_id: productId,
                 cantidad: 1
             })
         });
         
-        const data = await response.json();
-        
-        if (data.exito) {
-            showSuccess('Producto agregado al carrito');
+        if (response.exito) {
+            window.showAlert('success', 'Producto agregado al carrito');
             // Update cart count if function exists
-            if (typeof updateCartCount === 'function') {
-                updateCartCount();
+            if (typeof window.updateCartCount === 'function') {
+                window.updateCartCount();
             }
-    } else {
-            showError(data.mensaje || 'Error al agregar al carrito');
+        } else {
+            window.showAlert('danger', response.mensaje || 'Error al agregar al carrito');
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
-        showError('Error al agregar al carrito');
+        window.showAlert('danger', 'Error al agregar al carrito');
     }
 }
 
@@ -521,7 +644,6 @@ function showLoading() {
     if (loadingIndicator) {
         loadingIndicator.style.display = 'block';
     }
-    // Don't replace products container content here - let the API response handle it
 }
 
 function hideLoading() {
@@ -531,31 +653,11 @@ function hideLoading() {
 }
 
 function showError(message) {
-    // Use common.js showAlert function if available
-    if (typeof showAlert === 'function') {
-        showAlert('danger', message);
-    } else {
-        // Fallback: show error in products container
-    if (productsContainer) {
-        productsContainer.innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-danger text-center">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    ${message}
-                </div>
-            </div>
-        `;
-        }
-    }
+    window.showAlert('danger', message);
 }
 
 function showSuccess(message) {
-    // Use common.js showAlert function if available
-    if (typeof showAlert === 'function') {
-        showAlert('success', message);
-    } else {
-        alert(message);
-    }
+    window.showAlert('success', message);
 }
 
 function getEstadoBadgeClass(estado) {
@@ -584,7 +686,7 @@ function formatDate(dateString) {
     if (!dateString) return 'Fecha no disponible';
     
     try {
-    const date = new Date(dateString);
+        const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',

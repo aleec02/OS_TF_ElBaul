@@ -4,6 +4,8 @@
 // Global variables - will be properly initialized after DOM load
 let authToken = null;
 let currentUser = null;
+let isCommonInitialized = false;
+let uiUpdateTimeout = null;
 
 // API base URL
 const API_BASE_URL = '/api';
@@ -36,7 +38,7 @@ async function apiCall(endpoint, options = {}) {
         ...options
     };
     
-    // Add auth token if available
+    // Add auth token if available (use the global authToken, not localStorage directly)
     if (authToken) {
         config.headers['Authorization'] = `Bearer ${authToken}`;
     }
@@ -58,9 +60,13 @@ async function apiCall(endpoint, options = {}) {
 
 // Show alert function
 function showAlert(type, message, container = null) {
-    // Remove existing alerts
-    const existingAlerts = document.querySelectorAll('.auth-alert, .alert');
-    existingAlerts.forEach(alert => alert.remove());
+    // Remove existing alerts with same message to prevent duplicates
+    const existingAlerts = document.querySelectorAll('.auth-alert');
+    existingAlerts.forEach(alert => {
+        if (alert.textContent.includes(message)) {
+            alert.remove();
+        }
+    });
     
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type} alert-dismissible fade show auth-alert`;
@@ -71,14 +77,33 @@ function showAlert(type, message, container = null) {
     `;
     
     // Insert at the top of the container
-    const targetContainer = container || document.querySelector('.card-body') || document.querySelector('.container') || document.body;
+    const targetContainer = container || document.querySelector('#alerts-container') || document.querySelector('.container') || document.body;
     if (targetContainer) {
         targetContainer.insertBefore(alertDiv, targetContainer.firstChild);
     }
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
 }
 
-// Update authentication UI elements
+// Update authentication UI elements (DEBOUNCED)
 function updateAuthUI(userData) {
+    // Clear any pending UI updates
+    if (uiUpdateTimeout) {
+        clearTimeout(uiUpdateTimeout);
+    }
+    
+    // Debounce UI updates to prevent multiple rapid calls
+    uiUpdateTimeout = setTimeout(() => {
+        performAuthUIUpdate(userData);
+    }, 50);
+}
+
+function performAuthUIUpdate(userData) {
     console.log('Updating auth UI with user:', userData?.nombre || 'null');
     
     // Update navbar user info
@@ -91,7 +116,12 @@ function updateAuthUI(userData) {
     if (userData) {
         // User is logged in
         if (userDropdown) {
-            userDropdown.innerHTML = `<i class="fas fa-user-circle me-1"></i>${userData.nombre}`;
+            const userNameSpan = userDropdown.querySelector('.user-name');
+            if (userNameSpan) {
+                userNameSpan.textContent = userData.nombre;
+            } else {
+                userDropdown.innerHTML = `<i class="fas fa-user"></i> <span class="user-name">${userData.nombre}</span>`;
+            }
         }
         
         // Hide login/register links
@@ -115,12 +145,12 @@ function updateAuthUI(userData) {
             if (listItem) listItem.style.display = 'block';
         }
         
-        // Update cart count
-        updateCartCount();
+        // Update cart count (debounced)
+        debounce(updateCartCount, 500)();
     } else {
         // User is not logged in
         if (userDropdown) {
-            userDropdown.innerHTML = `<i class="fas fa-user-circle me-1"></i>Usuario`;
+            userDropdown.innerHTML = `<i class="fas fa-user"></i> Usuario`;
         }
         
         // Show login/register links
@@ -240,8 +270,8 @@ async function logout() {
 // Make logout function globally available
 window.logout = logout;
 
-// Update cart count
-async function updateCartCount() {
+// Update cart count (DEBOUNCED)
+const updateCartCount = debounce(async function() {
     if (!authToken) return;
     
     try {
@@ -262,7 +292,7 @@ async function updateCartCount() {
     } catch (error) {
         console.error('Error updating cart count:', error);
     }
-}
+}, 1000);
 
 // Sync user session with backend
 async function syncUserSession(userData) {
@@ -298,8 +328,11 @@ async function checkAndSyncSession() {
             
             console.log('Session synced successfully for user:', userData.nombre);
             
-            // Update UI
-            updateAuthUI(userData);
+            // Update UI (DEBOUNCED to prevent flickering)
+            setTimeout(() => {
+                updateAuthUI(userData);
+            }, 100);
+            
             return true;
         } catch (error) {
             console.error('Error checking session:', error);
@@ -381,14 +414,20 @@ function setupSearch() {
             e.preventDefault();
             const query = searchInput.value.trim();
             if (query.length >= 2) {
-                window.location.href = `/buscar?q=${encodeURIComponent(query)}`;
+                window.location.href = `/productos?q=${encodeURIComponent(query)}`;
             }
         });
     }
 }
 
-// Initialize common functionality
+// Initialize common functionality (PREVENT MULTIPLE CALLS)
 document.addEventListener('DOMContentLoaded', async function() {
+    if (isCommonInitialized) {
+        console.log('Common.js already initialized, skipping...');
+        return;
+    }
+    
+    isCommonInitialized = true;
     console.log('Common.js loaded - initializing...');
     
     // Initialize auth state first
@@ -413,16 +452,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.syncUserSession = syncUserSession;
     window.formatPrice = formatPrice;
     window.formatDate = formatDate;
+    window.debounce = debounce;
+    window.updateCartCount = updateCartCount;
     
     console.log('Common.js initialization complete');
     
-    // Ensure UI is updated after a short delay to handle any timing issues
+    // Ensure UI is updated after everything is loaded (SINGLE FINAL UPDATE)
     setTimeout(() => {
         if (currentUser) {
             console.log('Final UI update for user:', currentUser.nombre);
             updateAuthUI(currentUser);
         }
-    }, 100);
+    }, 200);
 });
 
 // Export for use in other modules
@@ -439,4 +480,4 @@ window.ElBaulCommon = {
     formatPrice,
     formatDate,
     debounce
-}; 
+};

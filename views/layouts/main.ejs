@@ -114,7 +114,8 @@
                         const product = favorite.producto;
                         
                         // Create product image URL
-                        let imageUrl = '/img/placeholder.jpg';
+                        const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+                        let imageUrl = placeholderImage;
                         if (product.imagenes && product.imagenes.length > 0) {
                             imageUrl = product.imagenes[0];
                         } else if (product.imagen_url) {
@@ -133,7 +134,7 @@
                                     <img src="${imageUrl}" 
                                          class="card-img-top" alt="${product.titulo}" 
                                          style="height: 200px; object-fit: cover;"
-                                         onerror="this.src='/img/placeholder.jpg'">
+                                         onerror="this.src='${placeholderImage}'">
                                     <div class="card-body d-flex flex-column">
                                         <h6 class="card-title">${product.titulo}</h6>
                                         <p class="card-text text-muted small flex-grow-1">${description}</p>

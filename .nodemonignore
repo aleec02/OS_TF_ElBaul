@@ -1,0 +1,10 @@
+# Ignore data files, uploads, logs, and other non-source files
+# This prevents nodemon from restarting unnecessarily
+
+data/*
+public/uploads/*
+public/img/*
+*.log
+*.tmp
+node_modules/*
+docker-entrypoint-initdb.d/* 

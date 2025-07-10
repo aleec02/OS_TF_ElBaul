@@ -10,9 +10,18 @@ let socialCurrentUser = null;
 let currentSort = 'recientes';
 let currentTag = null;
 let userStats = null;
+let socialIsInitialized = false;
+let feedLoadTimeout = null;
+let lastFeedLoadTime = 0;
+let feedLoadThrottle = 1000; // Minimum 1 second between loads
 
-// Initialize social functionality when DOM is ready
+// Initialize social functionality when DOM is ready (PREVENT MULTIPLE CALLS)
 document.addEventListener('DOMContentLoaded', function() {
+    if (socialIsInitialized) {
+        console.log('🎯 Social.js already initialized, skipping...');
+        return;
+    }
+    
     console.log('🎯 Social.js DOMContentLoaded - checking for social/comunidad page...');
     
     // Get current user from window variables
@@ -31,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (feedContainer || activityContainer) {
         console.log('✅ Social page detected, initializing...');
+        socialIsInitialized = true;
         initializeSocialPage();
     } else {
         console.log('❌ Not on social page, skipping initialization');
@@ -94,12 +104,37 @@ function waitForCommonFunctions() {
 // FEED FUNCTIONALITY
 // ========================================
 
-// Load social feed
+// Load social feed (DEBOUNCED AND PROTECTED)
 async function loadFeed(page = 1, append = false) {
+    // Clear any pending load
+    if (feedLoadTimeout) {
+        clearTimeout(feedLoadTimeout);
+    }
+    
+    // Debounce feed loading to prevent multiple rapid calls
+    return new Promise((resolve) => {
+        feedLoadTimeout = setTimeout(async () => {
+            await performFeedLoad(page, append);
+            resolve();
+        }, 100);
+    });
+}
+
+async function performFeedLoad(page = 1, append = false) {
+    const now = Date.now();
+    
+    // Throttle rapid calls
+    if (now - lastFeedLoadTime < feedLoadThrottle) {
+        console.log(`⏸️ Feed load throttled (${now - lastFeedLoadTime}ms < ${feedLoadThrottle}ms)`);
+        return;
+    }
+    
     if (socialIsLoading) {
         console.log('⏸️ Feed already loading, skipping...');
         return;
     }
+    
+    lastFeedLoadTime = now;
     
     try {
         socialIsLoading = true;
@@ -111,7 +146,7 @@ async function loadFeed(page = 1, append = false) {
             return;
         }
         
-        // Show loading state
+        // Show loading state (only if not appending)
         if (!append) {
             feedContainer.innerHTML = `
                 <div class="text-center py-4">
@@ -590,25 +625,26 @@ function createPostHTML(post) {
                     </div>
                 ` : ''}
                 
-                <!-- Related Product -->
+                <!-- Related Product (STABLE RENDERING) -->
                 ${post.producto && post.producto.titulo ? `
-                    <div class="card mt-3 product-card">
+                    <div class="card mt-3 product-card" data-product-id="${post.producto_id}">
                         <div class="card-body p-3">
                             <div class="row align-items-center">
                                 <div class="col-auto">
-                                    <img src="${post.producto.imagenes?.[0] || '/img/placeholder.jpg'}" 
-                                         class="rounded" style="width: 60px; height: 60px; object-fit: cover;"
-                                         onerror="this.src='/img/placeholder.jpg';">
+                                    <img src="${post.producto.imagenes?.[0] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM2Yzc1N2QiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZW48L3RleHQ+PC9zdmc+'}" 
+                                         class="rounded product-image" style="width: 60px; height: 60px; object-fit: cover;"
+                                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM2Yzc1N2QiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZW48L3RleHQ+PC9zdmc+';"
+                                         loading="lazy">
                                 </div>
                                 <div class="col">
-                                    <h6 class="mb-1">${post.producto.titulo}</h6>
-                                    <span class="text-success h6">S/ ${post.producto.precio}</span>
-                                    <span class="badge bg-secondary ms-2">${post.producto.estado || 'Usado'}</span>
+                                    <h6 class="mb-1 product-title">${post.producto.titulo}</h6>
+                                    <span class="text-success h6 product-price">S/ ${post.producto.precio}</span>
+                                    <span class="badge bg-secondary ms-2 product-status">${post.producto.estado || 'Usado'}</span>
                                     <br>
-                                    <small class="text-muted">Código: ${post.producto_id}</small>
+                                    <small class="text-muted product-code">Código: ${post.producto_id}</small>
                                 </div>
                                 <div class="col-auto">
-                                    <a href="/productos/${post.producto_id}" class="btn btn-sm btn-outline-primary">Ver Producto</a>
+                                    <a href="/productos/${post.producto_id}" class="btn btn-sm btn-outline-primary product-link">Ver Producto</a>
                                 </div>
                             </div>
                         </div>
@@ -1050,12 +1086,23 @@ async function loadActivity() {
 function setupInfiniteScroll() {
     console.log('🔄 Setting up infinite scroll...');
     
+    let scrollTimeout = null;
+    
     window.addEventListener('scroll', () => {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-            if (!socialIsLoading && currentSort) {
-                loadFeed(socialCurrentPage + 1, true);
-            }
+        // Clear any pending scroll event
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
         }
+        
+        // Throttle scroll events
+        scrollTimeout = setTimeout(() => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                if (!socialIsLoading && currentSort && !socialIsLoading) {
+                    console.log('📜 Infinite scroll triggered, loading page:', socialCurrentPage + 1);
+                    loadFeed(socialCurrentPage + 1, true);
+                }
+            }
+        }, 200); // 200ms throttle
     });
 }
 

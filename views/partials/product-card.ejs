@@ -1,6 +1,6 @@
 <div class="card product-card h-100">
     <div class="position-relative">
-        <img src="<%= product.imagenes && product.imagenes.length > 0 ? product.imagenes[0] : '/img/placeholder.jpg' %>" 
+        <img src="<%= product.imagenes && product.imagenes.length > 0 ? product.imagenes[0] : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==' %>" 
              class="card-img-top product-image" alt="<%= product.titulo %>">
         <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-2 favorite-btn" 
                 data-product-id="<%= product.producto_id %>" onclick="toggleFavorite('<%= product.producto_id %>')">
