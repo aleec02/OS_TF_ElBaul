@@ -78,6 +78,13 @@ router.get("/buscar", (req, res) => {
 });
 
 // User protected pages (require authentication)
+router.get("/dashboard", verificarAuthFrontend, (req, res) => {
+    res.render('pages/user/dashboard', {
+        title: 'Dashboard - ElBaul',
+        page: 'dashboard'
+    });
+});
+
 router.get("/perfil", verificarAuthFrontend, (req, res) => {
     res.render('pages/profile/index', {
         title: 'Mi Perfil - ElBaul',

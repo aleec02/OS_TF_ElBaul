@@ -1,174 +1,156 @@
-<!-- User Profile Page -->
-<section class="py-5">
+<!-- Profile Page -->
+<section class="py-4">
     <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-1">
+                            <i class="fas fa-user-edit me-2 text-primary"></i>Mi Perfil
+                        </h1>
+                        <p class="text-muted mb-0">Gestiona tu información personal</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="/dashboard" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert container -->
+        <div id="alerts-container"></div>
+
         <div class="row">
-            <!-- Profile Header -->
-            <div class="col-12 mb-4">
-                <div class="card shadow-lg border-0">
-                    <div class="card-body p-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 text-center">
-                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
-                                    <i class="fas fa-user fa-3x"></i>
+            <!-- Profile Form -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>Información Personal
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="profile-form">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">Nombre *</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                           value="<%= user.nombre %>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellido" class="form-label">Apellido *</label>
+                                    <input type="text" class="form-control" id="apellido" name="apellido" 
+                                           value="<%= user.apellido %>" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <h2 class="mb-2"><%= user.nombre %> <%= user.apellido %></h2>
-                                <p class="text-muted mb-1">
-                                    <i class="fas fa-envelope me-2"></i><%= user.email %>
-                                </p>
-                                <% if (user.telefono) { %>
-                                    <p class="text-muted mb-1">
-                                        <i class="fas fa-phone me-2"></i><%= user.telefono %>
-                                    </p>
-                                <% } %>
-                                <% if (user.direccion) { %>
-                                    <p class="text-muted mb-1">
-                                        <i class="fas fa-map-marker-alt me-2"></i><%= user.direccion %>
-                                    </p>
-                                <% } %>
-                                <p class="text-muted mb-0">
-                                    <i class="fas fa-calendar me-2"></i>Miembro desde <%= new Date(user.fecha_registro).toLocaleDateString('es-PE') %>
-                                </p>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="<%= user.email %>" required readonly>
+                                <div class="form-text">El email no se puede cambiar</div>
                             </div>
-                            <div class="col-md-3 text-end">
-                                <a href="/perfil/editar" class="btn btn-outline-primary">
-                                    <i class="fas fa-edit me-2"></i>Editar Perfil
-                                </a>
+                            
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <textarea class="form-control" id="direccion" name="direccion" rows="3"
+                                          placeholder="Ingresa tu dirección completa"><%= user.direccion || '' %></textarea>
                             </div>
-                        </div>
+                            
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                       value="<%= user.telefono || '' %>" placeholder="+51 999 999 999">
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-outline-secondary me-md-2" onclick="resetForm()">
+                                    <i class="fas fa-undo me-2"></i>Restaurar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            
-            <!-- Quick Stats -->
-            <div class="col-12 mb-4">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <div class="card bg-primary text-white">
-                            <div class="card-body text-center">
-                                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-                                <h4 class="mb-0" id="orders-count">-</h4>
-                                <small>Órdenes</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-success text-white">
-                            <div class="card-body text-center">
-                                <i class="fas fa-heart fa-2x mb-2"></i>
-                                <h4 class="mb-0" id="favorites-count">-</h4>
-                                <small>Favoritos</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-warning text-white">
-                            <div class="card-body text-center">
-                                <i class="fas fa-star fa-2x mb-2"></i>
-                                <h4 class="mb-0" id="reviews-count">-</h4>
-                                <small>Reseñas</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-info text-white">
-                            <div class="card-body text-center">
-                                <i class="fas fa-users fa-2x mb-2"></i>
-                                <h4 class="mb-0" id="posts-count">-</h4>
-                                <small>Publicaciones</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="col-lg-8">
-                <!-- Recent Orders -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-light">
+
+            <!-- Change Password -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-list me-2"></i>Órdenes Recientes
+                            <i class="fas fa-lock me-2"></i>Cambiar Contraseña
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div id="recent-orders">
-                            <div class="text-center py-3">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
+                        <form id="password-form">
+                            <div class="mb-3">
+                                <label for="contrasena_actual" class="form-label">Contraseña Actual *</label>
+                                <input type="password" class="form-control" id="contrasena_actual" name="contrasena_actual" required>
                             </div>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a href="/mis-ordenes" class="btn btn-outline-primary">Ver Todas las Órdenes</a>
-                        </div>
+                            
+                            <div class="mb-3">
+                                <label for="nueva_contrasena" class="form-label">Nueva Contraseña *</label>
+                                <input type="password" class="form-control" id="nueva_contrasena" name="nueva_contrasena" required>
+                                <div class="form-text">Mínimo 6 caracteres</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="confirmar_contrasena" class="form-label">Confirmar Nueva Contraseña *</label>
+                                <input type="password" class="form-control" id="confirmar_contrasena" name="confirmar_contrasena" required>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-key me-2"></i>Cambiar Contraseña
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                
-                <!-- Recent Reviews -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-light">
+
+                <!-- Account Info -->
+                <div class="card mt-4">
+                    <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-star me-2"></i>Mis Reseñas Recientes
+                            <i class="fas fa-info-circle me-2"></i>Información de Cuenta
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div id="recent-reviews">
-                            <div class="text-center py-3">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <strong>ID de Usuario:</strong>
+                            <p class="mb-1 text-muted"><%= user.usuario_id %></p>
                         </div>
-                        <div class="text-center mt-3">
-                            <a href="/mis-resenas" class="btn btn-outline-primary">Ver Todas las Reseñas</a>
+                        <div class="mb-3">
+                            <strong>Rol:</strong>
+                            <p class="mb-1">
+                                <span class="badge bg-<%= user.rol === 'admin' ? 'danger' : 'primary' %>">
+                                    <%= user.rol === 'admin' ? 'Administrador' : 'Cliente' %>
+                                </span>
+                            </p>
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Sidebar -->
-            <div class="col-lg-4">
-                <!-- Quick Actions -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">
-                            <i class="fas fa-bolt me-2"></i>Acciones Rápidas
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="/carrito" class="btn btn-outline-primary">
-                                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
-                            </a>
-                            <a href="/favoritos" class="btn btn-outline-danger">
-                                <i class="fas fa-heart me-2"></i>Mis Favoritos
-                            </a>
-                            <a href="/comunidad" class="btn btn-outline-success">
-                                <i class="fas fa-users me-2"></i>Comunidad
-                            </a>
-                            <a href="/perfil/seguridad" class="btn btn-outline-warning">
-                                <i class="fas fa-shield-alt me-2"></i>Seguridad
-                            </a>
+                        <div class="mb-3">
+                            <strong>Estado:</strong>
+                            <p class="mb-1">
+                                <span class="badge bg-<%= user.estado ? 'success' : 'danger' %>">
+                                    <%= user.estado ? 'Activo' : 'Inactivo' %>
+                                </span>
+                            </p>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Activity -->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">
-                            <i class="fas fa-clock me-2"></i>Actividad Reciente
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="recent-activity">
-                            <div class="text-center py-3">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
-                            </div>
+                        <div class="mb-0">
+                            <strong>Fecha de Registro:</strong>
+                            <p class="mb-0 text-muted"><%= new Date(user.fecha_registro).toLocaleDateString('es-PE', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) %></p>
                         </div>
                     </div>
                 </div>
@@ -179,101 +161,141 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    loadUserStats();
-    loadRecentOrders();
-    loadRecentReviews();
-    loadRecentActivity();
+    console.log('Profile page loaded');
+    
+    // Wait for common functions to be ready
+    function waitForCommonFunctions() {
+        return new Promise((resolve) => {
+            const checkFunctions = () => {
+                if (window.apiCall && window.showAlert) {
+                    console.log('Common functions ready, initializing profile page');
+                    resolve();
+                } else {
+                    console.log('Waiting for common functions...');
+                    setTimeout(checkFunctions, 100);
+                }
+            };
+            checkFunctions();
+        });
+    }
+    
+    waitForCommonFunctions().then(() => {
+        initializeProfilePage();
+    });
 });
 
-async function loadUserStats() {
-    try {
-        // Load orders count
-        const ordersResponse = await fetch('/api/ordenes?limit=1');
-        const ordersData = await ordersResponse.json();
-        if (ordersData.exito) {
-            document.getElementById('orders-count').textContent = ordersData.data.paginacion?.total || 0;
-        }
-        
-        // Load favorites count
-        const favoritesResponse = await fetch('/api/favoritos');
-        const favoritesData = await favoritesResponse.json();
-        if (favoritesData.exito) {
-            document.getElementById('favorites-count').textContent = favoritesData.data.favoritos?.length || 0;
-        }
-        
-        // Load reviews count (this would need a reviews endpoint)
-        document.getElementById('reviews-count').textContent = '0';
-        
-        // Load posts count (this would need a posts endpoint)
-        document.getElementById('posts-count').textContent = '0';
-        
-    } catch (error) {
-        console.error('Error loading user stats:', error);
-    }
+function initializeProfilePage() {
+    // Profile form submission
+    document.getElementById('profile-form').addEventListener('submit', handleProfileSubmit);
+    
+    // Password form submission
+    document.getElementById('password-form').addEventListener('submit', handlePasswordSubmit);
 }
 
-async function loadRecentOrders() {
+async function handleProfileSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const profileData = {
+        nombre: formData.get('nombre'),
+        apellido: formData.get('apellido'),
+        direccion: formData.get('direccion'),
+        telefono: formData.get('telefono')
+    };
+    
+    // Validation
+    if (!profileData.nombre || !profileData.apellido) {
+        window.showAlert('danger', 'Nombre y apellido son requeridos');
+        return;
+    }
+    
     try {
-        const response = await fetch('/api/ordenes?limit=3');
-        const data = await response.json();
+        console.log('Updating profile:', profileData);
         
-        const container = document.getElementById('recent-orders');
+        const response = await window.apiCall('/usuarios/perfil', {
+            method: 'PUT',
+            body: JSON.stringify(profileData)
+        });
         
-        if (data.exito && data.data.ordenes && data.data.ordenes.length > 0) {
-            let html = '';
-            data.data.ordenes.forEach(order => {
-                html += `
-                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                        <div>
-                            <strong>Orden #${order.orden_id}</strong>
-                            <br>
-                            <small class="text-muted">${new Date(order.fecha_creacion).toLocaleDateString('es-PE')}</small>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-${getStatusColor(order.estado)}">${order.estado}</span>
-                            <br>
-                            <small class="text-muted">S/ ${order.total}</small>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
+        if (response.exito) {
+            window.showAlert('success', 'Perfil actualizado exitosamente');
+            
+            // Update the user data in localStorage
+            if (window.currentUser) {
+                window.currentUser = { ...window.currentUser, ...profileData };
+                localStorage.setItem('user', JSON.stringify(window.currentUser));
+            }
         } else {
-            container.innerHTML = '<p class="text-muted text-center">No hay órdenes recientes</p>';
+            window.showAlert('danger', response.mensaje || 'Error al actualizar perfil');
         }
     } catch (error) {
-        console.error('Error loading recent orders:', error);
-        document.getElementById('recent-orders').innerHTML = '<p class="text-danger text-center">Error al cargar órdenes</p>';
+        console.error('Error updating profile:', error);
+        window.showAlert('danger', 'Error de conexión al actualizar perfil');
     }
 }
 
-async function loadRecentReviews() {
+async function handlePasswordSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const passwordData = {
+        contrasena_actual: formData.get('contrasena_actual'),
+        nueva_contrasena: formData.get('nueva_contrasena'),
+        confirmar_contrasena: formData.get('confirmar_contrasena')
+    };
+    
+    // Validation
+    if (!passwordData.contrasena_actual || !passwordData.nueva_contrasena || !passwordData.confirmar_contrasena) {
+        window.showAlert('danger', 'Todos los campos son requeridos');
+        return;
+    }
+    
+    if (passwordData.nueva_contrasena.length < 6) {
+        window.showAlert('danger', 'La nueva contraseña debe tener al menos 6 caracteres');
+        return;
+    }
+    
+    if (passwordData.nueva_contrasena !== passwordData.confirmar_contrasena) {
+        window.showAlert('danger', 'Las contraseñas no coinciden');
+        return;
+    }
+    
     try {
-        // This would need a reviews endpoint
-        document.getElementById('recent-reviews').innerHTML = '<p class="text-muted text-center">No hay reseñas recientes</p>';
+        console.log('Changing password...');
+        
+        const response = await window.apiCall('/usuarios/cambiar-contrasena', {
+            method: 'PUT',
+            body: JSON.stringify({
+                contrasena_actual: passwordData.contrasena_actual,
+                nueva_contrasena: passwordData.nueva_contrasena
+            })
+        });
+        
+        if (response.exito) {
+            window.showAlert('success', 'Contraseña cambiada exitosamente');
+            
+            // Clear the password form
+            event.target.reset();
+        } else {
+            window.showAlert('danger', response.mensaje || 'Error al cambiar contraseña');
+        }
     } catch (error) {
-        console.error('Error loading recent reviews:', error);
-        document.getElementById('recent-reviews').innerHTML = '<p class="text-danger text-center">Error al cargar reseñas</p>';
+        console.error('Error changing password:', error);
+        window.showAlert('danger', 'Error de conexión al cambiar contraseña');
     }
 }
 
-async function loadRecentActivity() {
-    try {
-        // This would need an activity endpoint
-        document.getElementById('recent-activity').innerHTML = '<p class="text-muted text-center">No hay actividad reciente</p>';
-    } catch (error) {
-        console.error('Error loading recent activity:', error);
-        document.getElementById('recent-activity').innerHTML = '<p class="text-danger text-center">Error al cargar actividad</p>';
-    }
-}
-
-function getStatusColor(status) {
-    switch (status) {
-        case 'completada': return 'success';
-        case 'en_proceso': return 'warning';
-        case 'cancelada': return 'danger';
-        case 'pendiente': return 'info';
-        default: return 'secondary';
+function resetForm() {
+    if (confirm('¿Estás seguro de que quieres restaurar los valores originales?')) {
+        document.getElementById('profile-form').reset();
+        
+        // Restore original values
+        document.getElementById('nombre').value = '<%= user.nombre %>';
+        document.getElementById('apellido').value = '<%= user.apellido %>';
+        document.getElementById('direccion').value = '<%= user.direccion || '' %>';
+        document.getElementById('telefono').value = '<%= user.telefono || '' %>';
+        
+        window.showAlert('info', 'Formulario restaurado a los valores originales');
     }
 }
 </script> 
