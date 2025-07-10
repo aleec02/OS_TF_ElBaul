@@ -247,6 +247,11 @@
         <script src="/js/order-detail.js"></script>
     <% } %>
     
+    <% if (locals.page === 'orders') { %>
+        <script>console.log('📋 Loading orders.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/orders.js"></script>
+    <% } %>
+    
     <!-- DEBUG: List all loaded scripts -->
     <script>
         console.log('🔍 All scripts loaded for page:', '<%= locals.page || "undefined" %>');
