@@ -566,10 +566,10 @@ function initializeFavoriteButtons() {
         btn.addEventListener('click', window.debounce(toggleFavorite, 300));
     });
     
-    // Add event listeners for add to cart buttons (DEBOUNCED)
+    // Add event listeners for add to cart buttons (DEBOUNCED, FIXED)
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', window.debounce(function() {
-            const productId = this.getAttribute('data-product-id');
+        const productId = btn.getAttribute('data-product-id');
+        btn.addEventListener('click', window.debounce(() => {
             addToCart(productId);
         }, 300));
     });

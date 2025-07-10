@@ -9,11 +9,15 @@ const ModeloInventario = require("../models/inventario.model");
  */
 const obtenerCarrito = async (req, res) => {
     try {
+        console.log('🔍 Looking for cart for user:', req.usuario.usuario_id);
+        
         // Buscar carrito activo del usuario
         let carrito = await ModeloCarrito.findOne({
             usuario_id: req.usuario.usuario_id,
             estado: "activo"
         });
+        
+        console.log('🔍 Cart found:', carrito ? carrito.carrito_id : 'null');
         
         if (!carrito) {
             return res.json({
@@ -28,6 +32,8 @@ const obtenerCarrito = async (req, res) => {
             });
         }
         
+        console.log('🔍 Looking for cart items with carrito_id:', carrito.carrito_id);
+        
         // Obtener items del carrito con información del producto
         const items = await ModeloItemCarrito.aggregate([
             { $match: { carrito_id: carrito.carrito_id } },
@@ -41,6 +47,25 @@ const obtenerCarrito = async (req, res) => {
             },
             { $unwind: "$producto" },
             {
+                $addFields: {
+                    // Ensure precio_unitario and subtotal exist, calculate if missing
+                    precio_unitario: {
+                        $cond: {
+                            if: { $and: [{ $ne: ["$precio_unitario", null] }, { $ne: ["$precio_unitario", 0] }] },
+                            then: "$precio_unitario",
+                            else: "$producto.precio"
+                        }
+                    },
+                    subtotal: {
+                        $cond: {
+                            if: { $and: [{ $ne: ["$subtotal", null] }, { $ne: ["$subtotal", 0] }] },
+                            then: "$subtotal",
+                            else: { $multiply: ["$cantidad", "$producto.precio"] }
+                        }
+                    }
+                }
+            },
+            {
                 $project: {
                     item_carrito_id: 1,
                     producto_id: 1,
@@ -52,14 +77,18 @@ const obtenerCarrito = async (req, res) => {
                     "producto.precio": 1,
                     "producto.estado": 1,
                     "producto.marca": 1,
-                    "producto.activo": 1
+                    "producto.activo": 1,
+                    "producto.imagenes": 1
                 }
             }
         ]);
         
+        console.log('Cart items found:', items.length);
+        console.log('Cart items:', items);
+        
         // Calcular totales
-        const totalItems = items.reduce((total, item) => total + item.cantidad, 0);
-        const totalPrecio = items.reduce((total, item) => total + item.subtotal, 0);
+        const totalItems = items.reduce((total, item) => total + (item.cantidad || 0), 0);
+        const totalPrecio = items.reduce((total, item) => total + (item.subtotal || 0), 0);
         
         res.json({
             exito: true,
@@ -88,6 +117,9 @@ const obtenerCarrito = async (req, res) => {
  */
 const agregarItemCarrito = async (req, res) => {
     try {
+        console.log('🛒 Adding item to cart for user:', req.usuario.usuario_id);
+        console.log('🛒 Request body:', req.body);
+        
         const { producto_id, cantidad = 1 } = req.body;
         
         if (!producto_id) {
@@ -115,14 +147,19 @@ const agregarItemCarrito = async (req, res) => {
             });
         }
         
-        // Verificar stock disponible
+        // Verificar stock disponible (solo si existe inventario)
         const inventario = await ModeloInventario.findOne({ producto_id });
-        if (inventario && inventario.cantidad_disponible < cantidad) {
-            return res.status(400).json({
-                exito: false,
-                mensaje: `Stock insuficiente. Disponible: ${inventario.cantidad_disponible}`,
-                codigo: "INSUFFICIENT_STOCK"
-            });
+        if (inventario) {
+            console.log(`🛒 Stock check for ${producto_id}: available=${inventario.cantidad_disponible}, requested=${cantidad}`);
+            if (inventario.cantidad_disponible < cantidad) {
+                return res.status(400).json({
+                    exito: false,
+                    mensaje: `Stock insuficiente. Disponible: ${inventario.cantidad_disponible}`,
+                    codigo: "INSUFFICIENT_STOCK"
+                });
+            }
+        } else {
+            console.log(`🛒 No inventory record found for ${producto_id}, allowing purchase`);
         }
         
         // Buscar o crear carrito activo
@@ -131,11 +168,14 @@ const agregarItemCarrito = async (req, res) => {
             estado: "activo"
         });
         
+        console.log('🛒 Existing cart found:', carrito ? carrito.carrito_id : 'null');
+        
         if (!carrito) {
             carrito = new ModeloCarrito({
                 usuario_id: req.usuario.usuario_id
             });
             await carrito.save();
+            console.log('🛒 New cart created:', carrito.carrito_id);
         }
         
         // Verificar si el producto ya está en el carrito
@@ -145,6 +185,8 @@ const agregarItemCarrito = async (req, res) => {
         });
         
         if (itemExistente) {
+            console.log('🛒 Updating existing item:', itemExistente.item_carrito_id);
+            
             // Actualizar cantidad
             const nuevaCantidad = itemExistente.cantidad + parseInt(cantidad);
             
@@ -161,6 +203,8 @@ const agregarItemCarrito = async (req, res) => {
             itemExistente.precio_unitario = producto.precio;
             await itemExistente.save();
             
+            console.log('🛒 Item updated successfully');
+            
             res.json({
                 exito: true,
                 mensaje: "Cantidad actualizada en el carrito",
@@ -169,6 +213,8 @@ const agregarItemCarrito = async (req, res) => {
                 }
             });
         } else {
+            console.log('🛒 Creating new item for cart:', carrito.carrito_id);
+            
             // Crear nuevo item
             const nuevoItem = new ModeloItemCarrito({
                 carrito_id: carrito.carrito_id,
@@ -178,6 +224,8 @@ const agregarItemCarrito = async (req, res) => {
             });
             
             await nuevoItem.save();
+            
+            console.log('🛒 New item created:', nuevoItem.item_carrito_id);
             
             res.status(201).json({
                 exito: true,
@@ -244,14 +292,19 @@ const actualizarItemCarrito = async (req, res) => {
             });
         }
         
-        // Verificar stock disponible
+        // Verificar stock disponible (solo si existe inventario)
         const inventario = await ModeloInventario.findOne({ producto_id: item.producto_id });
-        if (inventario && inventario.cantidad_disponible < cantidad) {
-            return res.status(400).json({
-                exito: false,
-                mensaje: `Stock insuficiente. Disponible: ${inventario.cantidad_disponible}`,
-                codigo: "INSUFFICIENT_STOCK"
-            });
+        if (inventario) {
+            console.log(`🛒 Stock check for ${item.producto_id}: available=${inventario.cantidad_disponible}, requested=${cantidad}`);
+            if (inventario.cantidad_disponible < cantidad) {
+                return res.status(400).json({
+                    exito: false,
+                    mensaje: `Stock insuficiente. Disponible: ${inventario.cantidad_disponible}`,
+                    codigo: "INSUFFICIENT_STOCK"
+                });
+            }
+        } else {
+            console.log(`🛒 No inventory record found for ${item.producto_id}, allowing update`);
         }
         
         // Actualizar item

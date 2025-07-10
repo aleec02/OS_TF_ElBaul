@@ -71,6 +71,10 @@
         <script>console.log('🛍️ Loading products.js for page:', '<%= locals.page %>');</script>
         <script src="/js/products.js"></script>
     <% } %>
+    <% if (locals.page === 'cart') { %>
+        <script>console.log('🛒 Loading cart.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/cart.js"></script>
+    <% } %>
     
     <% if (locals.page === 'favorites') { %>
         <script>console.log('❤️ Loading favorites functionality inline');</script>
@@ -230,63 +234,7 @@
     <% } %>
     
     <% if (locals.page === 'cart') { %>
-        <script>console.log('🛒 Loading cart functionality inline');</script>
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Cart page loaded');
-            
-            // Wait for common functions to be ready
-            function waitForCommonFunctions() {
-                return new Promise((resolve) => {
-                    const checkFunctions = () => {
-                        if (window.apiCall && window.showAlert) {
-                            console.log('Common functions ready, loading cart');
-                            resolve();
-                        } else {
-                            console.log('Waiting for common functions...');
-                            setTimeout(checkFunctions, 100);
-                        }
-                    };
-                    checkFunctions();
-                });
-            }
-            
-            waitForCommonFunctions().then(() => {
-                loadCart();
-            });
-        });
-
-        async function loadCart() {
-            try {
-                console.log('Loading cart...');
-                
-                const response = await window.apiCall('/carrito');
-                console.log('Cart response:', response);
-                
-                const container = document.getElementById('cart-container');
-                
-                if (response.exito && response.data.items && response.data.items.length > 0) {
-                    // Cart has items - show detailed view (implement full cart HTML here)
-                    container.innerHTML = '<div class="alert alert-success">Carrito cargado con ' + response.data.items.length + ' items</div>';
-                } else {
-                    container.innerHTML = `
-                        <div class="text-center py-5">
-                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                            <h4 class="text-muted">Tu carrito está vacío</h4>
-                            <p class="text-muted">¡Agrega productos para comenzar tu compra!</p>
-                            <a href="/productos" class="btn btn-primary">
-                                <i class="fas fa-shopping-bag me-2"></i>Explorar Productos
-                            </a>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error loading cart:', error);
-                const container = document.getElementById('cart-container');
-                container.innerHTML = '<div class="alert alert-danger">Error al cargar carrito: ' + error.message + '</div>';
-            }
-        }
-        </script>
+        <script>console.log('🛒 Cart page - using template functionality');</script>
     <% } %>
     
     <!-- DEBUG: List all loaded scripts -->

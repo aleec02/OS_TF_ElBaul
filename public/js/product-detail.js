@@ -384,16 +384,37 @@ async function addToCart() {
     const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
     const addToCartBtn = document.getElementById('add-to-cart-btn');
 
+    // Check if user is logged in
+    if (!window.currentUser) {
+        showNotification('Debes iniciar sesión para agregar al carrito', 'warning');
+        return;
+    }
+
     try {
         if (addToCartBtn) {
             addToCartBtn.disabled = true;
             addToCartBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
         }
 
-        // Simulate API call for now
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Call the real API
+        const response = await window.apiCall('/carrito/items', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                producto_id: currentProduct.producto_id,
+                cantidad: quantity
+            })
+        });
         
-        showNotification(`${currentProduct.titulo} agregado al carrito (${quantity} unidad${quantity > 1 ? 's' : ''})`, 'success');
+        if (response.exito) {
+            showNotification(`${currentProduct.titulo} agregado al carrito (${quantity} unidad${quantity > 1 ? 's' : ''})`, 'success');
+            
+            // Update cart count if function exists
+            if (typeof window.updateCartCount === 'function') {
+                window.updateCartCount();
+            }
+        } else {
+            showNotification(response.mensaje || 'Error al agregar al carrito', 'error');
+        }
 
     } catch (error) {
         console.error('Error adding to cart:', error);
@@ -411,21 +432,43 @@ async function toggleFavorite() {
     const favoriteBtn = document.getElementById('favorite-btn');
     if (!favoriteBtn) return;
 
+    // Check if user is logged in
+    if (!window.currentUser) {
+        showNotification('Debes iniciar sesión para agregar favoritos', 'warning');
+        return;
+    }
+
     const icon = favoriteBtn.querySelector('i');
     const isFavorited = icon.classList.contains('fas');
 
     try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-
         if (isFavorited) {
-            icon.classList.replace('fas', 'far');
-            favoriteBtn.classList.replace('btn-danger', 'btn-outline-danger');
-            showNotification('Producto removido de favoritos', 'info');
+            // Remove from favorites
+            const response = await window.apiCall(`/favoritos/producto/${currentProduct.producto_id}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.exito) {
+                icon.classList.replace('fas', 'far');
+                favoriteBtn.classList.replace('btn-danger', 'btn-outline-danger');
+                showNotification('Producto removido de favoritos', 'info');
+            } else {
+                showNotification(response.mensaje || 'Error al remover de favoritos', 'error');
+            }
         } else {
-            icon.classList.replace('far', 'fas');
-            favoriteBtn.classList.replace('btn-outline-danger', 'btn-danger');
-            showNotification('Producto agregado a favoritos', 'success');
+            // Add to favorites
+            const response = await window.apiCall('/favoritos', {
+                method: 'POST',
+                body: JSON.stringify({ producto_id: currentProduct.producto_id })
+            });
+            
+            if (response.exito) {
+                icon.classList.replace('far', 'fas');
+                favoriteBtn.classList.replace('btn-outline-danger', 'btn-danger');
+                showNotification('Producto agregado a favoritos', 'success');
+            } else {
+                showNotification(response.mensaje || 'Error al agregar a favoritos', 'error');
+            }
         }
     } catch (error) {
         console.error('Error toggling favorite:', error);
