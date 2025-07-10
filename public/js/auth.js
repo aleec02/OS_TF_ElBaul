@@ -224,7 +224,7 @@ function initializeLoginForm() {
                     window.showAlert('success', '¡Bienvenido! Redirigiendo...');
                     
                     setTimeout(() => {
-                        window.location.href = '/perfil';
+                        window.location.href = '/dashboard';
                     }, 1500);
                 } else {
                     throw new Error(response.mensaje || 'Error al iniciar sesión');
