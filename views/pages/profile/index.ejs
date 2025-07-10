@@ -33,7 +33,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form id="profile-form">
+                        <form id="profile-form" onsubmit="return false;">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nombre" class="form-label">Nombre *</label>
@@ -70,7 +70,7 @@
                                 <button type="button" class="btn btn-outline-secondary me-md-2" onclick="resetForm()">
                                     <i class="fas fa-undo me-2"></i>Restaurar
                                 </button>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="button" class="btn btn-primary" onclick="handleProfileSubmit()">
                                     <i class="fas fa-save me-2"></i>Guardar Cambios
                                 </button>
                             </div>
@@ -88,7 +88,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form id="password-form">
+                        <form id="password-form" onsubmit="return false;">
                             <div class="mb-3">
                                 <label for="contrasena_actual" class="form-label">Contraseña Actual *</label>
                                 <input type="password" class="form-control" id="contrasena_actual" name="contrasena_actual" required>
@@ -106,7 +106,7 @@
                             </div>
                             
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-warning">
+                                <button type="button" class="btn btn-warning" onclick="handlePasswordSubmit()">
                                     <i class="fas fa-key me-2"></i>Cambiar Contraseña
                                 </button>
                             </div>
@@ -185,22 +185,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeProfilePage() {
-    // Profile form submission
-    document.getElementById('profile-form').addEventListener('submit', handleProfileSubmit);
-    
-    // Password form submission
-    document.getElementById('password-form').addEventListener('submit', handlePasswordSubmit);
+    // Forms are now handled by onclick buttons, no need for event listeners
+    console.log('Profile page initialized');
 }
 
-async function handleProfileSubmit(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
+async function handleProfileSubmit() {
     const profileData = {
-        nombre: formData.get('nombre'),
-        apellido: formData.get('apellido'),
-        direccion: formData.get('direccion'),
-        telefono: formData.get('telefono')
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        direccion: document.getElementById('direccion').value,
+        telefono: document.getElementById('telefono').value
     };
     
     // Validation
@@ -234,14 +228,11 @@ async function handleProfileSubmit(event) {
     }
 }
 
-async function handlePasswordSubmit(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
+async function handlePasswordSubmit() {
     const passwordData = {
-        contrasena_actual: formData.get('contrasena_actual'),
-        nueva_contrasena: formData.get('nueva_contrasena'),
-        confirmar_contrasena: formData.get('confirmar_contrasena')
+        contrasena_actual: document.getElementById('contrasena_actual').value,
+        contrasena_nueva: document.getElementById('nueva_contrasena').value,
+        confirmar_contrasena: document.getElementById('confirmar_contrasena').value
     };
     
     // Validation
@@ -267,7 +258,7 @@ async function handlePasswordSubmit(event) {
             method: 'PUT',
             body: JSON.stringify({
                 contrasena_actual: passwordData.contrasena_actual,
-                nueva_contrasena: passwordData.nueva_contrasena
+                contrasena_nueva: passwordData.contrasena_nueva
             })
         });
         
@@ -275,7 +266,7 @@ async function handlePasswordSubmit(event) {
             window.showAlert('success', 'Contraseña cambiada exitosamente');
             
             // Clear the password form
-            event.target.reset();
+            document.getElementById('password-form').reset();
         } else {
             window.showAlert('danger', response.mensaje || 'Error al cambiar contraseña');
         }
