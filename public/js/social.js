@@ -925,6 +925,13 @@ function createCommentHTML(comment) {
     const fechaRelativa = formatRelativeTime(comment.fecha_creacion || comment.fecha);
     const isOwner = socialCurrentUser && (socialCurrentUser.usuario_id === comment.usuario_id);
     
+    // Escape the comment content to prevent JavaScript errors
+    const escapedContent = comment.contenido
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, '\\n');
+    
     return `
         <div class="comment mb-3" data-comment-id="${comment.comentario_id}">
             <div class="d-flex">
@@ -938,7 +945,7 @@ function createCommentHTML(comment) {
                     <div class="d-flex align-items-center mt-1">
                         <small class="text-muted">${fechaRelativa}</small>
                         ${isOwner ? `
-                            <button class="btn btn-sm btn-link text-muted p-0 ms-2" onclick="editCommentModal('${comment.comentario_id}', '${comment.contenido}')">
+                            <button class="btn btn-sm btn-link text-muted p-0 ms-2" onclick="editCommentModal('${comment.comentario_id}', '${escapedContent}')">
                                 Editar
                             </button>
                             <button class="btn btn-sm btn-link text-danger p-0 ms-1" onclick="deleteComment('${comment.comentario_id}')">
@@ -978,12 +985,91 @@ async function submitComment(event, postId) {
     }
 }
 
-// Other utility functions
+// Edit comment
+async function editComment(commentId, newContent) {
+    try {
+        console.log('✏️ Editing comment:', commentId);
+        
+        const response = await window.apiCall(`/comentarios/${commentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ contenido: newContent })
+        });
+        
+        if (response.exito) {
+            console.log('✅ Comment updated successfully');
+            window.showAlert('success', 'Comentario actualizado exitosamente');
+            
+            // Refresh the comments section
+            const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (commentElement) {
+                const contentElement = commentElement.querySelector('p');
+                if (contentElement) {
+                    contentElement.textContent = newContent;
+                }
+            }
+            
+            return response.data;
+        } else {
+            throw new Error(response.mensaje || 'Error al actualizar comentario');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error editing comment:', error);
+        window.showAlert('danger', error.message || 'Error al actualizar comentario');
+        throw error;
+    }
+}
+
+// Delete comment
+async function deleteComment(commentId) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este comentario?')) {
+        return;
+    }
+    
+    try {
+        console.log('🗑️ Deleting comment:', commentId);
+        
+        const response = await window.apiCall(`/comentarios/${commentId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.exito) {
+            console.log('✅ Comment deleted successfully');
+            window.showAlert('success', 'Comentario eliminado exitosamente');
+            
+            // Remove the comment element from DOM
+            const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (commentElement) {
+                commentElement.remove();
+            }
+            
+            // Update comment count in UI
+            const postElement = commentElement?.closest('[data-post-id]');
+            if (postElement) {
+                const commentButton = postElement.querySelector('.comment-btn');
+                if (commentButton) {
+                    const currentCountMatch = commentButton.textContent.match(/\d+/);
+                    const currentCount = currentCountMatch ? parseInt(currentCountMatch[0]) : 0;
+                    const newCount = Math.max(0, currentCount - 1);
+                    commentButton.innerHTML = `<i class="fas fa-comment me-1"></i>${newCount}`;
+                }
+            }
+            
+        } else {
+            throw new Error(response.mensaje || 'Error al eliminar comentario');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error deleting comment:', error);
+        window.showAlert('danger', error.message || 'Error al eliminar comentario');
+    }
+}
+
+// Edit comment modal function
 function editCommentModal(commentId, currentContent) {
     const newContent = prompt('Editar comentario:', currentContent);
-    if (newContent && newContent.trim() !== currentContent) {
-        // Implementation for edit comment
-        window.showAlert('info', 'Función de editar comentario en desarrollo');
+    if (newContent && newContent.trim() !== currentContent && newContent.trim().length > 0) {
+        editComment(commentId, newContent.trim());
     }
 }
 
@@ -997,11 +1083,7 @@ function editPostModal(postId) {
     }
 }
 
-function deleteComment(commentId) {
-    if (confirm('¿Eliminar comentario?')) {
-        window.showAlert('info', 'Función de eliminar comentario en desarrollo');
-    }
-}
+// Delete comment function is now implemented above
 
 function sharePost(postId) {
     const url = `${window.location.origin}/publicaciones/${postId}`;
