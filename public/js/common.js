@@ -1,12 +1,28 @@
 // Common JavaScript functions for ElBaul
 // This file is loaded on all pages
 
-// Global variables
-let authToken = localStorage.getItem('authToken');
-let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+// Global variables - will be properly initialized after DOM load
+let authToken = null;
+let currentUser = null;
 
 // API base URL
 const API_BASE_URL = '/api';
+
+// Initialize authentication state from localStorage
+function initializeAuthState() {
+    authToken = localStorage.getItem('authToken');
+    currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    
+    // Update global window variables
+    window.authToken = authToken;
+    window.currentUser = currentUser;
+    
+    console.log('Auth state initialized:', { 
+        hasToken: !!authToken, 
+        hasUser: !!currentUser,
+        userName: currentUser?.nombre 
+    });
+}
 
 // Generic API call function
 async function apiCall(endpoint, options = {}) {
@@ -63,10 +79,14 @@ function showAlert(type, message, container = null) {
 
 // Update authentication UI elements
 function updateAuthUI(userData) {
+    console.log('Updating auth UI with user:', userData?.nombre || 'null');
+    
     // Update navbar user info
     const userDropdown = document.querySelector('.navbar-nav .dropdown-toggle');
     const authLinks = document.querySelectorAll('.nav-link[href="/login"], .nav-link[href="/registro"]');
     const userMenu = document.querySelector('.navbar-nav .dropdown');
+    const cartLink = document.querySelector('.nav-link[href="/carrito"]');
+    const favoritesLink = document.querySelector('.nav-link[href="/favoritos"]');
     
     if (userData) {
         // User is logged in
@@ -83,6 +103,16 @@ function updateAuthUI(userData) {
         // Show user menu
         if (userMenu) {
             userMenu.style.display = 'block';
+        }
+        
+        // Show cart and favorites links
+        if (cartLink) {
+            const listItem = cartLink.closest('li');
+            if (listItem) listItem.style.display = 'block';
+        }
+        if (favoritesLink) {
+            const listItem = favoritesLink.closest('li');
+            if (listItem) listItem.style.display = 'block';
         }
         
         // Update cart count
@@ -104,12 +134,46 @@ function updateAuthUI(userData) {
             userMenu.style.display = 'none';
         }
         
+        // Hide cart and favorites links
+        if (cartLink) {
+            const listItem = cartLink.closest('li');
+            if (listItem) listItem.style.display = 'none';
+        }
+        if (favoritesLink) {
+            const listItem = favoritesLink.closest('li');
+            if (listItem) listItem.style.display = 'none';
+        }
+        
         // Clear cart count
         const cartBadge = document.querySelector('.cart-count');
         if (cartBadge) {
             cartBadge.style.display = 'none';
         }
     }
+}
+
+// Update authentication state (can be called from other parts of the app)
+function updateAuthState(token, userData) {
+    authToken = token;
+    currentUser = userData;
+    window.authToken = token;
+    window.currentUser = userData;
+    
+    if (token && userData) {
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+    } else {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+    }
+    
+    console.log('Auth state updated:', { 
+        hasToken: !!token, 
+        hasUser: !!userData,
+        userName: userData?.nombre 
+    });
+    
+    updateAuthUI(userData);
 }
 
 // Check authentication status on page load
@@ -121,6 +185,7 @@ async function checkAuthStatus() {
             if (response.exito) {
                 currentUser = response.data.usuario;
                 localStorage.setItem('user', JSON.stringify(currentUser));
+                window.currentUser = currentUser;
                 updateAuthUI(currentUser);
                 return true;
             }
@@ -142,7 +207,38 @@ function clearAuthData() {
     authToken = null;
     currentUser = null;
     window.authToken = null;
+    window.currentUser = null;
 }
+
+// Logout function
+async function logout() {
+    try {
+        // Clear frontend data first
+        clearAuthData();
+        
+        // Clear backend session
+        await fetch('/clear-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        // Update UI
+        updateAuthUI(null);
+        
+        // Redirect to home page
+        window.location.href = '/';
+        
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Even if there's an error, clear local data and redirect
+        clearAuthData();
+        updateAuthUI(null);
+        window.location.href = '/';
+    }
+}
+
+// Make logout function globally available
+window.logout = logout;
 
 // Update cart count
 async function updateCartCount() {
@@ -155,6 +251,12 @@ async function updateCartCount() {
             if (cartBadge) {
                 cartBadge.textContent = response.data.total_items;
                 cartBadge.style.display = 'inline';
+            }
+        } else {
+            // Hide cart badge if no items
+            const cartBadge = document.querySelector('.cart-count');
+            if (cartBadge) {
+                cartBadge.style.display = 'none';
             }
         }
     } catch (error) {
@@ -189,15 +291,22 @@ async function checkAndSyncSession() {
             await syncUserSession(userData);
             
             // Update global variables
-            window.currentUser = userData;
+            authToken = storedToken;
+            currentUser = userData;
             window.authToken = storedToken;
+            window.currentUser = userData;
+            
+            console.log('Session synced successfully for user:', userData.nombre);
             
             // Update UI
             updateAuthUI(userData);
+            return true;
         } catch (error) {
             console.error('Error checking session:', error);
+            return false;
         }
     }
+    return false;
 }
 
 // Utility functions
@@ -245,27 +354,41 @@ function setupSearch() {
 }
 
 // Initialize common functionality
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Common.js loaded');
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Common.js loaded - initializing...');
     
-    // Check and sync session first
-    checkAndSyncSession();
+    // Initialize auth state first
+    initializeAuthState();
     
-    // Check auth status
-    checkAuthStatus();
+    // Check and sync session
+    const sessionSynced = await checkAndSyncSession();
+    
+    // If session wasn't synced, check auth status
+    if (!sessionSynced) {
+        await checkAuthStatus();
+    }
     
     // Setup search
     setupSearch();
     
     // Setup global auth variables
-    window.authToken = authToken;
-    window.currentUser = currentUser;
     window.apiCall = apiCall;
     window.showAlert = showAlert;
     window.updateAuthUI = updateAuthUI;
+    window.updateAuthState = updateAuthState;
     window.syncUserSession = syncUserSession;
     window.formatPrice = formatPrice;
     window.formatDate = formatDate;
+    
+    console.log('Common.js initialization complete');
+    
+    // Ensure UI is updated after a short delay to handle any timing issues
+    setTimeout(() => {
+        if (currentUser) {
+            console.log('Final UI update for user:', currentUser.nombre);
+            updateAuthUI(currentUser);
+        }
+    }, 100);
 });
 
 // Export for use in other modules
@@ -273,6 +396,7 @@ window.ElBaulCommon = {
     apiCall,
     showAlert,
     updateAuthUI,
+    updateAuthState,
     checkAuthStatus,
     clearAuthData,
     updateCartCount,

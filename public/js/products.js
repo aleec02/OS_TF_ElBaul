@@ -2,6 +2,7 @@
 let currentPage = 1;
 let currentFilters = {};
 let isLoading = false;
+let isInitialized = false;
 
 // DOM Elements
 let productsContainer;
@@ -14,10 +15,15 @@ let priceMinInput;
 let priceMaxInput;
 let estadoCheckboxes;
 let sortSelect;
+let resultsInfo;
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    if (isInitialized) return; // Prevent multiple initializations
+    
     console.log('Products listing page loaded');
+    isInitialized = true;
+    
     initializeElements();
     initializeEventListeners();
     loadProducts();
@@ -35,11 +41,13 @@ function initializeElements() {
     priceMaxInput = document.getElementById('price-max');
     estadoCheckboxes = document.querySelectorAll('input[name="estado"]');
     sortSelect = document.getElementById('sort-select');
+    resultsInfo = document.getElementById('results-info');
 
     console.log('Elements initialized:', {
         productsContainer: !!productsContainer,
         loadingIndicator: !!loadingIndicator,
-        filtersForm: !!filtersForm
+        filtersForm: !!filtersForm,
+        resultsInfo: !!resultsInfo
     });
 }
 
@@ -94,6 +102,9 @@ async function loadProducts(page = 1, filters = {}) {
     try {
         console.log('Loading products...', { page, filters });
         
+        // Small delay to prevent rapid successive calls
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         // Build query parameters
         const params = new URLSearchParams({
             page: page.toString(),
@@ -113,6 +124,7 @@ async function loadProducts(page = 1, filters = {}) {
         if (data.exito) {
             displayProducts(data.data.productos);
             updatePagination(data.data.paginacion);
+            updateResultsInfo(data.data.paginacion, data.data.filtros_aplicados);
             currentPage = page;
             currentFilters = filters;
         } else {
@@ -156,6 +168,32 @@ function displayProducts(products) {
     
     // Initialize favorite buttons
     initializeFavoriteButtons();
+}
+
+// Update results info
+function updateResultsInfo(pagination, filters) {
+    if (!resultsInfo) return;
+    
+    const total = pagination.total;
+    const currentPage = pagination.page;
+    const limit = pagination.limit;
+    const start = (currentPage - 1) * limit + 1;
+    const end = Math.min(currentPage * limit, total);
+    
+    let infoText = `Mostrando ${start}-${end} de ${total} productos`;
+    
+    // Add filter info if any filters are applied
+    const activeFilters = [];
+    if (filters.categoria_id) activeFilters.push('categoría');
+    if (filters.precio_min || filters.precio_max) activeFilters.push('precio');
+    if (filters.estado) activeFilters.push('estado');
+    if (filters.buscar) activeFilters.push('búsqueda');
+    
+    if (activeFilters.length > 0) {
+        infoText += ` (filtros: ${activeFilters.join(', ')})`;
+    }
+    
+    resultsInfo.textContent = infoText;
 }
 
 // Create HTML for a single product card
@@ -397,7 +435,7 @@ function initializeFavoriteButtons() {
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
-            addToCart(productId);
+        addToCart(productId);
         });
     });
 }
@@ -429,11 +467,11 @@ async function toggleFavorite(event) {
                 icon.classList.remove('far');
                 icon.classList.add('fas');
                 icon.style.color = '#dc3545';
-            } else {
+        } else {
                 icon.classList.remove('fas');
                 icon.classList.add('far');
                 icon.style.color = 'white';
-            }
+        }
         } else {
             showError(data.mensaje || 'Error al agregar a favoritos');
         }
@@ -448,7 +486,7 @@ async function addToCart(productId) {
         showError('Debes iniciar sesión para agregar al carrito');
         return;
     }
-    
+
     try {
         const response = await fetch('/api/carrito/items', {
             method: 'POST',
@@ -470,7 +508,7 @@ async function addToCart(productId) {
             if (typeof updateCartCount === 'function') {
                 updateCartCount();
             }
-        } else {
+    } else {
             showError(data.mensaje || 'Error al agregar al carrito');
         }
     } catch (error) {
@@ -483,16 +521,7 @@ function showLoading() {
     if (loadingIndicator) {
         loadingIndicator.style.display = 'block';
     }
-    if (productsContainer) {
-        productsContainer.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Cargando productos...</span>
-                </div>
-                <p class="mt-2">Cargando productos...</p>
-            </div>
-        `;
-    }
+    // Don't replace products container content here - let the API response handle it
 }
 
 function hideLoading() {
@@ -506,7 +535,17 @@ function showError(message) {
     if (typeof showAlert === 'function') {
         showAlert('danger', message);
     } else {
-        alert(message);
+        // Fallback: show error in products container
+    if (productsContainer) {
+        productsContainer.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger text-center">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    ${message}
+                </div>
+            </div>
+        `;
+        }
     }
 }
 
@@ -545,7 +584,7 @@ function formatDate(dateString) {
     if (!dateString) return 'Fecha no disponible';
     
     try {
-        const date = new Date(dateString);
+    const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',

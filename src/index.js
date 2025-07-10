@@ -31,41 +31,65 @@ app.use(session({
     saveUninitialized: false,
     cookie: { 
         secure: false,
-        maxAge: 24 * 60 * 60 * 1000
-    }
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true
+    },
+    name: 'connect.sid'
 }));
 
 app.use(flash());
 
-// Global variables for templates
+// Global variables for templates with error handling
 app.use((req, res, next) => {
-    res.locals.success_messages = req.flash('success');
-    res.locals.error_messages = req.flash('error');
-    res.locals.user = req.session.user || null;
-    res.locals.currentPath = req.path;
+    try {
+        res.locals.success_messages = req.flash ? req.flash('success') : [];
+        res.locals.error_messages = req.flash ? req.flash('error') : [];
+        res.locals.user = req.session && req.session.user ? req.session.user : null;
+        res.locals.currentPath = req.path;
+    } catch (error) {
+        console.error('Error setting template locals:', error);
+        res.locals.success_messages = [];
+        res.locals.error_messages = [];
+        res.locals.user = null;
+        res.locals.currentPath = req.path;
+    }
     next();
 });
 
+app.use(cors());
+app.use(express.json());
+
 // Endpoint to sync user session from frontend
-app.post('/sync-session', express.json(), (req, res) => {
-    const { user } = req.body;
-    if (user) {
-        req.session.user = user;
-        res.json({ success: true });
-    } else {
-        req.session.user = null;
-        res.json({ success: true });
+app.post('/sync-session', (req, res) => {
+    try {
+        const { user } = req.body;
+        if (user && req.session) {
+            req.session.user = user;
+            res.json({ success: true });
+        } else if (req.session) {
+            req.session.user = null;
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: 'Session not available' });
+        }
+    } catch (error) {
+        console.error('Error syncing session:', error);
+        res.json({ success: false, error: error.message });
     }
 });
 
 // Endpoint to clear session
 app.post('/clear-session', (req, res) => {
-    req.session.user = null;
-    res.json({ success: true });
+    try {
+        if (req.session) {
+            req.session.user = null;
+        }
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error clearing session:', error);
+        res.json({ success: false, error: error.message });
+    }
 });
-
-app.use(cors());
-app.use(express.json());
 
 // Rutas básicas
 app.get("/", (req, res) => {
@@ -251,7 +275,43 @@ app.use((err, req, res, next) => {
 
 // Puerto del Servicio Web
 const puerto = process.env.PORT || 3000;
-app.listen(puerto);
-console.log("Server ElBaul on port", puerto);
-console.log(`Frontend: http://localhost:${puerto}`);
-console.log(`API: http://localhost:${puerto}/api`);
+
+// Improved server startup with error handling
+const server = app.listen(puerto, () => {
+    console.log("✅ Server ElBaul started successfully on port", puerto);
+    console.log(`🌐 Frontend: http://localhost:${puerto}`);
+    console.log(`🔌 API: http://localhost:${puerto}/api`);
+    console.log(`📊 Health Check: http://localhost:${puerto}/api/health`);
+}).on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${puerto} is already in use!`);
+        console.error('💡 Try one of these solutions:');
+        console.error('   1. Kill the process using the port:');
+        console.error(`      netstat -ano | findstr :${puerto}`);
+        console.error(`      taskkill /PID <PID> /F`);
+        console.error('   2. Use a different port:');
+        console.error(`      set PORT=3001 && npm run dev`);
+        console.error('   3. Wait a moment and try again');
+        process.exit(1);
+    } else {
+        console.error('❌ Server startup error:', error);
+        process.exit(1);
+    }
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('🛑 SIGTERM received, shutting down gracefully...');
+    server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('🛑 SIGINT received, shutting down gracefully...');
+    server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+    });
+});

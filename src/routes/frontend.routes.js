@@ -90,17 +90,36 @@ router.get('/recuperar-password', redirectIfAuthenticated, (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-    // Clear session
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
+    try {
+        // Clear session if it exists
+        if (req.session) {
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error('Error destroying session:', err);
+                }
+            });
         }
+        
+        // Clear session cookie
         res.clearCookie('connect.sid');
         
-        // Redirect to home with success message
-        req.flash('success', 'Sesión cerrada exitosamente');
+        // Clear any flash messages to avoid session dependency
+        try {
+            if (req.flash) {
+                req.flash('success', 'Sesión cerrada exitosamente');
+            }
+        } catch (flashError) {
+            console.log('Flash not available, proceeding without flash message');
+        }
+        
+        // Redirect to home
         res.redirect('/');
-    });
+        
+    } catch (error) {
+        console.error('Error in logout route:', error);
+        // Fallback: just redirect to home
+        res.redirect('/');
+    }
 });
 
 // ==========================================
