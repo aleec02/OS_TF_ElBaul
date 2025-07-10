@@ -1,129 +1,69 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const publicacionesController = require('../controllers/publicaciones.controller');
+const { verificarAuth } = require('../middleware/auth.middleware');
+const { optionalAuth } = require('../middleware/frontend-auth.middleware');
 
-const { verificarAuth } = require("../middleware/auth.middleware");
-const {
-    crearPublicacion,
-    obtenerFeed,
-    obtenerDetallePublicacion,
-    editarPublicacion,
-    eliminarPublicacion
-} = require("../controllers/publicaciones.controller");
+// ========================================
+// RUTAS PÚBLICAS (sin autenticación)
+// ========================================
 
-const {
-    anadirComentario,
-    obtenerComentarios
-} = require("../controllers/comentarios.controller");
+// Obtener feed de publicaciones (público)
+router.get('/', optionalAuth, publicacionesController.obtenerPublicaciones);
 
-const {
-    reaccionarPublicacion,
-    obtenerReaccionesPublicacion
-} = require("../controllers/reacciones.controller");
+// Obtener publicación específica (público)
+router.get('/:id', optionalAuth, publicacionesController.obtenerPublicacionPorId);
 
-// ==========================================
-// RUTAS DE PUBLICACIONES
-// ==========================================
+// Obtener tendencias (público)
+router.get('/tendencias', publicacionesController.obtenerTendencias);
 
-/**
- * @route   GET /api/publicaciones
- * @desc    Obtener feed de publicaciones con paginación
- * @access  Public
- * @query   {
- *            page?: number,
- *            limit?: number,
- *            usuario_id?: string
- *          }
- */
-router.get("/", obtenerFeed);
+// ========================================
+// RUTAS PRIVADAS (requiere autenticación)
+// ========================================
 
-/**
- * @route   POST /api/publicaciones
- * @desc    Crear nueva publicación
- * @access  Private (Usuario autenticado)
- * @body    {
- *            contenido: string (requerido),
- *            imagenes?: string[],
- *            producto_id?: string
- *          }
- */
-router.post("/", verificarAuth, crearPublicacion);
+// Crear publicación
+router.post('/', verificarAuth, publicacionesController.crearPublicacion);
 
-/**
- * @route   GET /api/publicaciones/:id
- * @desc    Obtener detalle de publicación específica con comentarios y reacciones
- * @access  Public
- * @params  id: post_id
- */
-router.get("/:id", obtenerDetallePublicacion);
+// Actualizar publicación
+router.put('/:id', verificarAuth, publicacionesController.actualizarPublicacion);
 
-/**
- * @route   PUT /api/publicaciones/:id
- * @desc    Editar publicación (solo el propietario)
- * @access  Private (Usuario autenticado - solo propietario)
- * @params  id: post_id
- * @body    {
- *            contenido?: string,
- *            imagenes?: string[]
- *          }
- */
-router.put("/:id", verificarAuth, editarPublicacion);
+// Eliminar publicación
+router.delete('/:id', verificarAuth, publicacionesController.eliminarPublicacion);
 
-/**
- * @route   DELETE /api/publicaciones/:id
- * @desc    Eliminar publicación (solo el propietario)
- * @access  Private (Usuario autenticado - solo propietario)
- * @params  id: post_id
- */
-router.delete("/:id", verificarAuth, eliminarPublicacion);
+// ========================================
+// COMENTARIOS
+// ========================================
 
-// ==========================================
-// RUTAS DE COMENTARIOS EN PUBLICACIONES
-// ==========================================
+// Obtener comentarios de una publicación (público)
+router.get('/:id/comentarios', optionalAuth, publicacionesController.obtenerComentarios);
 
-/**
- * @route   GET /api/publicaciones/:id/comentarios
- * @desc    Obtener comentarios de una publicación específica
- * @access  Public
- * @params  id: post_id
- * @query   {
- *            page?: number,
- *            limit?: number
- *          }
- */
-router.get("/:id/comentarios", obtenerComentarios);
+// Crear comentario
+router.post('/:id/comentarios', verificarAuth, publicacionesController.crearComentario);
 
-/**
- * @route   POST /api/publicaciones/:id/comentarios
- * @desc    Añadir comentario a una publicación
- * @access  Private (Usuario autenticado)
- * @params  id: post_id
- * @body    {
- *            contenido: string (requerido)
- *          }
- */
-router.post("/:id/comentarios", verificarAuth, anadirComentario);
+// ========================================
+// REACCIONES
+// ========================================
 
-// ==========================================
-// RUTAS DE REACCIONES EN PUBLICACIONES
-// ==========================================
+// Obtener reacciones de una publicación (público)
+router.get('/:id/reacciones', optionalAuth, publicacionesController.obtenerReacciones);
 
-/**
- * @route   GET /api/publicaciones/:id/reacciones
- * @desc    Obtener reacciones de una publicación específica
- * @access  Public (con datos adicionales si está autenticado)
- * @params  id: post_id
- */
-router.get("/:id/reacciones", obtenerReaccionesPublicacion);
+// Reaccionar a una publicación
+router.post('/:id/reacciones', verificarAuth, publicacionesController.reaccionarPublicacion);
 
-/**
- * @route   POST /api/publicaciones/:id/reacciones
- * @desc    Añadir/quitar/cambiar reacción a una publicación
- * @access  Private (Usuario autenticado)
- * @params  id: post_id
- * @body    {
- *            tipo: string (requerido: like, love, genial, wow, sad, angry)
- *          }
- */
-router.post("/:id/reacciones", verificarAuth, reaccionarPublicacion);
+// ========================================
+// FUNCIONALIDADES SOCIALES
+// ========================================
+
+// Reportar publicación
+router.post('/:id/reportar', verificarAuth, publicacionesController.reportarPublicacion);
+
+// Compartir publicación
+router.post('/:id/compartir', verificarAuth, publicacionesController.compartirPublicacion);
+
+// Obtener publicaciones de un usuario específico
+router.get('/usuario/:usuarioId', optionalAuth, publicacionesController.obtenerPublicacionesUsuario);
+
+// Obtener publicaciones relacionadas
+router.get('/:id/relacionadas', optionalAuth, publicacionesController.obtenerPublicacionesRelacionadas);
 
 module.exports = router;

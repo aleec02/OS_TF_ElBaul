@@ -217,8 +217,17 @@ app.use("/api/favoritos", require("./routes/favoritos.routes"));
 app.use("/api/ordenes", require("./routes/ordenes.routes"));
 app.use("/api/envios", require("./routes/envios.routes"));
 app.use("/api/devoluciones", require("./routes/devoluciones.routes"));
+
+// ========================================
+// RUTAS SOCIALES (Round 3)
+// ========================================
 app.use("/api/publicaciones", require("./routes/publicaciones.routes"));
 app.use("/api/comentarios", require("./routes/comentarios.routes"));
+
+// ========================================
+// RUTAS AVANZADAS DE PRODUCTOS (Round 3)
+// ========================================
+app.use("/api/productos-avanzado", require("./routes/productos-avanzado.routes"));
 
 // ========================================
 // RUTAS DE ADMINISTRACIÓN (solo admin)

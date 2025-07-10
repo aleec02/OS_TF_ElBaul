@@ -1,61 +1,47 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const comentariosController = require('../controllers/comentarios.controller');
+const { verificarAuth } = require('../middleware/auth.middleware');
+const { optionalAuth } = require('../middleware/frontend-auth.middleware');
 
-const { verificarAuth } = require("../middleware/auth.middleware");
-const {
-    editarComentario,
-    eliminarComentario
-} = require("../controllers/comentarios.controller");
+// ========================================
+// RUTAS PÚBLICAS (sin autenticación)
+// ========================================
 
-const {
-    reaccionarComentario,
-    obtenerReaccionesComentario
-} = require("../controllers/reacciones.controller");
+// Obtener comentarios de una publicación (público)
+router.get('/publicacion/:publicacionId', optionalAuth, comentariosController.obtenerComentariosPublicacion);
 
-// ==========================================
-// RUTAS DE COMENTARIOS INDIVIDUALES
-// ==========================================
+// ========================================
+// RUTAS PRIVADAS (requiere autenticación)
+// ========================================
 
-/**
- * @route   PUT /api/comentarios/:id
- * @desc    Editar comentario específico (solo el propietario)
- * @access  Private (Usuario autenticado - solo propietario)
- * @params  id: comentario_id
- * @body    {
- *            contenido: string (requerido)
- *          }
- */
-router.put("/:id", verificarAuth, editarComentario);
+// Crear comentario
+router.post('/', verificarAuth, comentariosController.crearComentario);
 
-/**
- * @route   DELETE /api/comentarios/:id
- * @desc    Eliminar comentario específico (solo el propietario)
- * @access  Private (Usuario autenticado - solo propietario)
- * @params  id: comentario_id
- */
-router.delete("/:id", verificarAuth, eliminarComentario);
+// Actualizar comentario
+router.put('/:id', verificarAuth, comentariosController.actualizarComentario);
 
-// ==========================================
-// RUTAS DE REACCIONES EN COMENTARIOS
-// ==========================================
+// Eliminar comentario
+router.delete('/:id', verificarAuth, comentariosController.eliminarComentario);
 
-/**
- * @route   GET /api/comentarios/:id/reacciones
- * @desc    Obtener reacciones de un comentario específico
- * @access  Public (con datos adicionales si está autenticado)
- * @params  id: comentario_id
- */
-router.get("/:id/reacciones", obtenerReaccionesComentario);
+// ========================================
+// REACCIONES EN COMENTARIOS
+// ========================================
 
-/**
- * @route   POST /api/comentarios/:id/reacciones
- * @desc    Añadir/quitar/cambiar reacción a un comentario
- * @access  Private (Usuario autenticado)
- * @params  id: comentario_id
- * @body    {
- *            tipo: string (requerido: like, love, genial, wow, sad, angry)
- *          }
- */
-router.post("/:id/reacciones", verificarAuth, reaccionarComentario);
+// Obtener reacciones de un comentario (público)
+router.get('/:id/reacciones', optionalAuth, comentariosController.obtenerReaccionesComentario);
+
+// Reaccionar a un comentario
+router.post('/:id/reacciones', verificarAuth, comentariosController.reaccionarComentario);
+
+// ========================================
+// FUNCIONALIDADES SOCIALES
+// ========================================
+
+// Reportar comentario
+router.post('/:id/reportar', verificarAuth, comentariosController.reportarComentario);
+
+// Obtener comentarios de un usuario
+router.get('/usuario/:usuarioId', optionalAuth, comentariosController.obtenerComentariosUsuario);
 
 module.exports = router;

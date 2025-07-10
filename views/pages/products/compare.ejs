@@ -1,0 +1,303 @@
+<%- contentFor('body') %>
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-balance-scale me-2"></i>Comparar Productos
+                    </h2>
+                    <p class="text-muted mb-0">Compara características, precios y especificaciones</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" id="clearComparison">
+                        <i class="fas fa-trash me-2"></i>Limpiar Comparación
+                    </button>
+                    <a href="/productos" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Agregar Producto
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Comparison Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div id="comparisonTable">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-3">Cargando comparación...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-success w-100" id="addAllToCart">
+                                <i class="fas fa-cart-plus me-2"></i>Agregar Todos al Carrito
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-warning w-100" id="addAllToFavorites">
+                                <i class="fas fa-heart me-2"></i>Agregar a Favoritos
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-info w-100" id="shareComparison">
+                                <i class="fas fa-share me-2"></i>Compartir Comparación
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-secondary w-100" id="printComparison">
+                                <i class="fas fa-print me-2"></i>Imprimir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Recommendations -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Productos Similares
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="recommendations">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Comparison Template (Hidden) -->
+<template id="comparisonTemplate">
+    <div class="table-responsive">
+        <table class="table table-bordered mb-0">
+            <!-- Product Images and Basic Info -->
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 200px;">Características</th>
+                    <th style="width: 300px;" class="product-column">
+                        <div class="text-center p-3">
+                            <div class="position-relative">
+                                <img src="" class="img-fluid rounded product-image" alt="Product" style="max-height: 200px;">
+                                <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 remove-product" data-product-id="">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <h6 class="mt-3 product-title"></h6>
+                            <p class="text-primary product-price mb-2"></p>
+                            <div class="product-rating mb-2"></div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-sm btn-primary add-to-cart-btn">
+                                    <i class="fas fa-cart-plus me-1"></i>Agregar al Carrito
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning add-to-favorites-btn">
+                                    <i class="fas fa-heart me-1"></i>Favorito
+                                </button>
+                                <a href="" class="btn btn-sm btn-outline-info view-details-btn">
+                                    <i class="fas fa-eye me-1"></i>Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            
+            <!-- Product Details -->
+            <tbody>
+                <!-- Basic Information -->
+                <tr class="table-primary">
+                    <th colspan="2">Información Básica</th>
+                </tr>
+                <tr>
+                    <td><strong>Marca</strong></td>
+                    <td class="product-brand"></td>
+                </tr>
+                <tr>
+                    <td><strong>Modelo</strong></td>
+                    <td class="product-model"></td>
+                </tr>
+                <tr>
+                    <td><strong>Categoría</strong></td>
+                    <td class="product-category"></td>
+                </tr>
+                <tr>
+                    <td><strong>Estado</strong></td>
+                    <td class="product-condition"></td>
+                </tr>
+                <tr>
+                    <td><strong>Stock</strong></td>
+                    <td class="product-stock"></td>
+                </tr>
+
+                <!-- Technical Specifications -->
+                <tr class="table-primary">
+                    <th colspan="2">Especificaciones Técnicas</th>
+                </tr>
+                <tr>
+                    <td><strong>Año de Fabricación</strong></td>
+                    <td class="product-year"></td>
+                </tr>
+                <tr>
+                    <td><strong>Garantía</strong></td>
+                    <td class="product-warranty"></td>
+                </tr>
+                <tr>
+                    <td><strong>Dimensiones</strong></td>
+                    <td class="product-dimensions"></td>
+                </tr>
+                <tr>
+                    <td><strong>Peso</strong></td>
+                    <td class="product-weight"></td>
+                </tr>
+                <tr>
+                    <td><strong>Color</strong></td>
+                    <td class="product-color"></td>
+                </tr>
+
+                <!-- Features -->
+                <tr class="table-primary">
+                    <th colspan="2">Características</th>
+                </tr>
+                <tr>
+                    <td><strong>Características Principales</strong></td>
+                    <td class="product-features"></td>
+                </tr>
+                <tr>
+                    <td><strong>Incluye</strong></td>
+                    <td class="product-includes"></td>
+                </tr>
+
+                <!-- Pricing and Availability -->
+                <tr class="table-primary">
+                    <th colspan="2">Precio y Disponibilidad</th>
+                </tr>
+                <tr>
+                    <td><strong>Precio Original</strong></td>
+                    <td class="product-original-price"></td>
+                </tr>
+                <tr>
+                    <td><strong>Precio Actual</strong></td>
+                    <td class="product-current-price"></td>
+                </tr>
+                <tr>
+                    <td><strong>Descuento</strong></td>
+                    <td class="product-discount"></td>
+                </tr>
+                <tr>
+                    <td><strong>Disponibilidad</strong></td>
+                    <td class="product-availability"></td>
+                </tr>
+
+                <!-- Reviews and Ratings -->
+                <tr class="table-primary">
+                    <th colspan="2">Reseñas y Calificaciones</th>
+                </tr>
+                <tr>
+                    <td><strong>Calificación Promedio</strong></td>
+                    <td class="product-avg-rating"></td>
+                </tr>
+                <tr>
+                    <td><strong>Número de Reseñas</strong></td>
+                    <td class="product-review-count"></td>
+                </tr>
+                <tr>
+                    <td><strong>Última Reseña</strong></td>
+                    <td class="product-last-review"></td>
+                </tr>
+
+                <!-- Seller Information -->
+                <tr class="table-primary">
+                    <th colspan="2">Información del Vendedor</th>
+                </tr>
+                <tr>
+                    <td><strong>Vendedor</strong></td>
+                    <td class="product-seller"></td>
+                </tr>
+                <tr>
+                    <td><strong>Calificación del Vendedor</strong></td>
+                    <td class="product-seller-rating"></td>
+                </tr>
+                <tr>
+                    <td><strong>Ubicación</strong></td>
+                    <td class="product-location"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</template>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Producto a la Comparación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="searchProduct" class="form-label">Buscar Producto</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchProduct" placeholder="Buscar por nombre, marca, categoría...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="searchResults" class="row g-3">
+                    <!-- Search results will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Card Template for Search Results -->
+<template id="productCardTemplate">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 product-card">
+            <img src="" class="card-img-top product-image" alt="Product" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h6 class="card-title product-title"></h6>
+                <p class="card-text text-primary product-price"></p>
+                <div class="product-rating mb-2"></div>
+                <button class="btn btn-sm btn-primary add-to-comparison-btn" data-product-id="">
+                    <i class="fas fa-plus me-1"></i>Agregar a Comparación
+                </button>
+            </div>
+        </div>
+    </div>
+</template> 

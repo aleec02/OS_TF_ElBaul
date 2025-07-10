@@ -1,73 +1,58 @@
 const express = require('express');
 const router = express.Router();
+const { requireAuth, requireAdmin, redirectIfAuthenticated, optionalAuth } = require('../middleware/frontend-auth.middleware');
 
-// Import frontend authentication middleware
-const { 
-    requireAuth, 
-    requireAdmin, 
-    redirectIfAuthenticated, 
-    optionalAuth 
-} = require('../middleware/frontend-auth.middleware');
+// ========================================
+// RUTAS PÚBLICAS (sin autenticación)
+// ========================================
 
-// ==========================================
-// SESSION SYNC ROUTES (for JWT integration)
-// ==========================================
-
-router.post('/sync-session', express.json(), (req, res) => {
-    if (req.body.user) {
-        req.session.user = req.body.user;
-        res.json({ success: true });
-    } else {
-        req.session.user = null;
-        res.json({ success: false });
-    }
-});
-
-router.post('/clear-session', (req, res) => {
-    req.session.user = null;
-    res.json({ success: true });
-});
-
-// ==========================================
-// PUBLIC PAGES
-// ==========================================
-
-// About page
-router.get('/acerca', (req, res) => {
-    res.render('pages/about', {
-        title: 'Acerca de ElBaul',
-        page: 'about'
+// Página de inicio
+router.get('/', (req, res) => {
+    res.render('pages/home', {
+        title: 'ElBaul - Marketplace de Segunda Mano',
+        page: 'home'
     });
 });
 
-// Contact page
-router.get('/contacto', (req, res) => {
-    res.render('pages/contact', {
-        title: 'Contacto - ElBaul',
-        page: 'contact'
+// Página de productos
+router.get('/productos', optionalAuth, (req, res) => {
+    res.render('pages/products/index', {
+        title: 'Productos - ElBaul',
+        page: 'products'
     });
 });
 
-// Terms and Privacy
-router.get('/terminos', (req, res) => {
-    res.render('pages/terms', {
-        title: 'Términos y Condiciones - ElBaul',
-        page: 'terms'
+// Detalle de producto
+router.get('/productos/:id', optionalAuth, (req, res) => {
+    res.render('pages/products/detail', {
+        title: 'Detalle de Producto - ElBaul',
+        page: 'product-detail',
+        productId: req.params.id
     });
 });
 
-router.get('/privacidad', (req, res) => {
-    res.render('pages/privacy', {
-        title: 'Política de Privacidad - ElBaul',
-        page: 'privacy'
+// Página de categorías
+router.get('/categorias', (req, res) => {
+    res.render('pages/categories/index', {
+        title: 'Categorías - ElBaul',
+        page: 'categories'
     });
 });
 
-// ==========================================
-// AUTHENTICATION PAGES
-// ==========================================
+// Página de categoría específica
+router.get('/categorias/:id', optionalAuth, (req, res) => {
+    res.render('pages/categories/detail', {
+        title: 'Categoría - ElBaul',
+        page: 'category-detail',
+        categoryId: req.params.id
+    });
+});
 
-// Auth pages
+// ========================================
+// RUTAS DE AUTENTICACIÓN
+// ========================================
+
+// Login
 router.get('/login', redirectIfAuthenticated, (req, res) => {
     res.render('pages/auth/login', {
         title: 'Iniciar Sesión - ElBaul',
@@ -75,142 +60,27 @@ router.get('/login', redirectIfAuthenticated, (req, res) => {
     });
 });
 
-router.get('/registro', redirectIfAuthenticated, (req, res) => {
+// Registro
+router.get('/register', redirectIfAuthenticated, (req, res) => {
     res.render('pages/auth/register', {
         title: 'Registrarse - ElBaul',
         page: 'register'
     });
 });
 
-router.get('/recuperar-password', redirectIfAuthenticated, (req, res) => {
-    res.render('pages/auth/forgot-password', {
-        title: 'Recuperar Contraseña - ElBaul',
-        page: 'forgot-password'
-    });
-});
+// ========================================
+// RUTAS PRIVADAS (requiere autenticación)
+// ========================================
 
-router.get('/logout', (req, res) => {
-    try {
-        // Clear session if it exists
-        if (req.session) {
-            req.session.destroy((err) => {
-                if (err) {
-                    console.error('Error destroying session:', err);
-                }
-            });
-        }
-        
-        // Clear session cookie
-        res.clearCookie('connect.sid');
-        
-        // Clear any flash messages to avoid session dependency
-        try {
-            if (req.flash) {
-                req.flash('success', 'Sesión cerrada exitosamente');
-            }
-        } catch (flashError) {
-            console.log('Flash not available, proceeding without flash message');
-        }
-        
-        // Redirect to home
-        res.redirect('/');
-        
-    } catch (error) {
-        console.error('Error in logout route:', error);
-        // Fallback: just redirect to home
-        res.redirect('/');
-    }
-});
-
-// ==========================================
-// PRODUCT PAGES
-// ==========================================
-
-// Products listing page
-router.get('/productos', (req, res) => {
-    res.render('pages/products/index', {
-        title: 'Productos - ElBaul',
-        page: 'products'
-    });
-});
-
-// Product detail page
-router.get('/productos/:id', (req, res) => {
-    res.render('pages/products/detail', {
-        title: 'Detalle del Producto - ElBaul',
-        page: 'product-detail',
-        productId: req.params.id
-    });
-});
-
-// Product search results
-router.get('/buscar', (req, res) => {
-    const query = req.query.q || '';
-    res.render('pages/products/search', {
-        title: `Buscar: ${query} - ElBaul`,
-        page: 'search',
-        searchQuery: query
-    });
-});
-
-// Category products
-router.get('/categoria/:id', (req, res) => {
-    res.render('pages/products/category', {
-        title: 'Productos por Categoría - ElBaul',
-        page: 'category',
-        categoryId: req.params.id
-    });
-});
-
-// ==========================================
-// SOCIAL FEATURES
-// ==========================================
-
-// Community/Social feed
-router.get('/comunidad', (req, res) => {
-    res.render('pages/social/feed', {
-        title: 'Comunidad - ElBaul',
-        page: 'social'
-    });
-});
-
-// User profile (public view)
-router.get('/usuario/:id', (req, res) => {
-    res.render('pages/social/user-profile', {
-        title: 'Perfil de Usuario - ElBaul',
-        page: 'user-profile',
-        userId: req.params.id
-    });
-});
-
-// ==========================================
-// PROTECTED PAGES (require authentication)
-// ==========================================
-
-// User Dashboard
+// Dashboard del usuario
 router.get('/dashboard', requireAuth, (req, res) => {
     res.render('pages/user/dashboard', {
-        title: 'Dashboard - ElBaul',
+        title: 'Mi Dashboard - ElBaul',
         page: 'dashboard'
     });
 });
 
-// Cart pages
-router.get('/carrito', requireAuth, (req, res) => {
-    res.render('pages/cart/index', {
-        title: 'Mi Carrito - ElBaul',
-        page: 'cart'
-    });
-});
-
-router.get('/checkout', requireAuth, (req, res) => {
-    res.render('pages/cart/checkout', {
-        title: 'Checkout - ElBaul',
-        page: 'checkout'
-    });
-});
-
-// Profile pages
+// Perfil del usuario
 router.get('/perfil', requireAuth, (req, res) => {
     res.render('pages/profile/index', {
         title: 'Mi Perfil - ElBaul',
@@ -218,37 +88,7 @@ router.get('/perfil', requireAuth, (req, res) => {
     });
 });
 
-router.get('/perfil/editar', requireAuth, (req, res) => {
-    res.render('pages/profile/edit', {
-        title: 'Editar Perfil - ElBaul',
-        page: 'profile-edit'
-    });
-});
-
-router.get('/perfil/seguridad', requireAuth, (req, res) => {
-    res.render('pages/profile/security', {
-        title: 'Seguridad - ElBaul',
-        page: 'profile-security'
-    });
-});
-
-// Orders pages
-router.get('/mis-ordenes', requireAuth, (req, res) => {
-    res.render('pages/profile/orders', {
-        title: 'Mis Órdenes - ElBaul',
-        page: 'orders'
-    });
-});
-
-router.get('/orden/:id', requireAuth, (req, res) => {
-    res.render('pages/profile/order-detail', {
-        title: 'Detalle de Orden - ElBaul',
-        page: 'order-detail',
-        orderId: req.params.id
-    });
-});
-
-// Favorites page
+// Favoritos del usuario
 router.get('/favoritos', requireAuth, (req, res) => {
     res.render('pages/profile/favorites', {
         title: 'Mis Favoritos - ElBaul',
@@ -256,320 +96,225 @@ router.get('/favoritos', requireAuth, (req, res) => {
     });
 });
 
-// Reviews pages
-router.get('/mis-resenas', requireAuth, (req, res) => {
-    res.render('pages/profile/reviews', {
-        title: 'Mis Reseñas - ElBaul',
-        page: 'reviews'
+// Carrito del usuario
+router.get('/carrito', requireAuth, (req, res) => {
+    res.render('pages/cart/index', {
+        title: 'Mi Carrito - ElBaul',
+        page: 'cart'
     });
 });
 
-// Shipping and Returns
-router.get('/mis-envios', requireAuth, (req, res) => {
-    res.render('pages/profile/shipping', {
-        title: 'Mis Envíos - ElBaul',
-        page: 'shipping'
+// Historial de órdenes
+router.get('/ordenes', requireAuth, (req, res) => {
+    res.render('pages/orders/index', {
+        title: 'Mis Órdenes - ElBaul',
+        page: 'orders'
     });
 });
 
-router.get('/envio/:id', requireAuth, (req, res) => {
-    res.render('pages/profile/shipping-detail', {
-        title: 'Detalle de Envío - ElBaul',
-        page: 'shipping-detail',
-        shipmentId: req.params.id
+// Detalle de orden
+router.get('/ordenes/:id', requireAuth, (req, res) => {
+    res.render('pages/orders/detail', {
+        title: 'Detalle de Orden - ElBaul',
+        page: 'order-detail',
+        orderId: req.params.id
     });
 });
 
-router.get('/devoluciones', requireAuth, (req, res) => {
-    res.render('pages/profile/returns', {
-        title: 'Devoluciones - ElBaul',
-        page: 'returns'
+// ========================================
+// RUTAS SOCIALES
+// ========================================
+
+// Feed social (público)
+router.get('/social', optionalAuth, (req, res) => {
+    res.render('pages/social/feed', {
+        title: 'Feed Social - ElBaul',
+        page: 'social-feed'
     });
 });
 
-router.get('/devolucion/:id', requireAuth, (req, res) => {
-    res.render('pages/profile/return-detail', {
-        title: 'Detalle de Devolución - ElBaul',
-        page: 'return-detail',
-        returnId: req.params.id
+// Detalle de publicación (público)
+router.get('/social/post/:id', optionalAuth, (req, res) => {
+    res.render('pages/social/post-detail', {
+        title: 'Publicación - ElBaul',
+        page: 'post-detail',
+        postId: req.params.id
     });
 });
 
-// Notifications
-router.get('/notificaciones', requireAuth, (req, res) => {
-    res.render('pages/profile/notifications', {
-        title: 'Notificaciones - ElBaul',
-        page: 'notifications'
+// Perfil de usuario (público)
+router.get('/social/usuario/:id', optionalAuth, (req, res) => {
+    res.render('pages/social/user-profile', {
+        title: 'Perfil de Usuario - ElBaul',
+        page: 'user-profile',
+        userId: req.params.id
     });
 });
 
-// ==========================================
-// ADMIN PAGES (require admin role)
-// ==========================================
+// ========================================
+// RUTAS DE ADMINISTRACIÓN
+// ========================================
 
+// Panel de administración
 router.get('/admin', requireAdmin, (req, res) => {
-    res.render('admin/dashboard', {
+    res.render('pages/admin/dashboard', {
         title: 'Panel de Administración - ElBaul',
         page: 'admin-dashboard'
     });
 });
 
+// Gestión de productos (admin)
 router.get('/admin/productos', requireAdmin, (req, res) => {
-    res.render('admin/products', {
+    res.render('pages/admin/products', {
         title: 'Gestión de Productos - ElBaul',
         page: 'admin-products'
     });
 });
 
-router.get('/admin/productos/crear', requireAdmin, (req, res) => {
-    res.render('admin/products-create', {
-        title: 'Crear Producto - ElBaul',
-        page: 'admin-products-create'
-    });
-});
-
-router.get('/admin/productos/:id/editar', requireAdmin, (req, res) => {
-    res.render('admin/products-edit', {
-        title: 'Editar Producto - ElBaul',
-        page: 'admin-products-edit',
-        productId: req.params.id
-    });
-});
-
+// Gestión de categorías (admin)
 router.get('/admin/categorias', requireAdmin, (req, res) => {
-    res.render('admin/categories', {
+    res.render('pages/admin/categories', {
         title: 'Gestión de Categorías - ElBaul',
         page: 'admin-categories'
     });
 });
 
-router.get('/admin/usuarios', requireAdmin, (req, res) => {
-    res.render('admin/users', {
-        title: 'Gestión de Usuarios - ElBaul',
-        page: 'admin-users'
-    });
-});
-
-router.get('/admin/ordenes', requireAdmin, (req, res) => {
-    res.render('admin/orders', {
-        title: 'Gestión de Órdenes - ElBaul',
-        page: 'admin-orders'
-    });
-});
-
+// Gestión de reseñas (admin)
 router.get('/admin/resenas', requireAdmin, (req, res) => {
-    res.render('admin/reviews', {
+    res.render('pages/admin/reviews', {
         title: 'Gestión de Reseñas - ElBaul',
         page: 'admin-reviews'
     });
 });
 
-router.get('/admin/reportes', requireAdmin, (req, res) => {
-    res.render('admin/reports', {
-        title: 'Reportes - ElBaul',
-        page: 'admin-reports'
+// Gestión de usuarios (admin)
+router.get('/admin/usuarios', requireAdmin, (req, res) => {
+    res.render('pages/admin/users', {
+        title: 'Gestión de Usuarios - ElBaul',
+        page: 'admin-users'
     });
 });
 
-router.get('/admin/configuracion', requireAdmin, (req, res) => {
-    res.render('admin/settings', {
-        title: 'Configuración - ElBaul',
-        page: 'admin-settings'
+// ========================================
+// RUTAS DE BÚSQUEDA Y EXPLORACIÓN
+// ========================================
+
+// Búsqueda de productos
+router.get('/buscar', optionalAuth, (req, res) => {
+    const query = req.query.q || '';
+    res.render('pages/search/results', {
+        title: `Búsqueda: ${query} - ElBaul`,
+        page: 'search',
+        searchQuery: query
     });
 });
 
-// ==========================================
-// HELP AND SUPPORT PAGES
-// ==========================================
+// Página de ofertas
+router.get('/ofertas', optionalAuth, (req, res) => {
+    res.render('pages/deals/index', {
+        title: 'Ofertas Especiales - ElBaul',
+        page: 'deals'
+    });
+});
 
+// Página de productos nuevos
+router.get('/nuevos', optionalAuth, (req, res) => {
+    res.render('pages/products/new', {
+        title: 'Productos Nuevos - ElBaul',
+        page: 'new-products'
+    });
+});
+
+// Página de productos populares
+router.get('/populares', optionalAuth, (req, res) => {
+    res.render('pages/products/popular', {
+        title: 'Productos Populares - ElBaul',
+        page: 'popular-products'
+    });
+});
+
+// ========================================
+// RUTAS DE INFORMACIÓN Y AYUDA
+// ========================================
+
+// Acerca de nosotros
+router.get('/acerca-de', (req, res) => {
+    res.render('pages/info/about', {
+        title: 'Acerca de ElBaul',
+        page: 'about'
+    });
+});
+
+// Política de privacidad
+router.get('/privacidad', (req, res) => {
+    res.render('pages/info/privacy', {
+        title: 'Política de Privacidad - ElBaul',
+        page: 'privacy'
+    });
+});
+
+// Términos y condiciones
+router.get('/terminos', (req, res) => {
+    res.render('pages/info/terms', {
+        title: 'Términos y Condiciones - ElBaul',
+        page: 'terms'
+    });
+});
+
+// Página de contacto
+router.get('/contacto', (req, res) => {
+    res.render('pages/info/contact', {
+        title: 'Contacto - ElBaul',
+        page: 'contact'
+    });
+});
+
+// Página de ayuda
 router.get('/ayuda', (req, res) => {
-    res.render('pages/help/index', {
+    res.render('pages/info/help', {
         title: 'Centro de Ayuda - ElBaul',
         page: 'help'
     });
 });
 
-router.get('/ayuda/faq', (req, res) => {
-    res.render('pages/help/faq', {
-        title: 'Preguntas Frecuentes - ElBaul',
-        page: 'help-faq'
+// ========================================
+// RUTAS DE ERRORES
+// ========================================
+
+// Página 404 personalizada
+router.get('/404', (req, res) => {
+    res.status(404).render('pages/errors/404', {
+        title: 'Página no encontrada - ElBaul',
+        page: 'error-404'
     });
 });
 
-router.get('/ayuda/guias', (req, res) => {
-    res.render('pages/help/guides', {
-        title: 'Guías de Usuario - ElBaul',
-        page: 'help-guides'
+// Página 500 personalizada
+router.get('/500', (req, res) => {
+    res.status(500).render('pages/errors/500', {
+        title: 'Error del servidor - ElBaul',
+        page: 'error-500'
     });
 });
 
-router.get('/soporte', requireAuth, (req, res) => {
-    res.render('pages/help/support', {
-        title: 'Soporte Técnico - ElBaul',
-        page: 'support'
+// ========================================
+// RUTAS DE UTILIDADES
+// ========================================
+
+// Página de mantenimiento
+router.get('/mantenimiento', (req, res) => {
+    res.render('pages/maintenance', {
+        title: 'Sitio en Mantenimiento - ElBaul',
+        page: 'maintenance'
     });
 });
 
-// ==========================================
-// TEST AND DEBUG ROUTES
-// ==========================================
-
-// Test routes (remove in production)
-router.get('/test/productos', (req, res) => {
-    res.render('pages/products/simple-test', {
-        title: 'Products Test - ElBaul',
-        page: 'products-test'
+// Página de construcción
+router.get('/en-construccion', (req, res) => {
+    res.render('pages/construction', {
+        title: 'Página en Construcción - ElBaul',
+        page: 'construction'
     });
-});
-
-router.get('/test/basic', (req, res) => {
-    res.render('pages/products/basic-test', {
-        title: 'Basic Test - ElBaul',
-        page: 'basic-test'
-    });
-});
-
-router.get('/test/standalone', (req, res) => {
-    res.render('pages/products/standalone', {
-        title: 'Products Standalone - ElBaul',
-        page: 'products-standalone'
-    });
-});
-
-// Debug route for API testing
-router.get('/debug-api', (req, res) => {
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Quick API Debug</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        </head>
-        <body>
-            <div class="container py-4">
-                <h1>Quick API Debug</h1>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h3>API Tests</h3>
-                        <div id="results"></div>
-                    </div>
-                    <div class="col-md-6">
-                        <h3>Raw Response</h3>
-                        <pre id="raw-response" style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; max-height: 400px; overflow-y: auto;"></pre>
-                    </div>
-                </div>
-            </div>
-            <script>
-                async function testAPI() {
-                    const results = document.getElementById('results');
-                    const rawDiv = document.getElementById('raw-response');
-                    results.innerHTML = '<div class="spinner-border"></div> Testing...';
-                    
-                    try {
-                        // Test products API
-                        const response = await fetch('/api/productos');
-                        const data = await response.json();
-                        
-                        rawDiv.textContent = JSON.stringify(data, null, 2);
-                        
-                        if (response.ok && data.exito) {
-                            const count = data.data.productos ? data.data.productos.length : 0;
-                            results.innerHTML = \`
-                                <div class="alert alert-success">
-                                    ✅ Products API OK: Found \${count} products
-                                </div>
-                                <div class="alert alert-info">
-                                    📊 Total: \${data.data.paginacion?.total || 0}
-                                </div>
-                            \`;
-                        } else {
-                            results.innerHTML = \`
-                                <div class="alert alert-warning">
-                                    ⚠️ API Response: \${data.mensaje || 'Unknown error'}
-                                </div>
-                            \`;
-                        }
-                    } catch (error) {
-                        results.innerHTML = \`
-                            <div class="alert alert-danger">
-                                ❌ Error: \${error.message}
-                            </div>
-                        \`;
-                    }
-                }
-                
-                document.addEventListener('DOMContentLoaded', testAPI);
-            </script>
-        </body>
-        </html>
-    `);
-});
-
-// Debug route for product detail testing
-router.get('/debug-product/:id', (req, res) => {
-    const productId = req.params.id;
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Product Debug - ${productId}</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        </head>
-        <body>
-            <div class="container py-4">
-                <h1>Product Debug: ${productId}</h1>
-                <div id="results"></div>
-            </div>
-            <script>
-                async function testProductAPI() {
-                    const results = document.getElementById('results');
-                    results.innerHTML = '<div class="spinner-border"></div> Testing product API...';
-                    
-                    try {
-                        const response = await fetch('/api/productos/${productId}');
-                        const data = await response.json();
-                        
-                        if (response.ok && data.exito) {
-                            const product = data.data.producto;
-                            results.innerHTML = \`
-                                <div class="alert alert-success">
-                                     Product found: \${product.titulo}
-                                </div>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5>\${product.titulo}</h5>
-                                        <p>\${product.descripcion}</p>
-                                        <p><strong>Price:</strong> S/ \${product.precio}</p>
-                                        <p><strong>Status:</strong> \${product.estado}</p>
-                                        <p><strong>Stock:</strong> \${product.stock}</p>
-                                    </div>
-                                </div>
-                                <details class="mt-3">
-                                    <summary>Full Response</summary>
-                                    <pre>\${JSON.stringify(data, null, 2)}</pre>
-                                </details>
-                            \`;
-                        } else {
-                            results.innerHTML = \`
-                                <div class="alert alert-danger">
-                                     Error: \${data.mensaje || 'Product not found'}
-                                </div>
-                            \`;
-                        }
-                    } catch (error) {
-                        results.innerHTML = \`
-                            <div class="alert alert-danger">
-                                 Network Error: \${error.message}
-                            </div>
-                        \`;
-                    }
-                }
-                
-                document.addEventListener('DOMContentLoaded', testProductAPI);
-            </script>
-        </body>
-        </html>
-    `);
 });
 
 module.exports = router;

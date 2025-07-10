@@ -1,57 +1,60 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const ordenesController = require('../controllers/ordenes.controller');
+const { verificarAuth } = require('../middleware/auth.middleware');
+const { optionalAuth } = require('../middleware/frontend-auth.middleware');
 
-const { verificarAuth } = require("../middleware/auth.middleware");
-const {
-    checkout,
-    obtenerOrdenes,
-    obtenerDetalleOrden,
-    cancelarOrden
-} = require("../controllers/ordenes.controller");
+// ========================================
+// RUTAS PÚBLICAS (sin autenticación)
+// ========================================
 
-// RUTAS DE ÓRDENES (requieren autenticación)
+// Obtener orden por código (público para seguimiento)
+router.get('/seguimiento/:codigo', ordenesController.obtenerOrdenPorCodigo);
 
-/**
- * @route   POST /api/ordenes/checkout
- * @desc    Procesar checkout del carrito y crear orden
- * @access  Private (Usuario autenticado)
- * @body    {
- *            direccion_envio: string (requerido),
- *            metodo_pago: string (requerido),
- *            notas?: string
- *          }
- */
-router.post("/checkout", verificarAuth, checkout);
+// ========================================
+// RUTAS PRIVADAS (requiere autenticación)
+// ========================================
 
-/**
- * @route   GET /api/ordenes
- * @desc    Obtener órdenes del usuario con paginación y filtros
- * @access  Private (Usuario autenticado)
- * @query   {
- *            page?: number,
- *            limit?: number,
- *            estado?: string
- *          }
- */
-router.get("/", verificarAuth, obtenerOrdenes);
+// Checkout y creación de orden
+router.post('/checkout', verificarAuth, ordenesController.procesarCheckout);
 
-/**
- * @route   GET /api/ordenes/:id
- * @desc    Obtener detalle completo de una orden específica
- * @access  Private (Usuario autenticado - solo sus órdenes)
- * @params  id: orden_id
- */
-router.get("/:id", verificarAuth, obtenerDetalleOrden);
+// Obtener órdenes del usuario
+router.get('/', verificarAuth, ordenesController.obtenerOrdenesUsuario);
 
-/**
- * @route   PUT /api/ordenes/:id/cancelar
- * @desc    Cancelar una orden (solo si está pendiente/confirmada)
- * @access  Private (Usuario autenticado - solo sus órdenes)
- * @params  id: orden_id
- * @body    {
- *            motivo?: string
- *          }
- */
-router.put("/:id/cancelar", verificarAuth, cancelarOrden);
+// Obtener orden específica del usuario
+router.get('/:id', verificarAuth, ordenesController.obtenerOrdenPorId);
+
+// Cancelar orden
+router.post('/:id/cancelar', verificarAuth, ordenesController.cancelarOrden);
+
+// Confirmar recepción de orden
+router.post('/:id/confirmar-recepcion', verificarAuth, ordenesController.confirmarRecepcion);
+
+// ========================================
+// PROCESAMIENTO DE PAGOS
+// ========================================
+
+// Procesar pago con tarjeta
+router.post('/:id/pagar-tarjeta', verificarAuth, ordenesController.procesarPagoTarjeta);
+
+// Procesar pago con transferencia
+router.post('/:id/pagar-transferencia', verificarAuth, ordenesController.procesarPagoTransferencia);
+
+// ========================================
+// GESTIÓN DE ENVÍOS
+// ========================================
+
+// Obtener opciones de envío
+router.get('/opciones-envio', verificarAuth, ordenesController.obtenerOpcionesEnvio);
+
+// Calcular costo de envío
+router.post('/calcular-envio', verificarAuth, ordenesController.calcularCostoEnvio);
+
+// ========================================
+// RESEÑAS Y CALIFICACIONES
+// ========================================
+
+// Crear reseña para orden
+router.post('/:id/resena', verificarAuth, ordenesController.crearResenaOrden);
 
 module.exports = router;

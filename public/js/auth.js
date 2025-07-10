@@ -187,20 +187,20 @@ function initializeLoginForm() {
                 });
                 
                 console.log('Login response:', response);
-                
-                if (response.exito) {
+        
+        if (response.exito) {
                     const token = response.data.token;
-                    const userData = response.data.usuario;
+            const userData = response.data.usuario;
                     
                     console.log('Login successful, storing data...');
-                    
-                    // Store in localStorage
+            
+            // Store in localStorage
                     localStorage.setItem('authToken', token);
-                    localStorage.setItem('user', JSON.stringify(userData));
-                    
-                    if (rememberMe) {
-                        localStorage.setItem('rememberMe', 'true');
-                    }
+            localStorage.setItem('user', JSON.stringify(userData));
+            
+            if (rememberMe) {
+                localStorage.setItem('rememberMe', 'true');
+            }
                     
                     // Update global variables
                     if (typeof window.updateAuthState === 'function') {
@@ -209,8 +209,8 @@ function initializeLoginForm() {
                         window.authToken = token;
                         window.currentUser = userData;
                     }
-                    
-                    // Sync with backend session
+            
+            // Sync with backend session
                     if (typeof window.syncUserSession === 'function') {
                         await window.syncUserSession(userData);
                     }
@@ -228,9 +228,9 @@ function initializeLoginForm() {
                     }, 1500);
                 } else {
                     throw new Error(response.mensaje || 'Error al iniciar sesión');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
+        }
+    } catch (error) {
+        console.error('Login error:', error);
                 window.showAlert('danger', error.message || 'Error al iniciar sesión. Verifica tus credenciales.');
                 setLoadingState(false);
             }
@@ -258,7 +258,7 @@ function validatePasswordStrength(password) {
     
     const score = Object.values(strength).filter(Boolean).length;
     
-    return {
+            return {
         isValid: score >= 3 && strength.length,
         score: score,
         feedback: {
