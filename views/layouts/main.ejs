@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%- title || 'ElBaul - Marketplace de Segunda Mano' %></title>
+    <title><%= title || 'ElBaul' %></title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Custom CSS -->
-    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="d-flex flex-column h-100">
     <!-- Navigation -->
     <%- include('../partials/navbar') %>
     
@@ -20,7 +22,7 @@
     <%- include('../partials/flash-messages') %>
     
     <!-- Main Content -->
-    <main>
+    <main class="flex-shrink-0">
         <%- body %>
     </main>
     
@@ -32,23 +34,258 @@
     
     <!-- Make user data available globally -->
     <script>
-        window.user = <%- JSON.stringify(user || null) %>;
+        window.user = <%-JSON.stringify(locals.user || null)%>;
     </script>
     
     <!-- Common scripts for all pages (load first) -->
     <script src="/js/common.js"></script>
     
     <!-- Page-specific scripts (load after common) -->
-    <% if (typeof page !== 'undefined') { %>
-        <% if (page === 'products') { %>
-            <script src="/js/products.js"></script>
-        <% } else if (page === 'product-detail') { %>
-            <script src="/js/product-detail.js"></script>
-        <% } else if (page === 'home') { %>
-            <script src="/js/main.js"></script>
-        <% } else if (page === 'login' || page === 'register') { %>
-            <script src="/js/auth.js"></script>
-        <% } %>
+    <!-- DEBUG: Show current page variable -->
+    <script>
+        console.log('🔍 DEBUG - Page variable:', '<%= locals.page || "undefined" %>');
+        console.log('🔍 DEBUG - Current path:', window.location.pathname);
+    </script>
+    
+    <% if (locals.page === 'login' || locals.page === 'register') { %>
+        <script>console.log('📱 Loading auth.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/auth.js"></script>
     <% } %>
+    
+    <% if (locals.page === 'comunidad' || locals.page === 'social') { %>
+        <script>console.log('🌐 Loading social.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/social.js"></script>
+    <% } %>
+    
+    <% if (locals.page === 'product-detail') { %>
+        <script>console.log('📦 Loading product-detail.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/product-detail.js"></script>
+    <% } %>
+    
+    <% if (locals.page === 'products') { %>
+        <script>console.log('🛍️ Loading products.js for page:', '<%= locals.page %>');</script>
+        <script src="/js/products.js"></script>
+    <% } %>
+    
+    <% if (locals.page === 'favorites') { %>
+        <script>console.log('❤️ Loading favorites functionality inline');</script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Favorites page loaded');
+            
+            // Wait for common functions to be ready
+            function waitForCommonFunctions() {
+                return new Promise((resolve) => {
+                    const checkFunctions = () => {
+                        if (window.apiCall && window.showAlert) {
+                            console.log('Common functions ready, loading favorites');
+                            resolve();
+                        } else {
+                            console.log('Waiting for common functions...');
+                            setTimeout(checkFunctions, 100);
+                        }
+                    };
+                    checkFunctions();
+                });
+            }
+            
+            waitForCommonFunctions().then(() => {
+                loadFavorites();
+            });
+        });
+
+        async function loadFavorites() {
+            try {
+                console.log('Loading favorites...');
+                
+                const response = await window.apiCall('/favoritos');
+                console.log('Favorites response:', response);
+                
+                const container = document.getElementById('favorites-container');
+                
+                if (response.exito && response.data.favoritos && response.data.favoritos.length > 0) {
+                    let html = '<div class="row g-4">';
+                    response.data.favoritos.forEach(favorite => {
+                        const product = favorite.producto;
+                        
+                        // Create product image URL
+                        let imageUrl = '/img/placeholder.jpg';
+                        if (product.imagenes && product.imagenes.length > 0) {
+                            imageUrl = product.imagenes[0];
+                        } else if (product.imagen_url) {
+                            imageUrl = product.imagen_url;
+                        }
+                        
+                        // Create description
+                        let description = product.descripcion || `${product.marca || ''} ${product.modelo || ''}`.trim();
+                        if (description.length > 80) {
+                            description = description.substring(0, 80) + '...';
+                        }
+                        
+                        html += `
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm">
+                                    <img src="${imageUrl}" 
+                                         class="card-img-top" alt="${product.titulo}" 
+                                         style="height: 200px; object-fit: cover;"
+                                         onerror="this.src='/img/placeholder.jpg'">
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="card-title">${product.titulo}</h6>
+                                        <p class="card-text text-muted small flex-grow-1">${description}</p>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="h5 text-success mb-0">S/ ${product.precio}</span>
+                                            <span class="badge bg-secondary">${product.estado}</span>
+                                        </div>
+                                        <div class="d-grid gap-2 mt-auto">
+                                            <a href="/productos/${product.producto_id}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-eye me-1"></i>Ver Detalle
+                                            </a>
+                                            <button onclick="removeFavorite('${favorite.favorito_id}')" class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-heart-broken me-1"></i>Quitar de Favoritos
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No tienes favoritos aún</h4>
+                            <p class="text-muted">¡Agrega productos a tus favoritos para encontrarlos fácilmente!</p>
+                            <a href="/productos" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart me-2"></i>Explorar Productos
+                            </a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading favorites:', error);
+                
+                const container = document.getElementById('favorites-container');
+                
+                if (error.message && error.message.includes('Token inválido')) {
+                    container.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                            <h4 class="text-warning">Sesión expirada</h4>
+                            <p class="text-muted">Por favor, inicia sesión nuevamente para ver tus favoritos.</p>
+                            <a href="/login" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                            <h4 class="text-danger">Error al cargar favoritos</h4>
+                            <p class="text-muted">Por favor, intenta de nuevo más tarde.</p>
+                            <button onclick="loadFavorites()" class="btn btn-primary">
+                                <i class="fas fa-redo me-2"></i>Reintentar
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        async function removeFavorite(favoriteId) {
+            if (!confirm('¿Estás seguro de que quieres quitar este producto de tus favoritos?')) {
+                return;
+            }
+            
+            try {
+                console.log('Removing favorite:', favoriteId);
+                
+                const response = await window.apiCall(`/favoritos/${favoriteId}`, {
+                    method: 'DELETE'
+                });
+                
+                console.log('Remove favorite response:', response);
+                
+                if (response.exito) {
+                    window.showAlert('success', 'Producto removido de favoritos');
+                    loadFavorites(); // Reload the list
+                } else {
+                    window.showAlert('danger', response.mensaje || 'Error al remover de favoritos');
+                }
+            } catch (error) {
+                console.error('Error removing favorite:', error);
+                window.showAlert('danger', 'Error de conexión al remover favorito');
+            }
+        }
+        </script>
+    <% } %>
+    
+    <% if (locals.page === 'cart') { %>
+        <script>console.log('🛒 Loading cart functionality inline');</script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Cart page loaded');
+            
+            // Wait for common functions to be ready
+            function waitForCommonFunctions() {
+                return new Promise((resolve) => {
+                    const checkFunctions = () => {
+                        if (window.apiCall && window.showAlert) {
+                            console.log('Common functions ready, loading cart');
+                            resolve();
+                        } else {
+                            console.log('Waiting for common functions...');
+                            setTimeout(checkFunctions, 100);
+                        }
+                    };
+                    checkFunctions();
+                });
+            }
+            
+            waitForCommonFunctions().then(() => {
+                loadCart();
+            });
+        });
+
+        async function loadCart() {
+            try {
+                console.log('Loading cart...');
+                
+                const response = await window.apiCall('/carrito');
+                console.log('Cart response:', response);
+                
+                const container = document.getElementById('cart-container');
+                
+                if (response.exito && response.data.items && response.data.items.length > 0) {
+                    // Cart has items - show detailed view (implement full cart HTML here)
+                    container.innerHTML = '<div class="alert alert-success">Carrito cargado con ' + response.data.items.length + ' items</div>';
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">Tu carrito está vacío</h4>
+                            <p class="text-muted">¡Agrega productos para comenzar tu compra!</p>
+                            <a href="/productos" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag me-2"></i>Explorar Productos
+                            </a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                const container = document.getElementById('cart-container');
+                container.innerHTML = '<div class="alert alert-danger">Error al cargar carrito: ' + error.message + '</div>';
+            }
+        }
+        </script>
+    <% } %>
+    
+    <!-- DEBUG: List all loaded scripts -->
+    <script>
+        console.log('🔍 All scripts loaded for page:', '<%= locals.page || "undefined" %>');
+    </script>
 </body>
 </html>

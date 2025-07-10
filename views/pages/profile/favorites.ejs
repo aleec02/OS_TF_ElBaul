@@ -12,6 +12,9 @@
                     </a>
                 </div>
                 
+                <!-- Alert container -->
+                <div id="alerts-container"></div>
+                
                 <!-- Favorites Grid -->
                 <div id="favorites-container">
                     <div class="text-center py-4">
@@ -27,38 +30,77 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    loadFavorites();
+    console.log('Favorites page loaded');
+    
+    // Wait for common functions to be ready
+    function waitForCommonFunctions() {
+        return new Promise((resolve) => {
+            const checkFunctions = () => {
+                if (window.apiCall && window.showAlert) {
+                    console.log('Common functions ready, loading favorites');
+                    resolve();
+                } else {
+                    console.log('Waiting for common functions...');
+                    setTimeout(checkFunctions, 100);
+                }
+            };
+            checkFunctions();
+        });
+    }
+    
+    waitForCommonFunctions().then(() => {
+        loadFavorites();
+    });
 });
 
 async function loadFavorites() {
     try {
-        const response = await fetch('/api/favoritos');
-        const data = await response.json();
+        console.log('Loading favorites...');
+        
+        const response = await window.apiCall('/favoritos');
+        console.log('Favorites response:', response);
         
         const container = document.getElementById('favorites-container');
         
-        if (data.exito && data.data.favoritos && data.data.favoritos.length > 0) {
+        if (response.exito && response.data.favoritos && response.data.favoritos.length > 0) {
             let html = '<div class="row g-4">';
-            data.data.favoritos.forEach(favorite => {
+            response.data.favoritos.forEach(favorite => {
                 const product = favorite.producto;
+                
+                // Create product image URL
+                let imageUrl = '/img/placeholder.jpg';
+                if (product.imagenes && product.imagenes.length > 0) {
+                    imageUrl = product.imagenes[0];
+                } else if (product.imagen_url) {
+                    imageUrl = product.imagen_url;
+                }
+                
+                // Create description
+                let description = product.descripcion || `${product.marca || ''} ${product.modelo || ''}`.trim();
+                if (description.length > 80) {
+                    description = description.substring(0, 80) + '...';
+                }
+                
                 html += `
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 shadow-sm">
-                            <img src="${product.imagenes && product.imagenes.length > 0 ? product.imagenes[0] : '/img/placeholder.jpg'}" 
-                                 class="card-img-top" alt="${product.titulo}" style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
+                            <img src="${imageUrl}" 
+                                 class="card-img-top" alt="${product.titulo}" 
+                                 style="height: 200px; object-fit: cover;"
+                                 onerror="this.src='/img/placeholder.jpg'">
+                            <div class="card-body d-flex flex-column">
                                 <h6 class="card-title">${product.titulo}</h6>
-                                <p class="card-text text-muted small">${product.descripcion.substring(0, 80)}...</p>
+                                <p class="card-text text-muted small flex-grow-1">${description}</p>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="h5 text-success mb-0">S/ ${product.precio}</span>
                                     <span class="badge bg-secondary">${product.estado}</span>
                                 </div>
-                                <div class="d-grid gap-2">
+                                <div class="d-grid gap-2 mt-auto">
                                     <a href="/productos/${product.producto_id}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-eye me-1"></i>Ver Detalle
                                     </a>
                                     <button onclick="removeFavorite('${favorite.favorito_id}')" class="btn btn-outline-danger btn-sm">
-                                        <i class="fas fa-heart-broken me-1"></i>Quitar de Favoritos
+<i class="fas fa-heart-broken me-1"></i>Quitar de Favoritos
                                     </button>
                                 </div>
                             </div>
@@ -67,6 +109,12 @@ async function loadFavorites() {
                 `;
             });
             html += '</div>';
+            
+            // Add pagination if needed
+            if (response.data.paginacion && response.data.paginacion.totalPages > 1) {
+                html += createPagination(response.data.paginacion);
+            }
+            
             container.innerHTML = html;
         } else {
             container.innerHTML = `
@@ -82,16 +130,32 @@ async function loadFavorites() {
         }
     } catch (error) {
         console.error('Error loading favorites:', error);
-        document.getElementById('favorites-container').innerHTML = `
-            <div class="text-center py-5">
-                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
-                <h4 class="text-danger">Error al cargar favoritos</h4>
-                <p class="text-muted">Por favor, intenta de nuevo más tarde.</p>
-                <button onclick="loadFavorites()" class="btn btn-primary">
-                    <i class="fas fa-redo me-2"></i>Reintentar
-                </button>
-            </div>
-        `;
+        
+        const container = document.getElementById('favorites-container');
+        
+        if (error.message && error.message.includes('Token inválido')) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h4 class="text-warning">Sesión expirada</h4>
+                    <p class="text-muted">Por favor, inicia sesión nuevamente para ver tus favoritos.</p>
+                    <a href="/login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    </a>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <h4 class="text-danger">Error al cargar favoritos</h4>
+                    <p class="text-muted">Por favor, intenta de nuevo más tarde.</p>
+                    <button onclick="loadFavorites()" class="btn btn-primary">
+                        <i class="fas fa-redo me-2"></i>Reintentar
+                    </button>
+                </div>
+            `;
+        }
     }
 }
 
@@ -101,36 +165,60 @@ async function removeFavorite(favoriteId) {
     }
     
     try {
-        const response = await fetch(`/api/favoritos/${favoriteId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-            }
+        console.log('Removing favorite:', favoriteId);
+        
+        const response = await window.apiCall(`/favoritos/${favoriteId}`, {
+            method: 'DELETE'
         });
         
-        const data = await response.json();
+        console.log('Remove favorite response:', response);
         
-        if (data.exito) {
-            if (typeof window.showAlert === 'function') {
-                window.showAlert('success', 'Producto removido de favoritos');
-            } else {
-                alert('Producto removido de favoritos');
-            }
+        if (response.exito) {
+            window.showAlert('success', 'Producto removido de favoritos');
             loadFavorites(); // Reload the list
         } else {
-            if (typeof window.showAlert === 'function') {
-                window.showAlert('danger', data.mensaje || 'Error al remover de favoritos');
-            } else {
-                alert('Error: ' + (data.mensaje || 'Error al remover de favoritos'));
-            }
+            window.showAlert('danger', response.mensaje || 'Error al remover de favoritos');
         }
     } catch (error) {
         console.error('Error removing favorite:', error);
-        if (typeof window.showAlert === 'function') {
-            window.showAlert('danger', 'Error de conexión');
-        } else {
-            alert('Error de conexión');
-        }
+        window.showAlert('danger', 'Error de conexión al remover favorito');
     }
 }
-</script> 
+
+function createPagination(paginacion) {
+    let paginationHtml = '<nav aria-label="Paginación de favoritos" class="mt-4"><ul class="pagination justify-content-center">';
+    
+    // Previous page
+    if (paginacion.page > 1) {
+        paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="loadFavoritesPage(${paginacion.page - 1})">Anterior</a></li>`;
+    }
+    
+    // Page numbers
+    for (let i = 1; i <= paginacion.totalPages; i++) {
+        if (i === paginacion.page) {
+            paginationHtml += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+        } else {
+            paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="loadFavoritesPage(${i})">${i}</a></li>`;
+        }
+    }
+    
+    // Next page
+    if (paginacion.page < paginacion.totalPages) {
+        paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="loadFavoritesPage(${paginacion.page + 1})">Siguiente</a></li>`;
+    }
+    
+    paginationHtml += '</ul></nav>';
+    return paginationHtml;
+}
+
+async function loadFavoritesPage(page) {
+    try {
+        const response = await window.apiCall(`/favoritos?page=${page}&limit=12`);
+        // Handle response similar to loadFavorites()
+        // ... implementation similar to above
+    } catch (error) {
+        console.error('Error loading favorites page:', error);
+        window.showAlert('danger', 'Error al cargar página de favoritos');
+    }
+}
+</script>

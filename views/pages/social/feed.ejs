@@ -1,40 +1,174 @@
-<!-- Social Feed Page -->
-<section class="py-5">
+<!-- Social Feed / Comunidad Page -->
+<section class="py-4">
     <div class="container">
-        <div class="row">
+        <!-- Header -->
+        <div class="row mb-4">
             <div class="col-12">
-                <h1 class="mb-4">
-                    <i class="fas fa-users me-2"></i>Comunidad ElBaul
-                </h1>
-                <p class="text-muted">Conecta con otros usuarios y descubre las mejores ofertas</p>
+                <div class="text-center mb-4">
+                    <h1 class="display-6">
+                        <i class="fas fa-users me-2 text-primary"></i>Comunidad ElBaul
+                    </h1>
+                    <p class="lead text-muted">Conecta con otros usuarios y descubre las mejores ofertas</p>
+                </div>
             </div>
         </div>
-        
+
         <div class="row">
-            <div class="col-md-8">
-                <div class="card">
+            <!-- Main Feed -->
+            <div class="col-lg-8">
+                <!-- Create Post (only if logged in) -->
+                <% if (locals.user) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>Crear Publicación
+                        </h5>
+                    </div>
                     <div class="card-body">
-                        <h5>Feed de Publicaciones</h5>
-                        <p class="text-muted">Las publicaciones aparecerán aquí...</p>
-                        <div id="posts-container">
-                            <div class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status">
+                        <form id="create-post-form">
+                            <div class="mb-3">
+                                <textarea class="form-control" id="post-content" rows="3" 
+                                          placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-image me-1"></i>Foto
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-tag me-1"></i>Producto
+                                    </button>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1"></i>Publicar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <% } else { %>
+                <!-- Login prompt for non-authenticated users -->
+                <div class="card mb-4 bg-light">
+                    <div class="card-body text-center">
+                        <h5>¡Únete a la conversación!</h5>
+                        <p class="text-muted">Inicia sesión para crear publicaciones y conectar con otros usuarios.</p>
+                        <a href="/login" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Feed Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-newspaper me-2"></i>Feed de Publicaciones
+                    </h4>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm active">
+                            <i class="fas fa-clock me-1"></i>Recientes
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-fire me-1"></i>Populares
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alert container -->
+                <div id="alerts-container"></div>
+
+                <!-- Feed Container -->
+                <div id="feed-container">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando publicaciones...</span>
+                        </div>
+                        <p class="text-muted mt-2">Cargando...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Trending Topics -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-hashtag me-2"></i>Temas Populares
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <span>#ElectrónicosBaratos</span>
+                                    <small class="text-muted">245 posts</small>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <span>#MueblesCasaOferta</span>
+                                    <small class="text-muted">189 posts</small>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <span>#RopaVintage</span>
+                                    <small class="text-muted">156 posts</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell me-2"></i>Actividad Reciente
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="activity-container">
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-secondary" role="status">
                                     <span class="visually-hidden">Cargando...</span>
                                 </div>
+                                <p class="text-muted small mt-2">La actividad aparecerá aquí...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Stats -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Estadísticas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h4 class="text-primary mb-0">1.2k</h4>
+                                    <small class="text-muted">Usuarios</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h4 class="text-success mb-0">485</h4>
+                                    <small class="text-muted">Posts</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h4 class="text-info mb-0">89</h4>
+                                <small class="text-muted">Hoy</small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>Actividad Reciente</h5>
-                        <p class="text-muted">La actividad aparecerá aquí...</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-</section> 
+</section>
