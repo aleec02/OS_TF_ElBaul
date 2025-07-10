@@ -31,19 +31,39 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    loadOrders();
+    console.log('Orders page loaded');
+    
+    // Wait for common functions to be ready
+    function waitForCommonFunctions() {
+        return new Promise((resolve) => {
+            const checkFunctions = () => {
+                if (window.apiCall && window.showAlert) {
+                    console.log('Common functions ready, loading orders');
+                    resolve();
+                } else {
+                    console.log('Waiting for common functions...');
+                    setTimeout(checkFunctions, 100);
+                }
+            };
+            checkFunctions();
+        });
+    }
+    
+    waitForCommonFunctions().then(() => {
+        loadOrders();
+    });
 });
 
 async function loadOrders() {
     try {
-        const response = await fetch('/api/ordenes?limit=20');
-        const data = await response.json();
+        const response = await window.apiCall('/ordenes?limit=20');
+        console.log('Orders response:', response);
         
         const container = document.getElementById('orders-container');
         
-        if (data.exito && data.data.ordenes && data.data.ordenes.length > 0) {
+        if (response.exito && response.data.ordenes && response.data.ordenes.length > 0) {
             let html = '';
-            data.data.ordenes.forEach(order => {
+            response.data.ordenes.forEach(order => {
                 html += `
                     <div class="card mb-3 border-0 shadow-sm">
                         <div class="card-body">
@@ -83,16 +103,32 @@ async function loadOrders() {
         }
     } catch (error) {
         console.error('Error loading orders:', error);
-        document.getElementById('orders-container').innerHTML = `
-            <div class="text-center py-5">
-                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
-                <h4 class="text-danger">Error al cargar órdenes</h4>
-                <p class="text-muted">Por favor, intenta de nuevo más tarde.</p>
-                <button onclick="loadOrders()" class="btn btn-primary">
-                    <i class="fas fa-redo me-2"></i>Reintentar
-                </button>
-            </div>
-        `;
+        
+        const container = document.getElementById('orders-container');
+        
+        if (error.message && error.message.includes('Token inválido')) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h4 class="text-warning">Sesión expirada</h4>
+                    <p class="text-muted">Por favor, inicia sesión nuevamente para ver tus órdenes.</p>
+                    <a href="/login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    </a>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <h4 class="text-danger">Error al cargar órdenes</h4>
+                    <p class="text-muted">Por favor, intenta de nuevo más tarde.</p>
+                    <button onclick="loadOrders()" class="btn btn-primary">
+                        <i class="fas fa-redo me-2"></i>Reintentar
+                    </button>
+                </div>
+            `;
+        }
     }
 }
 

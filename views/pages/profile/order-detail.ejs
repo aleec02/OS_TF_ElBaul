@@ -1,0 +1,223 @@
+<!-- Order Detail Page -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>Detalle de Orden
+                    </h1>
+                    <a href="/ordenes" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a Órdenes
+                    </a>
+                </div>
+                
+                <!-- Alert container -->
+                <div id="alerts-container"></div>
+                
+                <!-- Order Detail Container -->
+                <div id="order-detail-container">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando detalle de orden...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Order detail page loaded');
+    
+    // Wait for common functions to be ready
+    function waitForCommonFunctions() {
+        return new Promise((resolve) => {
+            const checkFunctions = () => {
+                if (window.apiCall && window.showAlert) {
+                    console.log('Common functions ready, loading order detail');
+                    resolve();
+                } else {
+                    console.log('Waiting for common functions...');
+                    setTimeout(checkFunctions, 100);
+                }
+            };
+            checkFunctions();
+        });
+    }
+    
+    waitForCommonFunctions().then(() => {
+        loadOrderDetail();
+    });
+});
+
+async function loadOrderDetail() {
+    try {
+        // Get order ID from URL
+        const orderId = window.location.pathname.split('/').pop();
+        console.log('Loading order detail for:', orderId);
+        
+        const response = await window.apiCall(`/ordenes/${orderId}`);
+        console.log('Order detail response:', response);
+        
+        const container = document.getElementById('order-detail-container');
+        
+        if (response.exito && response.data.orden) {
+            const order = response.data.orden;
+            const items = response.data.items || [];
+            
+            let html = `
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Productos de la Orden</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Precio</th>
+                                                <th>Cantidad</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+            `;
+            
+            items.forEach(item => {
+                html += `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="${item.producto && item.producto.imagenes && item.producto.imagenes.length > 0 ? item.producto.imagenes[0] : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg=='}" 
+                                     alt="${item.producto ? item.producto.titulo : 'Producto'}" 
+                                     style="width: 50px; height: 50px; object-fit: cover;"
+                                     class="me-3">
+                                <div>
+                                    <h6 class="mb-0">${item.producto ? item.producto.titulo : 'Producto'}</h6>
+                                    <small class="text-muted">${item.producto ? item.producto.marca || '' : ''}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>S/ ${item.precio_unitario}</td>
+                        <td>${item.cantidad}</td>
+                        <td>S/ ${item.subtotal}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Información de la Orden</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <strong>Orden #:</strong> ${order.orden_id}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Fecha:</strong> ${new Date(order.fecha_creacion).toLocaleDateString('es-PE')}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Estado:</strong> 
+                                    <span class="badge bg-${getStatusColor(order.estado)}">${order.estado}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Método de Pago:</strong> ${order.metodo_pago || 'No especificado'}
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span>S/ ${order.total}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Envío:</span>
+                                    <span>Gratis</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>Total:</strong>
+                                    <strong class="text-primary">S/ ${order.total}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Dirección de Envío</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">${order.direccion_envio || 'No especificada'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h4 class="text-warning">Orden no encontrada</h4>
+                    <p class="text-muted">La orden que buscas no existe o no tienes permisos para verla.</p>
+                    <a href="/ordenes" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a Órdenes
+                    </a>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading order detail:', error);
+        
+        const container = document.getElementById('order-detail-container');
+        
+        if (error.message && error.message.includes('Token inválido')) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h4 class="text-warning">Sesión expirada</h4>
+                    <p class="text-muted">Por favor, inicia sesión nuevamente para ver el detalle de la orden.</p>
+                    <a href="/login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    </a>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <h4 class="text-danger">Error al cargar detalle de orden</h4>
+                    <p class="text-muted">Por favor, intenta de nuevo más tarde.</p>
+                    <button onclick="loadOrderDetail()" class="btn btn-primary">
+                        <i class="fas fa-redo me-2"></i>Reintentar
+                    </button>
+                </div>
+            `;
+        }
+    }
+}
+
+function getStatusColor(status) {
+    switch (status) {
+        case 'completada': return 'success';
+        case 'en_proceso': return 'warning';
+        case 'cancelada': return 'danger';
+        case 'pendiente': return 'info';
+        default: return 'secondary';
+    }
+}
+</script> 

@@ -95,13 +95,18 @@ const checkout = async (req, res) => {
             total += item.cantidad * producto.precio;
         }
         
+        // Convertir dirección de envío a string
+        const direccionString = typeof direccion_envio === 'object' 
+            ? `${direccion_envio.nombre}, ${direccion_envio.telefono}, ${direccion_envio.direccion}, ${direccion_envio.ciudad}, ${direccion_envio.codigo_postal}`
+            : direccion_envio;
+        
         // Crear la orden
         const nuevaOrden = new ModeloOrden({
             usuario_id: req.usuario.usuario_id,
             total,
             estado: "pendiente",
             metodo_pago,
-            direccion_envio
+            direccion_envio: direccionString
         });
         
         await nuevaOrden.save();

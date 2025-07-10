@@ -113,6 +113,14 @@ router.get("/ordenes", verificarAuthFrontend, (req, res) => {
     });
 });
 
+router.get("/orden/:id", verificarAuthFrontend, (req, res) => {
+    res.render('pages/profile/order-detail', {
+        title: 'Detalle de Orden - ElBaul',
+        page: 'order-detail',
+        orderId: req.params.id
+    });
+});
+
 router.get("/checkout", verificarAuthFrontend, (req, res) => {
     res.render('pages/checkout/index', {
         title: 'Checkout - ElBaul',
