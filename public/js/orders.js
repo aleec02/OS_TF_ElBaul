@@ -32,13 +32,31 @@ async function loadOrders() {
         if (response.exito && response.data.ordenes && response.data.ordenes.length > 0) {
             let html = '';
             response.data.ordenes.forEach(order => {
+                // Format date properly
+                let formattedDate = 'Fecha no disponible';
+                if (order.fecha_orden) {
+                    try {
+                        // Handle both string and Date formats
+                        const date = new Date(order.fecha_orden);
+                        if (!isNaN(date.getTime())) {
+                            formattedDate = date.toLocaleDateString('es-PE', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error formatting date:', error);
+                    }
+                }
+                
                 html += `
                     <div class="card mb-3 border-0 shadow-sm">
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-md-3">
                                     <h6 class="mb-1">Orden #${order.orden_id}</h6>
-                                    <small class="text-muted">${new Date(order.fecha_creacion).toLocaleDateString('es-PE')}</small>
+                                    <small class="text-muted">${formattedDate}</small>
                                 </div>
                                 <div class="col-md-3">
                                     <span class="badge bg-${getStatusColor(order.estado)} fs-6">${order.estado}</span>
@@ -105,7 +123,8 @@ function getStatusColor(status) {
         case 'completada': return 'success';
         case 'en_proceso': return 'warning';
         case 'cancelada': return 'danger';
-        case 'pendiente': return 'info';
+        case 'pendiente': return 'warning';
+        case 'pagada': return 'success';
         default: return 'secondary';
     }
 } 
