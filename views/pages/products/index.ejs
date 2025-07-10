@@ -1,612 +1,156 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos - Segunda Mano</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .product-card {
-            transition: transform 0.2s ease-in-out;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        .product-image {
-            height: 200px;
-            object-fit: cover;
-        }
-        .product-price {
-            color: #28a745;
-            font-weight: bold;
-        }
-        .favorite-btn {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .favorite-btn:hover {
-            background-color: #dc3545;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid py-4">
-        <!-- Page Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h2 mb-1">Productos</h1>
-                        <p class="text-muted mb-0">Encuentra los mejores productos de segunda mano</p>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-secondary" id="grid-view" title="Vista de cuadrícula">
-                            <i class="fas fa-th"></i>
-                        </button>
-                        <button class="btn btn-outline-secondary" id="list-view" title="Vista de lista">
-                            <i class="fas fa-list"></i>
+<!-- Products Page -->
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-1">Productos</h1>
+                    <p class="text-muted mb-0">Encuentra los mejores productos de segunda mano</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-secondary" id="grid-view" title="Vista de cuadrícula">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary" id="list-view" title="Vista de lista">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Filtros</h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-filters">
+                            Limpiar
                         </button>
                     </div>
+                </div>
+                <div class="card-body">
+                    <form id="filters-form">
+                        <!-- Search -->
+                        <div class="mb-3">
+                            <label for="search-input" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search-input" placeholder="Buscar productos...">
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="mb-3">
+                            <label for="category-select" class="form-label">Categoría</label>
+                            <select class="form-select" id="category-select">
+                                <option value="">Todas las categorías</option>
+                                <!-- Categories will be loaded via JavaScript -->
+                            </select>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-3">
+                            <label class="form-label">Rango de Precio</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="price-min" placeholder="Min" min="0">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="price-max" placeholder="Max" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estado Filter -->
+                        <div class="mb-3">
+                            <label class="form-label">Estado</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="estado" value="nuevo" id="estado-nuevo">
+                                <label class="form-check-label" for="estado-nuevo">Nuevo</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="estado" value="como_nuevo" id="estado-como-nuevo">
+                                <label class="form-check-label" for="estado-como-nuevo">Como Nuevo</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="estado" value="excelente" id="estado-excelente">
+                                <label class="form-check-label" for="estado-excelente">Excelente</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="estado" value="bueno" id="estado-bueno">
+                                <label class="form-check-label" for="estado-bueno">Buen Estado</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="estado" value="regular" id="estado-regular">
+                                <label class="form-check-label" for="estado-regular">Regular</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter"></i> Aplicar Filtros
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <!-- Filters Sidebar -->
-            <div class="col-lg-3 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Filtros</h5>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-filters">
-                                Limpiar
-                            </button>
-                        </div>
+        <!-- Products Content -->
+        <div class="col-lg-9">
+            <!-- Sort and Results Info -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div id="results-info" class="text-muted">
+                        Cargando productos...
                     </div>
-                    <div class="card-body">
-                        <form id="filters-form">
-                            <!-- Search -->
-                            <div class="mb-3">
-                                <label for="search-input" class="form-label">Buscar</label>
-                                <input type="text" class="form-control" id="search-input" placeholder="Buscar productos...">
-                            </div>
-
-                            <!-- Category Filter -->
-                            <div class="mb-3">
-                                <label for="category-select" class="form-label">Categoría</label>
-                                <select class="form-select" id="category-select">
-                                    <option value="">Todas las categorías</option>
-                                    <!-- Categories will be loaded via JavaScript -->
-                                </select>
-                            </div>
-
-                            <!-- Price Range -->
-                            <div class="mb-3">
-                                <label class="form-label">Rango de Precio</label>
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <input type="number" class="form-control" id="price-min" placeholder="Min" min="0">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" class="form-control" id="price-max" placeholder="Max" min="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Estado Filter -->
-                            <div class="mb-3">
-                                <label class="form-label">Estado</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="estado" value="nuevo" id="estado-nuevo">
-                                    <label class="form-check-label" for="estado-nuevo">Nuevo</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="estado" value="como_nuevo" id="estado-como-nuevo">
-                                    <label class="form-check-label" for="estado-como-nuevo">Como Nuevo</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="estado" value="excelente" id="estado-excelente">
-                                    <label class="form-check-label" for="estado-excelente">Excelente</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="estado" value="bueno" id="estado-bueno">
-                                    <label class="form-check-label" for="estado-bueno">Buen Estado</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="estado" value="regular" id="estado-regular">
-                                    <label class="form-check-label" for="estado-regular">Regular</label>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-filter"></i> Aplicar Filtros
-                            </button>
-                        </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <label for="sort-select" class="form-label me-2 mb-0">Ordenar por:</label>
+                        <select class="form-select" id="sort-select" style="width: auto;">
+                            <option value="">Relevancia</option>
+                            <option value="precio_asc">Precio: Menor a Mayor</option>
+                            <option value="precio_desc">Precio: Mayor a Menor</option>
+                            <option value="recientes">Más Recientes</option>
+                            <option value="nombre_asc">Nombre: A-Z</option>
+                            <option value="nombre_desc">Nombre: Z-A</option>
+                        </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Products Content -->
-            <div class="col-lg-9">
-                <!-- Sort and Results Info -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div id="results-info" class="text-muted">
-                            Cargando productos...
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex justify-content-end align-items-center">
-                            <label for="sort-select" class="form-label me-2 mb-0">Ordenar por:</label>
-                            <select class="form-select" id="sort-select" style="width: auto;">
-                                <option value="">Relevancia</option>
-                                <option value="precio_asc">Precio: Menor a Mayor</option>
-                                <option value="precio_desc">Precio: Mayor a Menor</option>
-                                <option value="recientes">Más Recientes</option>
-                                <option value="nombre_asc">Nombre: A-Z</option>
-                                <option value="nombre_desc">Nombre: Z-A</option>
-                            </select>
-                        </div>
-                    </div>
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando productos...</span>
                 </div>
+                <p class="mt-2">Cargando productos...</p>
+            </div>
 
-                <!-- Loading Indicator -->
-                <div id="loading-indicator" class="text-center py-5" style="display: none;">
+            <!-- Products Container -->
+            <div class="row" id="products-container">
+                <div class="col-12 text-center py-5">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Cargando productos...</span>
                     </div>
                     <p class="mt-2">Cargando productos...</p>
                 </div>
+            </div>
 
-                <!-- Products Container -->
-                <div class="row" id="products-container">
-                    <div class="col-12 text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando productos...</span>
-                        </div>
-                        <p class="mt-2">Cargando productos...</p>
-                    </div>
+            <!-- No Results Message -->
+            <div id="no-results" class="text-center py-5" style="display: none;">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    No se encontraron productos con los filtros aplicados.
                 </div>
+            </div>
 
-                <!-- Pagination -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div id="pagination-container"></div>
-                    </div>
+            <!-- Pagination -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div id="pagination-container"></div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Mock API function - replace with actual API calls
-        function apiCall(endpoint) {
-            // This would be replaced with actual API calls
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({
-                        exito: true,
-                        data: {
-                            productos: [],
-                            categorias: [],
-                            paginacion: {
-                                total: 0,
-                                totalPaginas: 0,
-                                paginaActual: 1
-                            }
-                        }
-                    });
-                }, 1000);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize products page
-            initializeProductsPage();
-        });
-
-        let currentPage = 1;
-        let totalPages = 1;
-        let currentFilters = {};
-
-        async function initializeProductsPage() {
-            // Load categories for filter
-            await loadCategories();
-            
-            // Parse URL parameters
-            parseURLParameters();
-            
-            // Load products
-            await loadProducts();
-            
-            // Setup event listeners
-            setupEventListeners();
-        }
-
-        async function loadCategories() {
-            try {
-                const response = await apiCall('/categorias');
-                if (response.exito && response.data.categorias) {
-                    const categorySelect = document.getElementById('category-select');
-                    response.data.categorias.forEach(category => {
-                        const option = document.createElement('option');
-                        option.value = category.categoria_id;
-                        option.textContent = category.nombre;
-                        categorySelect.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading categories:', error);
-            }
-        }
-
-        function parseURLParameters() {
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // Set search term
-            const searchTerm = urlParams.get('q');
-            if (searchTerm) {
-                document.getElementById('search-input').value = searchTerm;
-                currentFilters.q = searchTerm;
-            }
-            
-            // Set category
-            const category = urlParams.get('categoria');
-            if (category) {
-                document.getElementById('category-select').value = category;
-                currentFilters.categoria_id = category;
-            }
-            
-            // Set page
-            const page = urlParams.get('page');
-            if (page) {
-                currentPage = parseInt(page);
-            }
-        }
-
-        async function loadProducts() {
-            showLoading(true);
-            
-            try {
-                // Build query parameters
-                const params = new URLSearchParams();
-                params.append('page', currentPage);
-                params.append('limit', 12);
-                
-                // Add filters
-                Object.keys(currentFilters).forEach(key => {
-                    if (currentFilters[key]) {
-                        params.append(key, currentFilters[key]);
-                    }
-                });
-                
-                const endpoint = currentFilters.q ? 
-                    `/productos/buscar?${params.toString()}` : 
-                    `/productos?${params.toString()}`;
-                    
-                const response = await apiCall(endpoint);
-                
-                if (response.exito && response.data.productos) {
-                    displayProducts(response.data.productos);
-                    updateResultsCount(response.data.paginacion || response.data);
-                    updatePagination(response.data.paginacion || response.data);
-                } else {
-                    showNoResults();
-                }
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showNoResults();
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        function displayProducts(products) {
-            const container = document.getElementById('products-container');
-            
-            if (products.length === 0) {
-                showNoResults();
-                return;
-            }
-            
-            container.innerHTML = '';
-            container.className = 'row g-3';
-            document.getElementById('no-results').style.display = 'none';
-            
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                container.appendChild(productCard);
-            });
-        }
-
-        function createProductCard(product) {
-            const col = document.createElement('div');
-            col.className = 'col-md-6 col-lg-4';
-            
-            col.innerHTML = `
-                <div class="card product-card h-100">
-                    <div class="position-relative">
-                        <img src="${product.imagenes && product.imagenes.length > 0 ? product.imagenes[0] : '/img/placeholder.jpg'}" 
-                             class="card-img-top product-image" alt="${product.titulo}">
-                        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-2 favorite-btn" 
-                                data-product-id="${product.producto_id}" onclick="toggleFavorite('${product.producto_id}')">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <span class="badge bg-secondary position-absolute top-0 start-0 m-2">${product.estado}</span>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="card-title">${product.titulo}</h6>
-                        <p class="card-text text-muted small">${product.descripcion.substring(0, 100)}...</p>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="product-price h5 mb-0">S/ ${product.precio}</span>
-                            <small class="text-muted">${product.categoria ? product.categoria.nombre : ''}</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <div class="d-grid gap-2">
-                            <a href="/productos/${product.producto_id}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-eye me-1"></i>Ver Detalles
-                            </a>
-                            <button class="btn btn-success btn-sm" onclick="addToCart('${product.producto_id}')">
-                                <i class="fas fa-cart-plus me-1"></i>Agregar al Carrito
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            return col;
-        }
-
-        function updateResultsCount(paginationData) {
-            const resultsElement = document.getElementById('results-info');
-            const total = paginationData.total || 0;
-            const currentStart = ((currentPage - 1) * 12) + 1;
-            const currentEnd = Math.min(currentPage * 12, total);
-            
-            if (total > 0) {
-                resultsElement.textContent = `Mostrando ${currentStart}-${currentEnd} de ${total} productos`;
-            } else {
-                resultsElement.textContent = 'No se encontraron productos';
-            }
-        }
-
-        function updatePagination(paginationData) {
-            const paginationElement = document.getElementById('pagination-container');
-            totalPages = paginationData.totalPaginas || Math.ceil((paginationData.total || 0) / 12);
-            
-            if (totalPages <= 1) {
-                paginationElement.innerHTML = '';
-                return;
-            }
-            
-            let paginationHTML = '';
-            
-            // Previous button
-            paginationHTML += `
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="goToPage(${currentPage - 1})">Anterior</a>
-                </li>
-            `;
-            
-            // Page numbers
-            const startPage = Math.max(1, currentPage - 2);
-            const endPage = Math.min(totalPages, currentPage + 2);
-            
-            for (let i = startPage; i <= endPage; i++) {
-                paginationHTML += `
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>
-                    </li>
-                `;
-            }
-            
-            // Next button
-            paginationHTML += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="goToPage(${currentPage + 1})">Siguiente</a>
-                </li>
-            `;
-            
-            paginationElement.innerHTML = paginationHTML;
-        }
-
-        function goToPage(page) {
-            if (page < 1 || page > totalPages) return;
-            
-            currentPage = page;
-            loadProducts();
-            
-            // Update URL
-            const url = new URL(window.location);
-            url.searchParams.set('page', page);
-            window.history.pushState({}, '', url);
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function setupEventListeners() {
-            // Apply filters form submission
-            document.getElementById('filters-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                applyFilters();
-            });
-            
-            // Clear filters button
-            document.getElementById('clear-filters').addEventListener('click', clearFilters);
-            
-            // Sort dropdown
-            document.getElementById('sort-select').addEventListener('change', applySorting);
-            
-            // Search filter with debounce
-            let searchTimeout;
-            document.getElementById('search-input').addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(applyFilters, 500);
-            });
-            
-            // Price inputs
-            document.getElementById('price-min').addEventListener('change', applyFilters);
-            document.getElementById('price-max').addEventListener('change', applyFilters);
-            
-            // View toggle buttons
-            document.getElementById('grid-view').addEventListener('click', () => toggleView('grid'));
-            document.getElementById('list-view').addEventListener('click', () => toggleView('list'));
-        }
-
-        function applyFilters() {
-            currentFilters = {};
-            currentPage = 1;
-            
-            // Search filter
-            const searchTerm = document.getElementById('search-input').value.trim();
-            if (searchTerm) {
-                currentFilters.q = searchTerm;
-            }
-            
-            // Category filter
-            const category = document.getElementById('category-select').value;
-            if (category) {
-                currentFilters.categoria_id = category;
-            }
-            
-            // Price filters
-            const minPrice = document.getElementById('price-min').value;
-            const maxPrice = document.getElementById('price-max').value;
-            if (minPrice) currentFilters.precio_min = minPrice;
-            if (maxPrice) currentFilters.precio_max = maxPrice;
-            
-            // Estado filters
-            const estadoCheckboxes = document.querySelectorAll('input[name="estado"]:checked');
-            const estadoValues = Array.from(estadoCheckboxes).map(checkbox => checkbox.value);
-            if (estadoValues.length > 0) {
-                currentFilters.estado = estadoValues.join(',');
-            }
-            
-            // Update URL
-            updateURL();
-            
-            // Load products with new filters
-            loadProducts();
-        }
-
-        function clearFilters() {
-            // Clear form inputs
-            document.getElementById('filters-form').reset();
-            document.getElementById('sort-select').value = '';
-            
-            // Clear filters and reload
-            currentFilters = {};
-            currentPage = 1;
-            
-            // Update URL
-            window.history.pushState({}, '', window.location.pathname);
-            
-            // Reload products
-            loadProducts();
-        }
-
-        function applySorting() {
-            const sortValue = document.getElementById('sort-select').value;
-            if (sortValue) {
-                if (sortValue === 'recientes') {
-                    currentFilters.ordenar_por = 'fecha';
-                    currentFilters.orden = 'desc';
-                } else {
-                    const [field, direction] = sortValue.split('_');
-                    currentFilters.ordenar_por = field;
-                    currentFilters.orden = direction;
-                }
-            } else {
-                delete currentFilters.ordenar_por;
-                delete currentFilters.orden;
-            }
-            
-            currentPage = 1;
-            updateURL();
-            loadProducts();
-        }
-
-        function updateURL() {
-            const url = new URL(window.location);
-            
-            url.search = '';
-            
-            Object.keys(currentFilters).forEach(key => {
-                url.searchParams.set(key, currentFilters[key]);
-            });
-            
-            if (currentPage > 1) {
-                url.searchParams.set('page', currentPage);
-            }
-            
-            window.history.pushState({}, '', url);
-        }
-
-        function toggleView(viewType) {
-            const gridBtn = document.getElementById('grid-view');
-            const listBtn = document.getElementById('list-view');
-            const container = document.getElementById('products-container');
-            
-            if (viewType === 'grid') {
-                gridBtn.classList.add('active');
-                listBtn.classList.remove('active');
-                container.className = 'row g-3';
-                // Update product cards for grid view
-                container.querySelectorAll('.col-12').forEach(col => {
-                    col.className = 'col-md-6 col-lg-4';
-                });
-            } else {
-                listBtn.classList.add('active');
-                gridBtn.classList.remove('active');
-                container.className = 'row g-2';
-                container.querySelectorAll('.col-md-6, .col-lg-4').forEach(col => {
-                    col.className = 'col-12';
-                });
-            }
-        }
-
-        function showLoading(show) {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const productsContainer = document.getElementById('products-container');
-            const noResults = document.getElementById('no-results');
-            
-            if (show) {
-                loadingIndicator.style.display = 'block';
-                productsContainer.innerHTML = '';
-                noResults.style.display = 'none';
-            } else {
-                loadingIndicator.style.display = 'none';
-            }
-        }
-
-        function showNoResults() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const productsContainer = document.getElementById('products-container');
-            const noResults = document.getElementById('no-results');
-            
-            loadingIndicator.style.display = 'none';
-            productsContainer.innerHTML = '';
-            noResults.style.display = 'block';
-        }
-
-        // Utility functions for cart and favorites
-        function toggleFavorite(productId) {
-            console.log('Toggle favorite for product:', productId);
-            // Implement favorite toggle logic
-        }
-
-        function addToCart(productId) {
-            console.log('Add to cart product:', productId);
-            // Implement add to cart logic
-        }
-    </script>
-</body>
-</html>
+</div>
